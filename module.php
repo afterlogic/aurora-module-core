@@ -116,12 +116,67 @@ class CoreModule extends AApiModule
 	/**
 	 * @return array
 	 */
-//	public function GetAppData($oUser = null)
-//	{
+	public function GetAppData($oUser = null)
+	{
+		return $oUser && $oUser->Role === 0 ? array(
+			'SiteName' => \CApi::GetSettingsConf('SiteName'),
+			'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
+			'DBHost' => \CApi::GetSettingsConf('DBHost'),
+			'DBName' => \CApi::GetSettingsConf('DBName'),
+			'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
+			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
+			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
+			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
+			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
+			'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
+			'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
+			'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
+			'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel')
+		) : array(
+			'SiteName' => \CApi::GetSettingsConf('SiteName'),
+			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
+			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
+			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
+			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage')
+		);
 //		$oApiIntegratorManager = \CApi::GetCoreManager('integrator');
 //		$sAuthToken = (string) $this->getParamValue('AuthToken', '');
 //		return $oApiIntegratorManager ? $oApiIntegratorManager->appData(false, '', '', '', $sAuthToken) : false;
-//	}
+	}
+	
+	/**
+	 * 
+	 * @param string $LicenseKey
+	 * @param string $DbLogin
+	 * @param string $DbPassword
+	 * @param string $DbName
+	 * @param string $DbHost
+	 */
+	public function UpdateSettings($LicenseKey = null, $DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null)
+	{
+		$oSettings =& CApi::GetSettings();
+		if ($LicenseKey !== null)
+		{
+			$oSettings->SetConf('LicenseKey', $LicenseKey);
+		}
+		if ($DbLogin !== null)
+		{
+			$oSettings->SetConf('DBLogin', $DbLogin);
+		}
+		if ($DbPassword !== null)
+		{
+			$oSettings->SetConf('DBPassword', $DbPassword);
+		}
+		if ($DbName !== null)
+		{
+			$oSettings->SetConf('DBName', $DbName);
+		}
+		if ($DbHost !== null)
+		{
+			$oSettings->SetConf('DBHost', $DbHost);
+		}
+//		$oSettings->Save();
+	}
 	
 	public function EntryPull()
 	{
