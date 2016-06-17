@@ -649,7 +649,7 @@ class CoreModule extends AApiModule
 
 			$this->oApiChannelsManager->createChannel($oChannel);
 			return $oChannel ? array(
-				'iObjectId' => $oChannel->iObjectId
+				'iObjectId' => $oChannel->iId
 			) : false;
 		}
 		else
@@ -689,7 +689,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oChannel ? array(
-				'iObjectId' => $oChannel->iObjectId
+				'iObjectId' => $oChannel->iId
 			) : false;
 		}
 		else
@@ -720,7 +720,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oChannel ? array(
-				'iObjectId' => $oChannel->iObjectId
+				'iObjectId' => $oChannel->iId
 			) : false;
 		}
 		else
@@ -750,7 +750,7 @@ class CoreModule extends AApiModule
 
 			$this->oApiTenantsManager->createTenant($oTenant);
 			return $oTenant ? array(
-				'iObjectId' => $oTenant->iObjectId
+				'iObjectId' => $oTenant->iId
 			) : false;
 		}
 		else
@@ -794,7 +794,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oTenant ? array(
-				'iObjectId' => $oTenant->iObjectId
+				'iObjectId' => $oTenant->iId
 			) : false;
 		}
 		else
@@ -830,7 +830,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oTenant ? array(
-				'iObjectId' => $oTenant->iObjectId
+				'iObjectId' => $oTenant->iId
 			) : false;
 		}
 		else
@@ -902,7 +902,7 @@ class CoreModule extends AApiModule
 
 			$this->oApiUsersManager->createUser($oUser);
 			return $oUser ? array(
-				'iObjectId' => $oUser->iObjectId
+				'iObjectId' => $oUser->iId
 			) : false;
 		}
 		else
@@ -935,7 +935,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oUser ? array(
-				'iObjectId' => $oUser->iObjectId
+				'iObjectId' => $oUser->iId
 			) : false;
 		}
 		else
@@ -971,7 +971,7 @@ class CoreModule extends AApiModule
 			}
 			
 			return $oUser ? array(
-				'iObjectId' => $oUser->iObjectId
+				'iObjectId' => $oUser->iId
 			) : false;
 		}
 		else

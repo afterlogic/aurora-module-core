@@ -58,7 +58,7 @@ class CApiCoreTenantsManager extends AApiManager
 		$aResult = false;
 		try
 		{
-			$aResultTenants = $this->oEavManager->getObjects(
+			$aResultTenants = $this->oEavManager->getEntities(
 				'CTenant', 
 				array(
 					'Name', 
@@ -76,7 +76,7 @@ class CApiCoreTenantsManager extends AApiManager
 
 			foreach($aResultTenants as $oTenat)
 			{
-				$aResult[$oTenat->iObjectId] = array(
+				$aResult[$oTenat->iId] = array(
 					$oTenat->Name,
 					$oTenat->Description,
 					$oTenat->IdChannel
@@ -100,7 +100,7 @@ class CApiCoreTenantsManager extends AApiManager
 		$iResult = false;
 		try
 		{
-			$aResultTenants = $this->oEavManager->getObjectsCount(
+			$aResultTenants = $this->oEavManager->getEntitiesCount(
 				'CTenant', 
 				array(
 					'Description' => $sSearchDesc
@@ -136,7 +136,7 @@ class CApiCoreTenantsManager extends AApiManager
 				
 				//$oAccountsApi = CApi::GetCoreManager('users');
 				//TODO move account request to manager of Accounts
-				$aResults = $this->oEavManager->getObjects(
+				$aResults = $this->oEavManager->getEntities(
 					'CAccount', 
 					array(
 						'StorageQuota'
@@ -178,7 +178,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			try
 			{
-				$oResult = $this->oEavManager->getObjects(
+				$oResult = $this->oEavManager->getEntities(
 					'CTenant', 
 					array(
 						'IsDefault'
@@ -214,7 +214,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			//TODO verify logic
 //			$oTenant = $this->oStorage->getTenantById($mTenantId, $bIdIsHash);
-			$oResult = $this->oEavManager->getObjectById($mTenantId);
+			$oResult = $this->oEavManager->getEntityById($mTenantId);
 				
 			if ($oResult instanceOf \CTenant)
 			{
@@ -225,7 +225,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				/* @var $oTenant CTenant */
 				
-				$mTenantId = $oTenant->iObjectId;
+				$mTenantId = $oTenant->iId;
 
 				$iFilesUsageInMB = 0;
 				if (0 < strlen($oTenant->FilesUsageInBytes))
@@ -279,7 +279,7 @@ class CApiCoreTenantsManager extends AApiManager
 //					$oFilterBy['IsEnableAdminPanelLogin'] = true;
 //				}
 				
-				$aResultTenants = $this->oEavManager->getObjects(
+				$aResultTenants = $this->oEavManager->getEntities(
 					'CTenant', 
 					array(
 						'Name'
@@ -321,7 +321,7 @@ class CApiCoreTenantsManager extends AApiManager
 			$oTenant = $this->getTenantByName($sTenantName);
 			if ($oTenant)
 			{
-				$iResult = $oTenant->iObjectId;
+				$iResult = $oTenant->iId;
 			}
 		}
 
@@ -400,7 +400,7 @@ class CApiCoreTenantsManager extends AApiManager
 
 		try
 		{
-			$aResultTenants = $this->oEavManager->getObjects('CTenant',
+			$aResultTenants = $this->oEavManager->getEntities('CTenant',
 				array('Name'),
 				0,
 				0,
@@ -411,7 +411,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				foreach($aResultTenants as $oObject)
 				{
-					if ($oObject->iObjectId !== $oTenant->iObjectId)
+					if ($oObject->iId !== $oTenant->iId)
 					{
 						$bResult = true;
 						break;
@@ -442,7 +442,7 @@ class CApiCoreTenantsManager extends AApiManager
 //				$mResult = $this->oStorage->getTenantDomains($iTenantId);
 
 				//TODO move domains request to manager of Domains
-				$aResultDomains = $this->oEavManager->getObjects(
+				$aResultDomains = $this->oEavManager->getEntities(
 					'CDomain', 
 					array(
 						'Name'
@@ -460,7 +460,7 @@ class CApiCoreTenantsManager extends AApiManager
 				{
 					foreach ($aResultDomains as $oDomain)
 					{
-						$aSortedDomains[$oDomain->iObjectId] = $oDomain->Name;
+						$aSortedDomains[$oDomain->iId] = $oDomain->Name;
 					}
 					
 					$mResult = $aSortedDomains;
@@ -511,14 +511,14 @@ class CApiCoreTenantsManager extends AApiManager
 						$oTenant->IdChannel = 0;
 					}
 					
-					if (!$this->oEavManager->saveObject($oTenant))
+					if (!$this->oEavManager->saveEntity($oTenant))
 					{
 						throw new CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
 					}
 					
-					if ($oTenant->iObjectId)
+					if ($oTenant->iId)
 					{
-						$this->oEavManager->saveObject($oTenant);
+						$this->oEavManager->saveEntity($oTenant);
 					}
 				}
 				else
@@ -554,7 +554,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			if ($oTenant->validate())
 			{
-				if ($oTenant->IsDefault && 0 === $oTenant->iObjectId)
+				if ($oTenant->IsDefault && 0 === $oTenant->iId)
 				{
 					//TODO remove update settings
 					$this->oSettings->SetConf('Helpdesk/AdminEmailAccount', $oTenant->{'HelpDesk::AdminEmailAccount'});
@@ -603,7 +603,7 @@ class CApiCoreTenantsManager extends AApiManager
 						$iQuota = $oTenant->QuotaInMB;
 						if (0 < $iQuota)
 						{
-							$iSize = $this->getTenantAllocatedSize($oTenant->iObjectId);
+							$iSize = $this->getTenantAllocatedSize($oTenant->iId);
 							if ($iSize > $iQuota)
 							{
 								throw new CApiManagerException(Errs::TenantsManager_QuotaLimitExided);
@@ -611,7 +611,7 @@ class CApiCoreTenantsManager extends AApiManager
 						}
 					}
 					
-					if (!$this->oEavManager->saveObject($oTenant))
+					if (!$this->oEavManager->saveEntity($oTenant))
 					{
 						throw new CApiManagerException(Errs::TenantsManager_TenantUpdateFailed);
 					}
@@ -620,7 +620,7 @@ class CApiCoreTenantsManager extends AApiManager
 					{
 						/* @var $oDomainsApi CApiDomainsManager */
 						$oDomainsApi = CApi::GetCoreManager('domains');
-						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->iObjectId, !$oTenant->IsDisabled))
+						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->iId, !$oTenant->IsDisabled))
 						{
 							$oException = $oDomainsApi->GetLastException();
 							if ($oException)
@@ -663,7 +663,7 @@ class CApiCoreTenantsManager extends AApiManager
 	{
 		try
 		{
-			if ($oTenant && 0 < $oTenant->iObjectId)
+			if ($oTenant && 0 < $oTenant->iId)
 			{
 				$iNewUsedInMB = (int) round($iNewAllocatedSizeInBytes / (1024 * 1024));
 
@@ -673,9 +673,9 @@ class CApiCoreTenantsManager extends AApiManager
 				}
 				else
 				{
-					$oProperty = new CProperty('FilesUsageInBytes', $iNewAllocatedSizeInBytes, $oTenant->getPropertyType('FilesUsageInBytes'));
-					$oProperty->ObjectId = $oTenant->iObjectId;
-					$this->oEavManager->setProperty($oProperty);
+					$oProperty = new CAttribute('FilesUsageInBytes', $iNewAllocatedSizeInBytes, $oTenant->getAttributeType('FilesUsageInBytes'));
+					$oProperty->EntityId = $oTenant->iId;
+					$this->oEavManager->setAttribute($oProperty);
 				}
 			}
 		}
@@ -714,7 +714,7 @@ class CApiCoreTenantsManager extends AApiManager
 		$aResult = false;
 		try
 		{
-			$aResult = $this->oEavManager->getObjects(
+			$aResult = $this->oEavManager->getEntities(
 				'CTenant',
 				array('IsDefault', 'IdChannel'),
 				0,
@@ -743,7 +743,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			foreach ($aTenants as $oTenant)
 			{
-				if (!$oTenant->IsDefault && 0 < $oTenant->iObjectId)
+				if (!$oTenant->IsDefault && 0 < $oTenant->iId)
 				{
 					$iResult &= $this->deleteTenant($oTenant);
 				}
@@ -780,7 +780,7 @@ class CApiCoreTenantsManager extends AApiManager
 //					}
 //				}
 
-				$bResult = $this->oEavManager->deleteObject($oTenant->iObjectId);
+				$bResult = $this->oEavManager->deleteEntity($oTenant->iId);
 				
 				// TODO subscriptions
 				//if ($bResult)

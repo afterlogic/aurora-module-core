@@ -49,7 +49,7 @@ class CApiCoreUsersManager extends AApiManager
 				CApi::Plugin()->RunHook('api-get-user-by-id-precall', array(&$iUserId, &$oUser));
 				if (null === $oUser)
 				{
-					$oUser = $this->oEavManager->getObjectById($iUserId);
+					$oUser = $this->oEavManager->getEntityById($iUserId);
 
 					if ($oUser instanceOf \CUser)
 					{
@@ -112,7 +112,7 @@ class CApiCoreUsersManager extends AApiManager
 				$aFilters['Email'] = '%'.$sSearchDesc.'%';
 			}
 				
-			$aResults = $this->oEavManager->getObjects(
+			$aResults = $this->oEavManager->getEntities(
 				'CUser', 
 				array(
 //					'IsMailingList', 'Email', 'FriendlyName', 'IsDisabled', 'IdUser', 'StorageQuota', 'LastLogin'
@@ -127,7 +127,7 @@ class CApiCoreUsersManager extends AApiManager
 			
 			foreach($aResults as $oUser)
 			{
-				$aResult[$oUser->iObjectId] = array(
+				$aResult[$oUser->iId] = array(
 					$oUser->Name,
 //					$oUser->IsMailingList,
 //					$oUser->Email,
@@ -178,7 +178,7 @@ class CApiCoreUsersManager extends AApiManager
 			}
 			
 			//TODO rewrite logic to use corresponding objects
-			$mResult = $this->oEavManager->getObjectsCount(
+			$mResult = $this->oEavManager->getEntitiesCount(
 				'CAccount', 
 				$aFilters
 			);
@@ -243,7 +243,7 @@ class CApiCoreUsersManager extends AApiManager
 	{
 		$bResult = false;
 		
-		$oResult = $this->oEavManager->getObjectById($oUser->iObjectId);
+		$oResult = $this->oEavManager->getEntityById($oUser->iId);
 				
 		if ($oResult instanceof \CUser)
 		{
@@ -295,7 +295,7 @@ class CApiCoreUsersManager extends AApiManager
 				{
 //					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 					
-					if (!$this->oEavManager->saveObject($oUser))
+					if (!$this->oEavManager->saveEntity($oUser))
 					{
 						throw new \CApiManagerException(Errs::UsersManager_UserCreateFailed);
 					}
@@ -333,7 +333,7 @@ class CApiCoreUsersManager extends AApiManager
 //				{
 //					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 					
-					if (!$this->oEavManager->saveObject($oUser))
+					if (!$this->oEavManager->saveEntity($oUser))
 					{
 						throw new CApiManagerException(Errs::UsersManager_UserCreateFailed);
 					}
@@ -367,7 +367,7 @@ class CApiCoreUsersManager extends AApiManager
 		{
 //			if ($oUser->validate())
 //			{
-				if (!$this->oEavManager->deleteObject($oUser->iObjectId))
+				if (!$this->oEavManager->deleteEntity($oUser->iId))
 				{
 					throw new CApiManagerException(Errs::UsersManager_UserDeleteFailed);
 				}

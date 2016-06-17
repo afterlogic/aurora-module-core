@@ -11,7 +11,7 @@
  * @package Channels
  * @subpackage Classes
  */
-class CChannel extends APropertyBag
+class CChannel extends AEntity
 {
 	public function __construct($sModule)
 	{
