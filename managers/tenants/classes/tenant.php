@@ -60,7 +60,7 @@ class CTenant extends AEntity
 
 		$this->__USE_TRIM_IN_STRINGS__ = true;
 
-		$this->aStaticMap = array(
+		$this->setStaticMap(array(
 			'IdTenant'					=> array('int', 0),
 			'IdChannel'					=> array('int', 0),
 			'IsDisabled'				=> array('bool', false),
@@ -99,9 +99,7 @@ class CTenant extends AEntity
 //			'Socials'					=> array('array', array(), false), //$this->getDefaultSocials()
 			'CalendarNotificationEmailAccount'	=> array('string', ''),
 			'InviteNotificationEmailAccount'	=> array('string', '')
-		);
-
-		$this->SetDefaults();
+		));
 		
 		$this->setInheritedSettings();
 		

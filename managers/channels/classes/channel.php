@@ -19,13 +19,11 @@ class CChannel extends AEntity
 
 		$this->__USE_TRIM_IN_STRINGS__ = true;
 		
-		$this->aStaticMap = array(
+		$this->setStaticMap(array(
 			'Login'			=> array('string', ''),
 			'Password'		=> array('string', ''),
 			'Description'	=> array('string', '')
-		);
-		
-		$this->SetDefaults();
+		));
 		
 		//TODO
 //		$this->SetLower(array('Login'));

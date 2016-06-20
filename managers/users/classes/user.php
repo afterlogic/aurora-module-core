@@ -56,7 +56,7 @@ class CUser extends AEntity
 		
 		$this->__USE_TRIM_IN_STRINGS__ = true;
 		
-		$this->aStaticMap = array(
+		$this->setStaticMap(array(
 
 //			'IdUser'							=> array('int', 0), //'id_user'),
 			'Name'								=> array('string', ''),
@@ -103,10 +103,7 @@ class CUser extends AEntity
 			'EmailNotification'					=> array('string', ''), //'email_notification'),
 			
 			'PasswordResetHash'					=> array('string', ''), //'password_reset_hash')
-		);
-		
-		
-		$this->SetDefaults();
+		));
 
 		$this->oSubCache = null;
 		
