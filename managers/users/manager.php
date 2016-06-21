@@ -88,16 +88,15 @@ class CApiCoreUsersManager extends AApiManager
 	 * 
 	 * @api
 	 * 
-	 * @param int $iDomainId Domain identifier.
-	 * @param int $iPage List page.
-	 * @param int $iUsersPerPage Number of users on a single page.
-	 * @param string $sOrderBy = 'email'. Field by which to sort.
-	 * @param bool $bAscOrderType = true. If **true** the sort order type is ascending.
+	 * @param int $iOffset
+	 * @param int $iLimit
+	 * @param string $sOrderBy = 'Email'. Field by which to sort.
+	 * @param int $iOrderType = 0
 	 * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
 	 * 
 	 * @return array | false [IdAccount => [IsMailingList, Email, FriendlyName, IsDisabled, IdUser, StorageQuota, LastLogin]]
 	 */
-	public function getUserList($iPage, $iUsersPerPage, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try
@@ -112,33 +111,33 @@ class CApiCoreUsersManager extends AApiManager
 				$aFilters['Email'] = '%'.$sSearchDesc.'%';
 			}
 				
-			$aResults = $this->oEavManager->getEntities(
+			$aResult = $this->oEavManager->getEntities(
 				'CUser', 
 				array(
 //					'IsMailingList', 'Email', 'FriendlyName', 'IsDisabled', 'IdUser', 'StorageQuota', 'LastLogin'
 					'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
-				$iPage,
-				$iUsersPerPage,
+				$iOffset,
+				$iLimit,
 				$aFilters,
 				$sOrderBy,
 				$iOrderType
 			);
 			
-			foreach($aResults as $oUser)
-			{
-				$aResult[$oUser->iId] = array(
-					$oUser->Name,
-//					$oUser->IsMailingList,
-//					$oUser->Email,
-//					$oUser->FriendlyName,
-					$oUser->IsDisabled,
-//					$oUser->IdUser,
-//					$oUser->StorageQuota,
-					$oUser->LastLogin,
-					$oUser->IdTenant
-				);
-			}
+//			foreach($aResults as $oUser)
+//			{
+//				$aResult[$oUser->iId] = array(
+//					$oUser->Name,
+////					$oUser->IsMailingList,
+////					$oUser->Email,
+////					$oUser->FriendlyName,
+//					$oUser->IsDisabled,
+////					$oUser->IdUser,
+////					$oUser->StorageQuota,
+//					$oUser->LastLogin,
+//					$oUser->IdTenant
+//				);
+//			}
 
 		}
 		catch (CApiBaseException $oException)

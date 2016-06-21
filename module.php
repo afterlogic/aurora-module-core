@@ -178,6 +178,22 @@ class CoreModule extends AApiModule
 //		$oSettings->Save();
 	}
 	
+	public function GetTenants()
+	{
+		$aTenants = $this->oApiTenantsManager->getTenantList();
+		$aItems = array();
+
+		foreach ($aTenants as $oTenat)
+		{
+			$aItems[] = array(
+				'id' => $oTenat->iId,
+				'name' => $oTenat->Name
+			);
+		}
+		
+		return $aItems;
+	}
+	
 	public function EntryPull()
 	{
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -1044,10 +1060,30 @@ class CoreModule extends AApiModule
 		return $oUser ? $oUser : null;
 	}
 	
-	public function GetUserList($iPage, $iUsersPerPage, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function GetEntities($Type)
 	{
-		$aUsers = $this->oApiUsersManager->getUserList($iPage, $iUsersPerPage, $sOrderBy, $iOrderType, $sSearchDesc);
-		return $aUsers ? $aUsers : null;
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->GetTenants();
+			case 'User':
+				return $this->GetUserList();
+		}
+		return null;
+	}
+	
+	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	{
+		$aResults = $this->oApiUsersManager->getUserList($iOffset, $iLimit, $sOrderBy, $iOrderType, $sSearchDesc);
+		$aUsers = array();
+		foreach($aResults as $oUser)
+		{
+			$aUsers[] = array(
+				'id' => $oUser->iId,
+				'name' => $oUser->Name
+			);
+		}
+		return $aUsers;
 	}
 
 	public function GetTenantIdByName($sTenantName = '')

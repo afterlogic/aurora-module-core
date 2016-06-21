@@ -45,43 +45,34 @@ class CApiCoreTenantsManager extends AApiManager
 	}
 
 	/**
-	 * @param int $iPage
-	 * @param int $iTenantsPerPage
+	 * @param int $iOffset Default value is **0**.
+	 * @param int $iLimit Default value is **0**.
 	 * @param string $sOrderBy Default value is **'Name'**.
-	 * @param bool $bOrderType Default value is **true**.
+	 * @param int $iOrderType Default value is **0**.
 	 * @param string $sSearchDesc Default value is empty string.
 	 *
 	 * @return array|false [Id => [Name, Description]]
 	 */
-	public function getTenantList($iPage, $iTenantsPerPage, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getTenantList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try
 		{
-			$aResultTenants = $this->oEavManager->getEntities(
+			$aResult = $this->oEavManager->getEntities(
 				'CTenant', 
 				array(
 					'Name', 
 					'Description',
 					'IdChannel'
 				),
-				$iPage,
-				$iTenantsPerPage,
+				$iOffset,
+				$iLimit,
 				array(
 					'Description' => '%'.$sSearchDesc.'%'
 				),
 				$sOrderBy,
 				$iOrderType
 			);
-
-			foreach($aResultTenants as $oTenat)
-			{
-				$aResult[$oTenat->iId] = array(
-					$oTenat->Name,
-					$oTenat->Description,
-					$oTenat->IdChannel
-				);
-			}
 		}
 		catch (CApiBaseException $oException)
 		{
