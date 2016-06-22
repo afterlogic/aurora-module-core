@@ -1060,6 +1060,18 @@ class CoreModule extends AApiModule
 		return $oUser ? $oUser : null;
 	}
 	
+	public function DeleteEntity($Type, $Id)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->DeleteTenant($Id);
+			case 'User':
+				return $this->DeleteUser($Id);
+		}
+		return false;
+	}
+	
 	public function CreateEntity($Type, $Name, $Description)
 	{
 		switch ($Type)
@@ -1073,7 +1085,7 @@ class CoreModule extends AApiModule
 				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
 				return $this->CreateUser($iTenantId, $Name);
 		}
-		return null;
+		return false;
 	}
 	
 	public function GetEntities($Type)
