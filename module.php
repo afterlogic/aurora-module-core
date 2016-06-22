@@ -1060,6 +1060,22 @@ class CoreModule extends AApiModule
 		return $oUser ? $oUser : null;
 	}
 	
+	public function CreateEntity($Type, $Name, $Description)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
+				return $this->CreateTenant($Name, $Description, $iChannelId);
+			case 'User':
+				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
+				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
+				return $this->CreateUser($iTenantId, $Name);
+		}
+		return null;
+	}
+	
 	public function GetEntities($Type)
 	{
 		switch ($Type)
@@ -1072,7 +1088,7 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
-	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResults = $this->oApiUsersManager->getUserList($iOffset, $iLimit, $sOrderBy, $iOrderType, $sSearchDesc);
 		$aUsers = array();

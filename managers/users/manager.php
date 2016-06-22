@@ -96,7 +96,7 @@ class CApiCoreUsersManager extends AApiManager
 	 * 
 	 * @return array | false [IdAccount => [IsMailingList, Email, FriendlyName, IsDisabled, IdUser, StorageQuota, LastLogin]]
 	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Email', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try
@@ -108,7 +108,7 @@ class CApiCoreUsersManager extends AApiManager
 			if ($sSearchDesc !== '')
 			{
 //				$aFilters['FriendlyName'] = '%'.$sSearchDesc.'%';
-				$aFilters['Email'] = '%'.$sSearchDesc.'%';
+				$aFilters['Name'] = '%'.$sSearchDesc.'%';
 			}
 				
 			$aResult = $this->oEavManager->getEntities(

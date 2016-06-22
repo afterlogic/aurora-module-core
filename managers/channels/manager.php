@@ -37,40 +37,32 @@ class CApiCoreChannelsManager extends AApiManager
 	}
 
 	/**
-	 * @param int $iPage
-	 * @param int $iItemsPerPage
+	 * @param int $iOffset
+	 * @param int $iLimit
 	 * @param string $sOrderBy Default value is **Login**
 	 * @param bool $iOrderType Default value is **\ESortOrder::ASC**
 	 * @param string $sSearchDesc Default value is empty string
 	 *
 	 * @return array|false [Id => [Login, Description]]
 	 */
-	public function getChannelList($iPage, $iItemsPerPage, $sOrderBy = 'Login', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getChannelList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Login', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
+		$aSearch = empty($sSearchDesc) ? array() : array(
+			'Login' => '%'.$sSearchDesc.'%',
+			'Description' => '%'.$sSearchDesc.'%'
+		);
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities(
+			$aResult = $this->oEavManager->getEntities(
 				'CChannel', 
 				array('Login', 'Description', 'Password'),
-				$iPage,
-				$iItemsPerPage,
-				array(
-					'Login' => '%'.$sSearchDesc.'%',
-					'Description' => '%'.$sSearchDesc.'%'
-				),
+				$iOffset,
+				$iLimit,
+				$aSearch,
 				$sOrderBy,
 				$iOrderType
 			);
-			
-			foreach($aResultChannels as $oChannel)
-			{
-				$aResult[$oChannel->iId] = array(
-					$oChannel->Login,
-					$oChannel->Description,
-					$oChannel->Password
-				);
-			}
 		}
 		catch (CApiBaseException $oException)
 		{
