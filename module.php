@@ -175,7 +175,7 @@ class CoreModule extends AApiModule
 		{
 			$oSettings->SetConf('DBHost', $DbHost);
 		}
-//		$oSettings->Save();
+		$oSettings->Save();
 	}
 	
 	public function GetTenants()
