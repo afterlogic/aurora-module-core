@@ -8,6 +8,10 @@ class CoreModule extends AApiModule
 	
 	public $oApiUsersManager = null;
 	
+	protected $aSettingsMap = array(
+		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
+	);
+
 	public function init() {
 		parent::init();
 		

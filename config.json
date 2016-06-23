@@ -10,7 +10,7 @@
 	"AllowPasswordReset": false,
 	"EnableLogging": true,
 	"EnableEventLogging": false,
-	"LoggingLevel": 100,
+	"LoggingLevel": "Full",
 	"EnableMobileSync": true,
 	"TenantGlobalCapa": "",
 	"LoginStyleImage": "",
