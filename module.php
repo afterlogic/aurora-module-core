@@ -43,7 +43,7 @@ class CoreModule extends AApiModule
 
 		$bResult = false;
 
-		$oApiIntegrator = \CApi::GetCoreManager('integrator');
+		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 
 		if ($iUserId && $oApiIntegrator)
 		{
@@ -86,7 +86,7 @@ class CoreModule extends AApiModule
 		if ($bDoGC)
 		{
 			\CApi::Log('GC: FileCache / Start');
-			$oApiFileCache = \Capi::GetCoreManager('filecache');
+			$oApiFileCache = \Capi::GetSystemManager('filecache');
 			$oApiFileCache->gc();
 			$oCacher->gc();
 			\CApi::Log('GC: FileCache / End');
@@ -256,7 +256,7 @@ class CoreModule extends AApiModule
 	{
 		if ($this->oApiCapabilityManager->isNotLite())
 		{
-			$oApiIntegrator = \CApi::GetCoreManager('integrator');
+			$oApiIntegrator = \CApi::GetSystemManager('integrator');
 			$oApiIntegrator->setMobile(true);
 		}
 
@@ -277,7 +277,7 @@ class CoreModule extends AApiModule
 
 	public function EntrySso()
 	{
-		$oApiIntegratorManager = \CApi::GetCoreManager('integrator');
+		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
 
 		try
 		{
@@ -313,7 +313,7 @@ class CoreModule extends AApiModule
 	{
 		if (\CApi::GetConf('labs.allow-post-login', false))
 		{
-			$oApiIntegrator = \CApi::GetCoreManager('integrator');
+			$oApiIntegrator = \CApi::GetSystemManager('integrator');
 					
 			$sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
 			$sLogin = (string) $this->oHttp->GetRequest('Login', '');
@@ -388,7 +388,7 @@ class CoreModule extends AApiModule
 	 */
 	public function SetMobile($bMobile)
 	{
-		$oApiIntegratorManager = \CApi::GetCoreManager('integrator');
+		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
 		return $oApiIntegratorManager ?
 			$oApiIntegratorManager->setMobile($bMobile) : false;
 	}	
@@ -411,10 +411,10 @@ class CoreModule extends AApiModule
 		try
 		{
 			/* @var $oApiDomainsManager CApiDomainsManager */
-			$oApiDomainsManager = CApi::GetCoreManager('domains');
+			$oApiDomainsManager = CApi::GetSystemManager('domains');
 
 			/* @var $oApiUsersManager CApiUsersManager */
-			$oApiUsersManager = CApi::GetCoreManager('users');
+			$oApiUsersManager = CApi::GetSystemManager('users');
 
 			$sDomainName = api_Utils::GetDomainFromEmail($sEmail);
 

@@ -36,7 +36,7 @@ class CApiCoreTenantsManager extends AApiManager
 	{
 		parent::__construct('tenants', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetCoreManager('eav', 'db');
+		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
 		
 		$this->oChannelsManager = $this->oModule->GetManager('channels', 'db');
 		
@@ -610,7 +610,7 @@ class CApiCoreTenantsManager extends AApiManager
 					if (null !== $oTenant->IsDisabled)
 					{
 						/* @var $oDomainsApi CApiDomainsManager */
-						$oDomainsApi = CApi::GetCoreManager('domains');
+						$oDomainsApi = CApi::GetSystemManager('domains');
 						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->iId, !$oTenant->IsDisabled))
 						{
 							$oException = $oDomainsApi->GetLastException();

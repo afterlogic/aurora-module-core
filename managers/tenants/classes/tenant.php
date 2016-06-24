@@ -262,13 +262,13 @@ class CTenant extends AEntity
 
 	public function getUserCount()
 	{
-		$oUsersApi = CApi::GetCoreManager('users');
+		$oUsersApi = CApi::GetSystemManager('users');
 		return $oUsersApi->getUsersCountForTenant($this->iId);
 	}
 
 	public function getDomainCount()
 	{
-		$oDomainsApi = CApi::GetCoreManager('domains');
+		$oDomainsApi = CApi::GetSystemManager('domains');
 		return $oDomainsApi->getDomainCount('', $this->iId);
 	}
 

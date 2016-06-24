@@ -22,7 +22,7 @@ class CApiCoreChannelsManager extends AApiManager
 	{
 		parent::__construct('channels', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetCoreManager('eav', 'db');
+		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
 
 		$this->incClass('channel');
 	}
