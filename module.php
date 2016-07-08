@@ -958,10 +958,13 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
-	 * 
+	 * @param int $iTenantId
+	 * @param string $sName
+	 * @param int $iRole
 	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function CreateUser($iTenantId = 0, $sName = '')
+	public function CreateUser($iTenantId = 0, $sName = '', $iRole = \EUserRole::PowerUser)
 	{
 //		$oAccount = $this->getDefaultAccountFromParam();
 		
@@ -972,6 +975,7 @@ class CoreModule extends AApiModule
 			
 			$oUser->Name = $sName;
 			$oUser->IdTenant = $iTenantId;
+			$oUser->Role = $iRole;
 
 			$this->oApiUsersManager->createUser($oUser);
 			return $oUser ? array(
@@ -985,12 +989,17 @@ class CoreModule extends AApiModule
 
 		return false;
 	}
-	
+
 	/**
 	 * 
+	 * @param int $iUserId
+	 * @param string $sUserName
+	 * @param int $iTenantId
+	 * @param int $iRole
 	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function UpdateUser($iUserId = 0, $sUserName = '', $iTenantId = 0)
+	public function UpdateUser($iUserId = 0, $sUserName = '', $iTenantId = 0, $iRole = -1)
 	{
 //		$oAccount = $this->getDefaultAccountFromParam();
 		
@@ -1003,7 +1012,14 @@ class CoreModule extends AApiModule
 			if ($oUser)
 			{
 				$oUser->Name = $sUserName;
-				$oUser->IdTenant = $iTenantId;
+				if ($iTenantId !== 0)
+				{
+					$oUser->IdTenant = $iTenantId;
+				}
+				if ($iRole !== -1)
+				{
+					$oUser->Role = $iRole;
+				}
 				$this->oApiUsersManager->updateUser($oUser);
 			}
 			
@@ -1074,18 +1090,18 @@ class CoreModule extends AApiModule
 		return false;
 	}
 	
-	public function CreateEntity($Type, $Name, $Description)
+	public function CreateEntity($Type, $Data)
 	{
 		switch ($Type)
 		{
 			case 'Tenant':
 				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
 				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
-				return $this->CreateTenant($Name, $Description, $iChannelId);
+				return $this->CreateTenant($Data['Name'], $Data['Description'], $iChannelId);
 			case 'User':
 				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
 				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
-				return $this->CreateUser($iTenantId, $Name);
+				return $this->CreateUser($iTenantId, $Data['Name'], $Data['Role']);
 		}
 		return false;
 	}
@@ -1098,6 +1114,30 @@ class CoreModule extends AApiModule
 				return $this->GetTenants();
 			case 'User':
 				return $this->GetUserList();
+		}
+		return null;
+	}
+	
+	public function GetEntity($Type, $Id)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->GetTenantById($Id);
+			case 'User':
+				return $this->GetUser($Id);
+		}
+		return null;
+	}
+	
+	public function SaveEntity($Type, $Data)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->UpdateTenant($Data['Id'], $Data['Name'], $Data['Description']);
+			case 'User':
+				return $this->UpdateUser($Data['Id'], $Data['Name'], 0, $Data['Role']);
 		}
 		return null;
 	}
