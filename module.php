@@ -154,7 +154,8 @@ class CoreModule extends AApiModule
 	 * @param string $DbName
 	 * @param string $DbHost
 	 */
-	public function UpdateSettings($LicenseKey = null, $DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null)
+	public function UpdateSettings($LicenseKey = null, $DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null,
+			$AdminLogin = null, $Password = null, $NewPassword = null)
 	{
 		$oSettings =& CApi::GetSettings();
 		if ($LicenseKey !== null)
@@ -177,7 +178,22 @@ class CoreModule extends AApiModule
 		{
 			$oSettings->SetConf('DBHost', $DbHost);
 		}
-		$oSettings->Save();
+		if ($AdminLogin !== null)
+		{
+			$oSettings->SetConf('AdminLogin', $AdminLogin);
+		}
+		if ($Password !== null && $NewPassword !== null)
+		{
+			if (md5(trim($Password)) === $oSettings->GetConf('AdminPassword'))
+			{
+				$oSettings->SetConf('AdminPassword', md5(trim($NewPassword)));
+			}
+			else
+			{
+				throw new \System\Exceptions\ClientException(Errs::UserManager_AccountOldPasswordNotCorrect);
+			}
+		}
+		return $oSettings->Save();
 	}
 	
 	public function GetTenants()
