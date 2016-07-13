@@ -1168,6 +1168,21 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
+	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
+	{
+		$oSettings =& CApi::GetSettings();
+		$oSettings->SetConf('DBLogin', $DbLogin);
+		if ($DbPassword !== null)
+		{
+			$oSettings->SetConf('DBPassword', $DbPassword);
+		}
+		$oSettings->SetConf('DBName', $DbName);
+		$oSettings->SetConf('DBHost', $DbHost);
+		
+		$aResults = $this->oApiUsersManager->getUserList(0, 1, 'Name', \ESortOrder::ASC, '');
+		return is_array($aResults);
+	}
+	
 	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResults = $this->oApiUsersManager->getUserList($iOffset, $iLimit, $sOrderBy, $iOrderType, $sSearchDesc);
