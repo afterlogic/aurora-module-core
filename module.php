@@ -1094,6 +1094,16 @@ class CoreModule extends AApiModule
 		return $oUser ? $oUser : null;
 	}
 	
+	public function GetAdminUser()
+	{
+		$oUser = new \CUser();
+		$oUser->iId = -1;
+		$oUser->Role = 0;
+		$oUser->Name = 'Administrator';
+		
+		return $oUser;
+	}
+	
 	public function DeleteEntity($Type, $Id)
 	{
 		switch ($Type)
