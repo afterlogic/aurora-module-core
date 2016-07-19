@@ -418,4 +418,12 @@ class CTenant extends AEntity
 		}
  */
 	}
+	
+	public function toResponseArray()
+	{
+		return array(
+			'Name' => $this->Name,
+			'Description' => $this->Description
+		);
+	}
 }
