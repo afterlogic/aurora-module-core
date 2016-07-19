@@ -1064,15 +1064,16 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * Deletes user.
+	 * 
+	 * @param int $iUserId User identificator.
 	 * 
 	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
 	public function DeleteUser($iUserId = 0)
 	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-
 		if ($iUserId > 0)
 		{
 			$oUser = $this->oApiUsersManager->getUserById($iUserId);
@@ -1080,6 +1081,7 @@ class CoreModule extends AApiModule
 			if ($oUser)
 			{
 				$this->oApiUsersManager->deleteUser($oUser);
+				$this->broadcastEvent($this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', array($oUser->iId));
 			}
 			
 			return $oUser ? array(
