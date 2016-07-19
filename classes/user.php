@@ -258,12 +258,4 @@ class CUser extends AEntity
 	{
 		return new CUser($sModule, $oParams);
 	}
-	
-	public function toResponseArray()
-	{
-		return array(
-			'Name' => $this->Name,
-			'Role' => $this->Role
-		);
-	}
 }

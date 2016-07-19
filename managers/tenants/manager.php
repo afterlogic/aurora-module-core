@@ -39,9 +39,6 @@ class CApiCoreTenantsManager extends AApiManager
 		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
 		
 		$this->oChannelsManager = $this->oModule->GetManager('channels', 'db');
-		
-		$this->incClass('tenant');
-		$this->incClass('socials');
 	}
 
 	/**
@@ -664,9 +661,15 @@ class CApiCoreTenantsManager extends AApiManager
 				}
 				else
 				{
-					$oProperty = new CAttribute('FilesUsageInBytes', $iNewAllocatedSizeInBytes, $oTenant->getAttributeType('FilesUsageInBytes'));
-					$oProperty->EntityId = $oTenant->iId;
-					$this->oEavManager->setAttribute($oProperty);
+					$this->oEavManager->setAttribute(
+							\CAttribute::createInstance(
+								'FilesUsageInBytes', 
+								$iNewAllocatedSizeInBytes, 
+								$oTenant->getType('FilesUsageInBytes'), 
+								false, 
+								$oTenant->iId
+							)
+					);
 				}
 			}
 		}

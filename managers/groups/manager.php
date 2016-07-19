@@ -23,8 +23,6 @@ class CApiCoreUserGroupsManager extends AApiManager
 		parent::__construct('usergroups', $oManager, $oModule);
 		
 		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
-
-		$this->incClass('usergroup');
 	}
 
 	/**

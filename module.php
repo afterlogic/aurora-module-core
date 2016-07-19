@@ -13,6 +13,13 @@ class CoreModule extends AApiModule
 	);
 
 	public function init() {
+		
+		$this->incClass('channel');
+		$this->incClass('usergroup');		
+		$this->incClass('tenant');
+		$this->incClass('socials');
+		$this->incClass('user');
+		
 		$this->oApiTenantsManager = $this->GetManager('tenants');
 		$this->oApiChannelsManager = $this->GetManager('channels');
 		$this->oApiUsersManager = $this->GetManager('users');
