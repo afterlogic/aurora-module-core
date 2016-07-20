@@ -833,10 +833,7 @@ class CoreModule extends AApiModule
 	 */
 	public function CreateTenant($sName = '', $sDescription = '', $iChannelId = 0)
 	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-	
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		if ($sName !== '' && $sDescription !== '' && $iChannelId > 0)
+		if ($sName !== '' && $iChannelId > 0)
 		{
 			$oTenant = \CTenant::createInstance();
 
@@ -1177,6 +1174,62 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
+	public function CreateTables()
+	{
+		$bResult = false;
+		$oSettings =& CApi::GetSettings();
+		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
+		if ($oApiEavManager->syncTables())
+		{
+			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
+			{
+				$bResult = true;
+			}
+			else
+			{
+				$iChannelId = 0;
+				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+				if (is_array($aChannels) && count($aChannels) === 1)
+				{
+					$iChannelId = $aChannels[0]->iId;
+				}
+				else
+				{
+					$aChannels = $this->CreateChannel('Default', '');
+					if (is_array($aChannels) && count($aChannels) === 1)
+					{
+						$iChannelId = $aChannels['iObjectId'];
+					}
+				}
+				if ($iChannelId !== 0)
+				{
+					if ($oSettings->GetConf('EnableMultiTenant'))
+					{
+						$bResult = true;
+					}
+					else
+					{
+						$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($iChannelId);
+						if (is_array($aTenants) && count($aTenants) === 1)
+						{
+							$bResult = true;
+						}
+						else
+						{
+							$aTenants = $this->CreateTenant('Default', '', $iChannelId);
+							if (is_array($aTenants) && count($aTenants) === 1)
+							{
+								$bResult = true;
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		return $bResult;
+	}
+	
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
 		$oSettings =& CApi::GetSettings();
@@ -1188,8 +1241,8 @@ class CoreModule extends AApiModule
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$aResults = $this->oApiUsersManager->getUserList(0, 1, 'Name', \ESortOrder::ASC, '');
-		return is_array($aResults);
+		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
+		return $oApiEavManager->testStorageConnection();
 	}
 	
 	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
