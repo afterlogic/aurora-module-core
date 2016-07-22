@@ -187,6 +187,8 @@ class CoreModule extends AApiModule
 		}
 		if ($AdminLogin !== null)
 		{
+			$this->broadcastEvent('CheckAccountExists', array($AdminLogin));
+		
 			$oSettings->SetConf('AdminLogin', $AdminLogin);
 		}
 		if ($Password !== null && $NewPassword !== null)
