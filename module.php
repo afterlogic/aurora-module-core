@@ -138,6 +138,7 @@ class CoreModule extends AApiModule
 			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
 			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
 			'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
+			'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
 			'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
 			'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
 			'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel')
@@ -185,15 +186,15 @@ class CoreModule extends AApiModule
 		{
 			$oSettings->SetConf('DBHost', $DbHost);
 		}
-		if ($AdminLogin !== null)
+		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
 		{
 			$this->broadcastEvent('CheckAccountExists', array($AdminLogin));
 		
 			$oSettings->SetConf('AdminLogin', $AdminLogin);
 		}
-		if ($Password !== null && $NewPassword !== null)
+		if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
 		{
-			if (md5(trim($Password)) === $oSettings->GetConf('AdminPassword'))
+			if (empty($oSettings->GetConf('AdminPassword')) || md5(trim($Password)) === $oSettings->GetConf('AdminPassword'))
 			{
 				$oSettings->SetConf('AdminPassword', md5(trim($NewPassword)));
 			}
