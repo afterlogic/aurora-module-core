@@ -162,7 +162,8 @@ class CoreModule extends AApiModule
 	 * @param string $DbName
 	 * @param string $DbHost
 	 */
-	public function UpdateSettings($LicenseKey = null, $DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null,
+	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
+			$DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null)
 	{
 		$oSettings =& CApi::GetSettings();
@@ -194,9 +195,10 @@ class CoreModule extends AApiModule
 		}
 		if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
 		{
-			if (empty($oSettings->GetConf('AdminPassword')) || md5(trim($Password)) === $oSettings->GetConf('AdminPassword'))
+			if (empty($oSettings->GetConf('AdminPassword')) || 
+					crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
 			{
-				$oSettings->SetConf('AdminPassword', md5(trim($NewPassword)));
+				$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
 			}
 			else
 			{
