@@ -954,23 +954,29 @@ class CoreModule extends AApiModule
 	}
   
 	//TODO is it used by any code?
-	public function onAccountCreate($iTenantId, $iUserId, $sLogin, $sPassword, &$oResult)
+	/*$iTenantId, $iUserId, $sLogin, $sPassword*/
+	public function onAccountCreate($aData, &$oResult)
 	{
 		$oUser = null;
 		
-		if ($iUserId > 0)
+		if (isset($aData['UserId']) && (int)$aData['UserId'] > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUserById($iUserId);
+			$oUser = $this->oApiUsersManager->getUserById($aData['UserId']);
 		}
 		else
 		{
 			$oUser = \CUser::createInstance();
 			
-			$iTenantId = $iTenantId ? $iTenantId : 0;
-			
+			$iTenantId = (isset($aData['TenantId'])) ? (int)$aData['TenantId'] : 0;
 			if ($iTenantId)
 			{
 				$oUser->IdTenant = $iTenantId;
+			}
+
+			$sUserName = (isset($aData['UserName'])) ? $aData['UserName'] : '';
+			if ($sUserName)
+			{
+				$oUser->Name = $sUserName;
 			}
 				
 			if (!$this->oApiUsersManager->createUser($oUser))
