@@ -1185,12 +1185,17 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
+	/**
+	 * Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
+	 * 
+	 * @return boolean
+	 */
 	public function CreateTables()
 	{
 		$bResult = false;
 		$oSettings =& CApi::GetSettings();
 		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
-		if ($oApiEavManager->syncTables())
+		if ($oApiEavManager->createTablesFromFile())
 		{
 			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
 			{
