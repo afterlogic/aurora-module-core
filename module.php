@@ -1329,4 +1329,19 @@ class CoreModule extends AApiModule
 		\CApi::setTenantName($sTenant);
 		return $sTenant;
 	}
+	
+	public function Logout()
+	{	
+		$mAuthToken = \CApi::getLogginedUserAuthToken();
+		if ($mAuthToken !== false)
+		{
+			\CApi::UserSession()->Delete($mAuthToken);
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\Auth\Notifications::IncorrentAuthToken);
+		}
+
+		return true;
+	}
 }
