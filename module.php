@@ -44,7 +44,7 @@ class CoreModule extends AApiModule
 	 */
 	public function DoServerInitializations()
 	{
-		$iUserId = \CApi::getLogginedUserId();
+		$iUserId = \CApi::getAuthenticatedUserId();
 
 		$bResult = false;
 
@@ -1303,7 +1303,7 @@ class CoreModule extends AApiModule
 		$sAuthToken = $this->oHttp->GetPost('AuthToken', '');
 		if (!empty($sAuthToken))
 		{
-			$iUserId = \CApi::getLogginedUserId($sAuthToken);
+			$iUserId = \CApi::getAuthenticatedUserId($sAuthToken);
 			if ($iUserId !== false && $iUserId > 0)
 			{
 				$oUser = $this->GetUser($iUserId);
@@ -1332,7 +1332,7 @@ class CoreModule extends AApiModule
 	
 	public function Logout()
 	{	
-		$mAuthToken = \CApi::getLogginedUserAuthToken();
+		$mAuthToken = \CApi::getAuthenticatedUserAuthToken();
 		if ($mAuthToken !== false)
 		{
 			\CApi::UserSession()->Delete($mAuthToken);
