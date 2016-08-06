@@ -125,8 +125,9 @@ class CoreModule extends AApiModule
 	/**
 	 * @return array
 	 */
-	public function GetAppData($oUser = null)
+	public function GetAppData()
 	{
+		$oUser = \CApi::getAuthenticatedUser();
 		return $oUser && $oUser->Role === 0 ? array(
 			'SiteName' => \CApi::GetSettingsConf('SiteName'),
 			'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
