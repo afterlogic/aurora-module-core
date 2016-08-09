@@ -12,6 +12,9 @@ class CoreModule extends AApiModule
 		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
 	);
 
+	/**
+	 * Initializes Core Module.
+	 */
 	public function init() {
 		
 		$this->incClass('channel');
@@ -40,7 +43,9 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
-	 * @return array
+	 * Does some pending actions to be executed when you log in.
+	 * 
+	 * @return boolean
 	 */
 	public function DoServerInitializations()
 	{
@@ -107,15 +112,9 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
-	 * @return array
-	 */
-	public function Noop()
-	{
-		return true;
-	}
-
-	/**
-	 * @return array
+	 * Method is used for checking internet connection.
+	 * 
+	 * @return 'Pong'
 	 */
 	public function Ping()
 	{
@@ -123,6 +122,8 @@ class CoreModule extends AApiModule
 	}	
 	
 	/**
+	 * Obtaines module settings for authenticated user.
+	 * 
 	 * @return array
 	 */
 	public function GetAppData()
@@ -150,23 +151,30 @@ class CoreModule extends AApiModule
 			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
 			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage')
 		);
-//		$oApiIntegratorManager = \CApi::GetCoreManager('integrator');
-//		$sAuthToken = (string) $this->getParamValue('AuthToken', '');
-//		return $oApiIntegratorManager ? $oApiIntegratorManager->appData(false, '', '', '', $sAuthToken) : false;
 	}
 	
 	/**
+	 * Updates specified settings if super administrator is authenticated.
 	 * 
-	 * @param string $LicenseKey
-	 * @param string $DbLogin
-	 * @param string $DbPassword
-	 * @param string $DbName
-	 * @param string $DbHost
+	 * @param string $LicenseKey Value of license key.
+	 * @param string $DbLogin Database login.
+	 * @param string $DbPassword Database password.
+	 * @param string $DbName Database name.
+	 * @param string $DbHost Database host.
+	 * @param string $AdminLogin Login for super administrator.
+	 * @param string $Password Current password for super administrator.
+	 * @param string $NewPassword New password for super administrator.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
 			$DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null)
 	{
+		$this->verifyAdminAccess();
+		
 		$oSettings =& CApi::GetSettings();
 		if ($LicenseKey !== null)
 		{
@@ -209,8 +217,20 @@ class CoreModule extends AApiModule
 		return $oSettings->Save();
 	}
 	
+	/**
+	 * Obtains tenant list if super administrator is authenticated.
+	 * 
+	 * @return array {
+	 *		*int* **id** Tenant identificator
+	 *		*string* **name** Tenant name
+	 * }
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
 	public function GetTenants()
 	{
+		$this->verifyAdminAccess();
+		
 		$aTenants = $this->oApiTenantsManager->getTenantList();
 		$aItems = array();
 
@@ -225,6 +245,9 @@ class CoreModule extends AApiModule
 		return $aItems;
 	}
 	
+	/**
+	 * @ignore
+	 */
 	public function EntryPull()
 	{
 		if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN')
@@ -237,12 +260,10 @@ class CoreModule extends AApiModule
 		}
 	}
 	
-	public function EntryPing()
-	{
-		@header('Content-Type: text/plain; charset=utf-8');
-		return 'Pong';
-	}
-	
+	/**
+	 * @ignore
+	 * @return string
+	 */
 	public function EntryPlugins()
 	{
 		$sResult = '';
@@ -279,6 +300,9 @@ class CoreModule extends AApiModule
 		return $sResult;
 	}	
 	
+	/**
+	 * @ignore
+	 */
 	public function EntryMobile()
 	{
 		if ($this->oApiCapabilityManager->isNotLite())
@@ -290,18 +314,29 @@ class CoreModule extends AApiModule
 		\CApi::Location('./');
 	}
 	
+	/**
+	 * @ignore
+	 * Creates entry point ?Speclogon that turns on user level of logging.
+	 */
 	public function EntrySpeclogon()
 	{
 		\CApi::SpecifiedUserLogging(true);
 		\CApi::Location('./');
 	}
 	
+	/**
+	 * @ignore
+	 * Creates entry point ?Speclogoff that turns off user level of logging.
+	 */
 	public function EntrySpeclogoff()
 	{
 		\CApi::SpecifiedUserLogging(false);
 		\CApi::Location('./');
 	}
 
+	/**
+	 * @ignore
+	 */
 	public function EntrySso()
 	{
 		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
@@ -336,6 +371,9 @@ class CoreModule extends AApiModule
 		\CApi::Location('./');		
 	}	
 	
+	/**
+	 * @ignore
+	 */
 	public function EntryPostlogin()
 	{
 		if (\CApi::GetConf('labs.allow-post-login', false))
@@ -409,214 +447,23 @@ class CoreModule extends AApiModule
 		}
 	}	
 	
-	
 	/**
-	 * @return array
+	 * @ignore
+	 * Turns on or turns off mobile version.
+	 * @param boolean $Mobile Indicates if mobile version should be turned on or turned off.
+	 * @return boolean
 	 */
-	public function SetMobile($bMobile)
+	public function SetMobile($Mobile)
 	{
 		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
-		return $oApiIntegratorManager ?
-			$oApiIntegratorManager->setMobile($bMobile) : false;
+		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
 	}	
 	
 	/**
-	 * Creates new account.
-	 * 
-	 * @return CAccount | false
-	 */
-	public function CreateAccount()
-	{
-		$mResult = false;
-		
-		$sEmail = $this->getParamValue('Email');
-		$sPassword = $this->getParamValue('Password');
-		$sLanguage = $this->getParamValue('Language', '');
-		$aExtValues = $this->getParamValue('ExtValues', null);
-		$bAllowInternalOnly = $this->getParamValue('AllowInternalOnly', false);
-		
-		try
-		{
-			/* @var $oApiDomainsManager CApiDomainsManager */
-			$oApiDomainsManager = CApi::GetSystemManager('domains');
-
-			/* @var $oApiUsersManager CApiUsersManager */
-			$oApiUsersManager = CApi::GetSystemManager('users');
-
-			$sDomainName = api_Utils::GetDomainFromEmail($sEmail);
-
-			$oDomain = /* @var $oDomain CDomain */ $oApiDomainsManager->getDomainByName($sDomainName);
-			if (!$oDomain)
-			{
-				$oDomain = $oApiDomainsManager->getDefaultDomain();
-			}
-
-			$bApiIntegratorLoginToAccountResult = isset($aExtValues['ApiIntegratorLoginToAccountResult']) ? $aExtValues['ApiIntegratorLoginToAccountResult'] : false;
-			if ($oDomain && ($bApiIntegratorLoginToAccountResult || $oDomain->AllowNewUsersRegister || ($oDomain->IsInternal && $bAllowInternalOnly) || 'nodb' === CApi::GetManager()->GetStorageByType('webmail')))
-			{
-				/*if ($oDomain && !$oDomain->AllowWebMail)
-				{
-					throw new CApiManagerException(Errs::WebMailManager_AccountWebmailDisabled);
-				}
-				else */if ($oDomain && $oDomain->IsInternal && !$bAllowInternalOnly)
-				{
-					throw new CApiManagerException(Errs::WebMailManager_NewUserRegistrationDisabled);
-				}
-				else if ($oDomain && $bAllowInternalOnly && (!$oDomain->IsInternal || $oDomain->IsDefaultDomain))
-				{
-					throw new CApiManagerException(Errs::WebMailManager_NewUserRegistrationDisabled);
-				}
-				else if ($oDomain)
-				{
-					$oAccountToCreate = new CAccount($oDomain);
-					$oAccountToCreate->Email = $sEmail;
-
-//					$oAccountToCreate->IncomingMailLogin = (isset($aExtValues['Login'])) ? $aExtValues['Login'] :
-//						(($this->oSettings->GetConf('WebMail/UseLoginWithoutDomain'))
-//							? api_Utils::GetAccountNameFromEmail($sEmail) : $sEmail);
-										
-					$oAccountToCreate->IncomingMailLogin = (isset($aExtValues['Login']) ? $aExtValues['Login'] : $sEmail);
-					if (\CApi::GetSettingsConf('WebMail/UseLoginWithoutDomain'))
-					{
-						$oAccountToCreate->IncomingMailLogin = api_Utils::GetAccountNameFromEmail($oAccountToCreate->IncomingMailLogin);
-					}
-
-					$oAccountToCreate->IncomingMailPassword = $sPassword;
-
-					if (0 < strlen($sLanguage) && $sLanguage !== $oAccountToCreate->User->DefaultLanguage)
-					{
-						$oAccountToCreate->User->DefaultLanguage = $sLanguage;
-					}
-
-					if ($oDomain->IsDefaultDomain && isset(
-						$aExtValues['IncProtocol'], $aExtValues['IncHost'], $aExtValues['IncPort'],
-						$aExtValues['OutHost'], $aExtValues['OutPort'], $aExtValues['OutAuth']))
-					{
-						$oAccountToCreate->IncomingMailProtocol = (int) $aExtValues['IncProtocol'];
-						$oAccountToCreate->IncomingMailServer = trim($aExtValues['IncHost']);
-						$oAccountToCreate->IncomingMailPort = (int) trim($aExtValues['IncPort']);
-
-						$oAccountToCreate->OutgoingMailServer = trim($aExtValues['OutHost']);
-						$oAccountToCreate->OutgoingMailPort = (int) trim($aExtValues['OutPort']);
-						$oAccountToCreate->OutgoingMailAuth = ((bool) $aExtValues['OutAuth'])
-							? ESMTPAuthType::AuthCurrentUser : ESMTPAuthType::NoAuth;
-
-						// TODO
-						$oAccountToCreate->IncomingMailUseSSL = in_array($oAccountToCreate->IncomingMailPort, array(993, 995));
-						$oAccountToCreate->OutgoingMailUseSSL = in_array($oAccountToCreate->OutgoingMailPort, array(465));
-					}
-
-					CApi::Plugin()->RunHook('api-pre-create-account-process-call', array(&$oAccountToCreate));
-
-					if (isset($aExtValues['FriendlyName']))
-					{
-						$oAccountToCreate->FriendlyName = $aExtValues['FriendlyName'];
-					}
-
-					if (isset($aExtValues['Question1']))
-					{
-						$oAccountToCreate->User->Question1 = $aExtValues['Question1'];
-					}
-
-					if (isset($aExtValues['Question2']))
-					{
-						$oAccountToCreate->User->Question2 = $aExtValues['Question2'];
-					}
-
-					if (isset($aExtValues['Answer1']))
-					{
-						$oAccountToCreate->User->Answer1 = $aExtValues['Answer1'];
-					}
-
-					if (isset($aExtValues['Answer2']))
-					{
-						$oAccountToCreate->User->Answer2 = $aExtValues['Answer2'];
-					}
-					
-					if ($oApiUsersManager->createAccount($oAccountToCreate,
-						!($oAccountToCreate->IsInternal || !$oAccountToCreate->Domain->AllowWebMail || $bApiIntegratorLoginToAccountResult || $oAccountToCreate->Domain->IsDefaultTenantDomain)))
-					{
-						CApi::Plugin()->RunHook('api-success-post-create-account-process-call', array(&$oAccountToCreate));
-
-						$mResult = $oAccountToCreate;
-					}
-					else
-					{
-						$oException = $oApiUsersManager->GetLastException();
-
-						CApi::Plugin()->RunHook('api-error-post-create-account-process-call', array(&$oAccountToCreate, &$oException));
-
-						throw (is_object($oException))
-							? $oException
-							: new CApiManagerException(Errs::WebMailManager_AccountCreateOnLogin);
-					}
-				}
-				else
-				{
-					throw new CApiManagerException(Errs::WebMailManager_DomainDoesNotExist);
-				}
-			}
-			else
-			{
-				throw new CApiManagerException(Errs::WebMailManager_NewUserRegistrationDisabled);
-			}
-		}
-		catch (CApiBaseException $oException)
-		{
-			$mResult = false;
-//			$this->setLastException($oException);
-		}
-
-		return $mResult;
-	}
-
-	/**
-	 * Obtains list of skins.
+	 * Clears temporary files by cron.
 	 * 
 	 * @ignore
-	 * @todo not used
-	 * 
-	 * @return array
-	 */
-	public function GetSkinList()
-	{
-		$aList = array();
-		$sDir = CApi::WebMailPath().'skins';
-		if (@is_dir($sDir))
-		{
-			$rDirH = @opendir($sDir);
-			if ($rDirH)
-			{
-				while (($sFile = @readdir($rDirH)) !== false)
-				{
-					if ('.' !== $sFile{0} && @file_exists($sDir.'/'.$sFile.'/styles.css'))
-					{
-						$aList[] = $sFile;
-					}
-				}
-				@closedir($rDirH);
-			}
-		}
-		return $aList;
-	}
-
-	/**
-	 * Validates the administrator password.
-	 * 
-	 * @return bool
-	 */
-	public function ValidateAdminPassword()
-	{
-		$sPassword = $this->getParamValue('Password');
-		$sSettingsPassword =  \CApi::GetSettingsConf('Common/AdminPassword');
-		return $sSettingsPassword === $sPassword || md5($sPassword) === $sSettingsPassword;
-	}
-
-	/**
-	 * Clears temporary files.
-	 * 
-	 * @ignore
-	 * @todo not used
+	 * @todo check if it works.
 	 * 
 	 * @return bool
 	 */
@@ -639,7 +486,7 @@ class CoreModule extends AApiModule
 
 			if ($iFiletTime === -1 || $iNow - $iFiletTime > $iTime2Run)
 			{
-				$this->_removeDirByTime($sTempPath, $iTime2Kill, $iNow);
+				$this->removeDirByTime($sTempPath, $iTime2Kill, $iNow);
 				@file_put_contents( CApi::DataPath().'/'.$sDataFile, $iNow);
 			}
 		}
@@ -654,7 +501,7 @@ class CoreModule extends AApiModule
 	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
 	 * @param int $iNow Current Unix timestamp.
 	 */
-	protected function _removeDirByTime($sTempPath, $iTime2Kill, $iNow)
+	protected function removeDirByTime($sTempPath, $iTime2Kill, $iNow)
 	{
 		$iFileCount = 0;
 		if (@is_dir($sTempPath))
@@ -668,7 +515,7 @@ class CoreModule extends AApiModule
 					{
 						if (@is_dir($sTempPath.'/'.$sFile))
 						{
-							$this->_removeDirByTime($sTempPath.'/'.$sFile, $iTime2Kill, $iNow);
+							$this->removeDirByTime($sTempPath.'/'.$sFile, $iTime2Kill, $iNow);
 						}
 						else
 						{
@@ -681,7 +528,7 @@ class CoreModule extends AApiModule
 
 			if ($iFileCount > 0)
 			{
-				if ($this->_removeFilesByTime($sTempPath, $iTime2Kill, $iNow))
+				if ($this->removeFilesByTime($sTempPath, $iTime2Kill, $iNow))
 				{
 					@rmdir($sTempPath);
 				}
@@ -702,7 +549,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return boolean
 	 */
-	protected function _removeFilesByTime($sTempPath, $iTime2Kill, $iNow)
+	protected function removeFilesByTime($sTempPath, $iTime2Kill, $iNow)
 	{
 		$bResult = true;
 		if (@is_dir($sTempPath))
@@ -731,86 +578,94 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * Creates channel with specified login and description.
 	 * 
-	 * @return boolean
+	 * @param string $Login New channel login.
+	 * @param string $Description New channel description.
+	 * 
+	 * @return int New channel identificator.
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function CreateChannel($sLogin = '', $sDescription = '')
+	public function CreateChannel($Login, $Description = '')
 	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		if ($sLogin !== '')
+		$this->verifyAdminAccess();
+		
+		if ($Login !== '')
 		{
 			$oChannel = \CChannel::createInstance();
 			
-			$oChannel->Login = $sLogin;
+			$oChannel->Login = $Login;
 			
-			if ($sDescription !== '')
+			if ($Description !== '')
 			{
-				$oChannel->Description = $sDescription;
+				$oChannel->Description = $Description;
 			}
 
-			$this->oApiChannelsManager->createChannel($oChannel);
-			return $oChannel ? array(
-				'iObjectId' => $oChannel->iId
-			) : false;
+			if ($this->oApiChannelsManager->createChannel($oChannel))
+			{
+				return $oChannel->iId;
+			}
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
 		}
-
-		return false;
 	}
 	
 	/**
+	 * Updates channel.
+	 * 
+	 * @param int $ChannelId Channel identificator.
+	 * @param string $Login New login for channel.
+	 * @param string $Description New description for channel.
 	 * 
 	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function UpdateChannel($iChannelId = 0, $sLogin = '', $sDescription = '')
+	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
-//		$oAccount = $this->getDefaultAccountFromParam();
+		$this->verifyAdminAccess();
 		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		
-		if ($iChannelId > 0)
+		if ($ChannelId > 0)
 		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($iChannelId);
+			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
 			
 			if ($oChannel)
 			{
-				if ($sLogin)
+				if ($Login)
 				{
-					$oChannel->Login = $sLogin;
+					$oChannel->Login = $Login;
 				}
-				if ($sDescription)
+				if ($Description)
 				{
-					$oChannel->Description = $sDescription;
+					$oChannel->Description = $Description;
 				}
 				
-				$this->oApiChannelsManager->updateChannel($oChannel);
+				return $this->oApiChannelsManager->updateChannel($oChannel);
 			}
-			
-			return $oChannel ? array(
-				'iObjectId' => $oChannel->iId
-			) : false;
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
 	}
 	
 	/**
+	 * Deletes channel.
+	 * 
+	 * @param int $iChannelId Identificator of channel to delete.
 	 * 
 	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function DeleteChannel($iChannelId = 0)
+	public function DeleteChannel($iChannelId)
 	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
+		$this->verifyAdminAccess();
 
 		if ($iChannelId > 0)
 		{
@@ -818,43 +673,48 @@ class CoreModule extends AApiModule
 			
 			if ($oChannel)
 			{
-				$this->oApiChannelsManager->deleteChannel($oChannel);
+				return $this->oApiChannelsManager->deleteChannel($oChannel);
 			}
-			
-			return $oChannel ? array(
-				'iObjectId' => $oChannel->iId
-			) : false;
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
 	}
 	
 	/**
+	 * Creates tenant.
+	 * 
+	 * @param int $ChannelId Identificator of channel new tenant belongs to.
+	 * @param string $Name New tenant name.
+	 * @param string $Description New tenant description.
 	 * 
 	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
 	 */
-	public function CreateTenant($sName = '', $sDescription = '', $iChannelId = 0)
+	public function CreateTenant($ChannelId, $Name, $Description = '')
 	{
-		if ($sName !== '' && $iChannelId > 0)
+		$this->verifyAdminAccess();
+		
+		if ($Name !== '' && $ChannelId > 0)
 		{
 			$oTenant = \CTenant::createInstance();
 
-			$oTenant->Name = $sName;
-			$oTenant->Description = $sDescription;
-			$oTenant->IdChannel = $iChannelId;
+			$oTenant->Name = $Name;
+			$oTenant->Description = $Description;
+			$oTenant->IdChannel = $ChannelId;
 
-			$this->oApiTenantsManager->createTenant($oTenant);
-			return $oTenant ? array(
-				'iObjectId' => $oTenant->iId
-			) : false;
+			if ($this->oApiTenantsManager->createTenant($oTenant))
+			{
+				return $oTenant->iId;
+			}
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1141,7 +1001,7 @@ class CoreModule extends AApiModule
 			case 'Tenant':
 				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
 				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
-				return $this->CreateTenant($Data['Name'], $Data['Description'], $iChannelId);
+				return $this->CreateTenant($iChannelId, $Data['Name'], $Data['Description']);
 			case 'User':
 				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
 				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
@@ -1212,11 +1072,7 @@ class CoreModule extends AApiModule
 				}
 				else
 				{
-					$aChannels = $this->CreateChannel('Default', '');
-					if (is_array($aChannels) && count($aChannels) === 1)
-					{
-						$iChannelId = $aChannels['iObjectId'];
-					}
+					$iChannelId = $this->CreateChannel('Default', '');
 				}
 				if ($iChannelId !== 0)
 				{
@@ -1233,8 +1089,8 @@ class CoreModule extends AApiModule
 						}
 						else
 						{
-							$aTenants = $this->CreateTenant('Default', '', $iChannelId);
-							if (is_array($aTenants) && count($aTenants) === 1)
+							$mTenantId = $this->CreateTenant($iChannelId, 'Default');
+							if (is_int($mTenantId))
 							{
 								$bResult = true;
 							}
@@ -1344,5 +1200,14 @@ class CoreModule extends AApiModule
 		}
 
 		return true;
+	}
+	
+	protected function verifyAdminAccess()
+	{
+		$oUser = \CApi::getAuthenticatedUser();
+		if (empty($oUser) || $oUser->Role !== 0)
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::AccessDenied);
+		}
 	}
 }
