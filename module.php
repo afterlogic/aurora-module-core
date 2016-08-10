@@ -39,212 +39,173 @@ class CoreModule extends AApiModule
 			)
 		);
 		
-		$this->subscribeEvent('CreateAccount', array($this, 'onAccountCreate'));
+		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 	}
 	
+	/***** static functions *****/
 	/**
-	 * Does some pending actions to be executed when you log in.
-	 * 
+	 * @ignore
 	 * @return boolean
 	 */
-	public function DoServerInitializations()
+	public static function deleteTree($dir)
 	{
-		$iUserId = \CApi::getAuthenticatedUserId();
-
-		$bResult = false;
-
-		$oApiIntegrator = \CApi::GetSystemManager('integrator');
-
-		if ($iUserId && $oApiIntegrator)
+		$files = array_diff(scandir($dir), array('.','..'));
+			
+		foreach ($files as $file)
 		{
-			$oApiIntegrator->resetCookies();
+			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
 		}
-
-		if ($this->oApiCapabilityManager->isGlobalContactsSupported($iUserId, true))
+		
+		return rmdir($dir);
+	}
+	/***** static functions *****/
+	
+	
+	/***** private functions *****/
+	/**
+	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
+	 * 
+	 * @ignore
+	 * @param array $aData {
+	 *		*int* **UserId** Identificator of existing user.
+	 *		*int* **TenantId** Identificator of tenant for creating new user in it.
+	 *		*int* **UserName** New user name.
+	 * }
+	 * @param \CUser $oResult
+	 */
+	public function onCreateAccount($aData, &$oResult)
+	{
+		$oUser = null;
+		
+		if (isset($aData['UserId']) && (int)$aData['UserId'] > 0)
 		{
-			$bResult = \CApi::ExecuteMethod('Contact::SynchronizeExternalContacts', array('UserId' => $iUserId));
+			$oUser = $this->oApiUsersManager->getUserById($aData['UserId']);
 		}
-
-		$oCacher = \CApi::Cacher();
-
-		$bDoGC = false;
-		$bDoHepdeskClear = false;
-		if ($oCacher && $oCacher->IsInited())
+		else
 		{
-			$iTime = $oCacher->GetTimer('Cache/ClearFileCache');
-			if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
+			$oUser = \CUser::createInstance();
+			
+			$iTenantId = (isset($aData['TenantId'])) ? (int)$aData['TenantId'] : 0;
+			if ($iTenantId)
 			{
-				if ($oCacher->SetTimer('Cache/ClearFileCache'))
-				{
-					$bDoGC = true;
-				}
+				$oUser->IdTenant = $iTenantId;
 			}
 
-			if (\CApi::GetModuleManager()->ModuleExists('Helpdesk'))
+			$sUserName = (isset($aData['UserName'])) ? $aData['UserName'] : '';
+			if ($sUserName)
 			{
-				$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
-				if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
-				{
-					if ($oCacher->SetTimer('Cache/ClearHelpdeskUsers'))
-					{
-						$bDoHepdeskClear = true;
-					}
-				}
+				$oUser->Name = $sUserName;
+			}
+				
+			if (!$this->oApiUsersManager->createUser($oUser))
+			{
+				$oUser = null;
 			}
 		}
-
-		if ($bDoGC)
-		{
-			\CApi::Log('GC: FileCache / Start');
-			$oApiFileCache = \Capi::GetSystemManager('filecache');
-			$oApiFileCache->gc();
-			$oCacher->gc();
-			\CApi::Log('GC: FileCache / End');
-		}
-
-		if ($bDoHepdeskClear && \CApi::GetModuleManager()->ModuleExists('Helpdesk'))
-		{
-			\CApi::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
-			\CApi::ExecuteMethod('Helpdesk::ClearAllOnline');
-		}
-
-		return $bResult;
+		
+		$oResult = $oUser;
 	}
 	
 	/**
-	 * Method is used for checking internet connection.
-	 * 
-	 * @return 'Pong'
-	 */
-	public function Ping()
-	{
-		return 'Pong';
-	}	
-	
-	/**
-	 * Obtaines module settings for authenticated user.
-	 * 
-	 * @return array
-	 */
-	public function GetAppData()
-	{
-		$oUser = \CApi::getAuthenticatedUser();
-		return $oUser && $oUser->Role === 0 ? array(
-			'SiteName' => \CApi::GetSettingsConf('SiteName'),
-			'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
-			'DBHost' => \CApi::GetSettingsConf('DBHost'),
-			'DBName' => \CApi::GetSettingsConf('DBName'),
-			'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
-			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
-			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
-			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
-			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
-			'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
-			'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
-			'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
-			'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
-			'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel')
-		) : array(
-			'SiteName' => \CApi::GetSettingsConf('SiteName'),
-			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
-			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
-			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
-			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage')
-		);
-	}
-	
-	/**
-	 * Updates specified settings if super administrator is authenticated.
-	 * 
-	 * @param string $LicenseKey Value of license key.
-	 * @param string $DbLogin Database login.
-	 * @param string $DbPassword Database password.
-	 * @param string $DbName Database name.
-	 * @param string $DbHost Database host.
-	 * @param string $AdminLogin Login for super administrator.
-	 * @param string $Password Current password for super administrator.
-	 * @param string $NewPassword New password for super administrator.
-	 * 
-	 * @return boolean
+	 * Checks if authenticated user is super administrator.
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
-	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
-			$DbPassword = null, $DbName = null, $DbHost = null,
-			$AdminLogin = null, $Password = null, $NewPassword = null)
+	protected function checkAdminAccess()
 	{
-		$this->verifyAdminAccess();
-		
-		$oSettings =& CApi::GetSettings();
-		if ($LicenseKey !== null)
+		$oUser = \CApi::getAuthenticatedUser();
+		if (empty($oUser) || $oUser->Role !== \EUserRole::SuperAdmin)
 		{
-			$oSettings->SetConf('LicenseKey', $LicenseKey);
+			throw new \System\Exceptions\ClientException(\System\Notifications::AccessDenied);
 		}
-		if ($DbLogin !== null)
+	}
+	
+	/**
+	 * Recursively deletes temporary files and folders on time.
+	 * 
+	 * @param string $sTempPath Path to the temporary folder.
+	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
+	 * @param int $iNow Current Unix timestamp.
+	 */
+	protected function removeDirByTime($sTempPath, $iTime2Kill, $iNow)
+	{
+		$iFileCount = 0;
+		if (@is_dir($sTempPath))
 		{
-			$oSettings->SetConf('DBLogin', $DbLogin);
-		}
-		if ($DbPassword !== null)
-		{
-			$oSettings->SetConf('DBPassword', $DbPassword);
-		}
-		if ($DbName !== null)
-		{
-			$oSettings->SetConf('DBName', $DbName);
-		}
-		if ($DbHost !== null)
-		{
-			$oSettings->SetConf('DBHost', $DbHost);
-		}
-		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
-		{
-			$this->broadcastEvent('CheckAccountExists', array($AdminLogin));
-		
-			$oSettings->SetConf('AdminLogin', $AdminLogin);
-		}
-		if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
-		{
-			if (empty($oSettings->GetConf('AdminPassword')) || 
-					crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
+			$rDirH = @opendir($sTempPath);
+			if ($rDirH)
 			{
-				$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
+				while (($sFile = @readdir($rDirH)) !== false)
+				{
+					if ('.' !== $sFile && '..' !== $sFile)
+					{
+						if (@is_dir($sTempPath.'/'.$sFile))
+						{
+							$this->removeDirByTime($sTempPath.'/'.$sFile, $iTime2Kill, $iNow);
+						}
+						else
+						{
+							$iFileCount++;
+						}
+					}
+				}
+				@closedir($rDirH);
+			}
+
+			if ($iFileCount > 0)
+			{
+				if ($this->removeFilesByTime($sTempPath, $iTime2Kill, $iNow))
+				{
+					@rmdir($sTempPath);
+				}
 			}
 			else
 			{
-				throw new \System\Exceptions\ClientException(Errs::UserManager_AccountOldPasswordNotCorrect);
+				@rmdir($sTempPath);
 			}
 		}
-		return $oSettings->Save();
 	}
-	
-	/**
-	 * Obtains tenant list if super administrator is authenticated.
-	 * 
-	 * @return array {
-	 *		*int* **id** Tenant identificator
-	 *		*string* **name** Tenant name
-	 * }
-	 * 
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function GetTenants()
-	{
-		$this->verifyAdminAccess();
-		
-		$aTenants = $this->oApiTenantsManager->getTenantList();
-		$aItems = array();
 
-		foreach ($aTenants as $oTenat)
+	/**
+	 * Recursively deletes temporary files on time.
+	 * 
+	 * @param string $sTempPath Path to the temporary folder.
+	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
+	 * @param int $iNow Current Unix timestamp.
+	 * 
+	 * @return boolean
+	 */
+	protected function removeFilesByTime($sTempPath, $iTime2Kill, $iNow)
+	{
+		$bResult = true;
+		if (@is_dir($sTempPath))
 		{
-			$aItems[] = array(
-				'id' => $oTenat->iId,
-				'name' => $oTenat->Name
-			);
+			$rDirH = @opendir($sTempPath);
+			if ($rDirH)
+			{
+				while (($sFile = @readdir($rDirH)) !== false)
+				{
+					if ($sFile !== '.' && $sFile !== '..')
+					{
+						if ($iNow - filemtime($sTempPath.'/'.$sFile) > $iTime2Kill)
+						{
+							@unlink($sTempPath.'/'.$sFile);
+						}
+						else
+						{
+							$bResult = false;
+						}
+					}
+				}
+				@closedir($rDirH);
+			}
 		}
-		
-		return $aItems;
+		return $bResult;
 	}
+	/***** private functions *****/
 	
+	
+	/***** public functions *****/
 	/**
 	 * @ignore
 	 */
@@ -445,19 +406,7 @@ class CoreModule extends AApiModule
 
 			\CApi::Location('./');
 		}
-	}	
-	
-	/**
-	 * @ignore
-	 * Turns on or turns off mobile version.
-	 * @param boolean $Mobile Indicates if mobile version should be turned on or turned off.
-	 * @return boolean
-	 */
-	public function SetMobile($Mobile)
-	{
-		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
-		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
-	}	
+	}
 	
 	/**
 	 * Clears temporary files by cron.
@@ -493,478 +442,23 @@ class CoreModule extends AApiModule
 
 		return true;
 	}
-
-	/**
-	 * Recursively deletes temporary files and folders on time.
-	 * 
-	 * @param string $sTempPath Path to the temporary folder.
-	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
-	 * @param int $iNow Current Unix timestamp.
-	 */
-	protected function removeDirByTime($sTempPath, $iTime2Kill, $iNow)
-	{
-		$iFileCount = 0;
-		if (@is_dir($sTempPath))
-		{
-			$rDirH = @opendir($sTempPath);
-			if ($rDirH)
-			{
-				while (($sFile = @readdir($rDirH)) !== false)
-				{
-					if ('.' !== $sFile && '..' !== $sFile)
-					{
-						if (@is_dir($sTempPath.'/'.$sFile))
-						{
-							$this->removeDirByTime($sTempPath.'/'.$sFile, $iTime2Kill, $iNow);
-						}
-						else
-						{
-							$iFileCount++;
-						}
-					}
-				}
-				@closedir($rDirH);
-			}
-
-			if ($iFileCount > 0)
-			{
-				if ($this->removeFilesByTime($sTempPath, $iTime2Kill, $iNow))
-				{
-					@rmdir($sTempPath);
-				}
-			}
-			else
-			{
-				@rmdir($sTempPath);
-			}
-		}
-	}
-
-	/**
-	 * Recursively deletes temporary files on time.
-	 * 
-	 * @param string $sTempPath Path to the temporary folder.
-	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
-	 * @param int $iNow Current Unix timestamp.
-	 * 
-	 * @return boolean
-	 */
-	protected function removeFilesByTime($sTempPath, $iTime2Kill, $iNow)
-	{
-		$bResult = true;
-		if (@is_dir($sTempPath))
-		{
-			$rDirH = @opendir($sTempPath);
-			if ($rDirH)
-			{
-				while (($sFile = @readdir($rDirH)) !== false)
-				{
-					if ($sFile !== '.' && $sFile !== '..')
-					{
-						if ($iNow - filemtime($sTempPath.'/'.$sFile) > $iTime2Kill)
-						{
-							@unlink($sTempPath.'/'.$sFile);
-						}
-						else
-						{
-							$bResult = false;
-						}
-					}
-				}
-				@closedir($rDirH);
-			}
-		}
-		return $bResult;
-	}
 	
 	/**
-	 * Creates channel with specified login and description.
+	 * Updates user by object.
 	 * 
-	 * @param string $Login New channel login.
-	 * @param string $Description New channel description.
-	 * 
-	 * @return int New channel identificator.
-	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @param \CUser $oUser
 	 */
-	public function CreateChannel($Login, $Description = '')
-	{
-		$this->verifyAdminAccess();
-		
-		if ($Login !== '')
-		{
-			$oChannel = \CChannel::createInstance();
-			
-			$oChannel->Login = $Login;
-			
-			if ($Description !== '')
-			{
-				$oChannel->Description = $Description;
-			}
-
-			if ($this->oApiChannelsManager->createChannel($oChannel))
-			{
-				return $oChannel->iId;
-			}
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
-		}
-	}
-	
-	/**
-	 * Updates channel.
-	 * 
-	 * @param int $ChannelId Channel identificator.
-	 * @param string $Login New login for channel.
-	 * @param string $Description New description for channel.
-	 * 
-	 * @return boolean
-	 * 
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
-	{
-		$this->verifyAdminAccess();
-		
-		if ($ChannelId > 0)
-		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
-			
-			if ($oChannel)
-			{
-				if ($Login)
-				{
-					$oChannel->Login = $Login;
-				}
-				if ($Description)
-				{
-					$oChannel->Description = $Description;
-				}
-				
-				return $this->oApiChannelsManager->updateChannel($oChannel);
-			}
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * Deletes channel.
-	 * 
-	 * @param int $iChannelId Identificator of channel to delete.
-	 * 
-	 * @return boolean
-	 * 
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function DeleteChannel($iChannelId)
-	{
-		$this->verifyAdminAccess();
-
-		if ($iChannelId > 0)
-		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($iChannelId);
-			
-			if ($oChannel)
-			{
-				return $this->oApiChannelsManager->deleteChannel($oChannel);
-			}
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * Creates tenant.
-	 * 
-	 * @param int $ChannelId Identificator of channel new tenant belongs to.
-	 * @param string $Name New tenant name.
-	 * @param string $Description New tenant description.
-	 * 
-	 * @return boolean
-	 * 
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function CreateTenant($ChannelId, $Name, $Description = '')
-	{
-		$this->verifyAdminAccess();
-		
-		if ($Name !== '' && $ChannelId > 0)
-		{
-			$oTenant = \CTenant::createInstance();
-
-			$oTenant->Name = $Name;
-			$oTenant->Description = $Description;
-			$oTenant->IdChannel = $ChannelId;
-
-			if ($this->oApiTenantsManager->createTenant($oTenant))
-			{
-				return $oTenant->iId;
-			}
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * 
-	 * @return boolean
-	 */
-	public function UpdateTenant($iTenantId = 0, $sName = '', $sDescription = '', $iChannelId = 0)
-	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		
-		if ($iTenantId > 0)
-		{
-			$oTenant = $this->oApiTenantsManager->getTenantById($iTenantId);
-			
-			if ($oTenant)
-			{
-				if ($sName)
-				{
-					$oTenant->Name = $sName;
-				}
-				if ($sDescription)
-				{
-					$oTenant->Description = $sDescription;
-				}
-				if ($iChannelId)
-				{
-					$oTenant->IdChannel = $iChannelId;
-				}
-				
-				$this->oApiTenantsManager->updateTenant($oTenant);
-			}
-			
-			return $oTenant ? array(
-				'iObjectId' => $oTenant->iId
-			) : false;
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * 
-	 * @return boolean
-	 */
-	public function DeleteTenant($iTenantId = 0)
-	{
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-
-		if ($iTenantId > 0)
-		{
-			$oTenant = $this->oApiTenantsManager->getTenantById($iTenantId);
-			
-			if ($oTenant)
-			{
-				$sTenantSpacePath = PSEVEN_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
-				
-				if (@is_dir($sTenantSpacePath))
-				{
-					$this->deleteTree($sTenantSpacePath);
-				}
-						
-				$this->oApiTenantsManager->deleteTenant($oTenant);
-			}
-			
-			return $oTenant ? array(
-				'iObjectId' => $oTenant->iId
-			) : false;
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
-		}
-
-		return false;
-	}
-	
-	/**
-	 * 
-	 * @return boolean
-	 */
-	public static function deleteTree($dir)
-	{
-		$files = array_diff(scandir($dir), array('.','..'));
-			
-		foreach ($files as $file) {
-			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
-		}
-		return rmdir($dir);
-	}
-  
-	//TODO is it used by any code?
-	/*$iTenantId, $iUserId, $sLogin, $sPassword*/
-	public function onAccountCreate($aData, &$oResult)
-	{
-		$oUser = null;
-		
-		if (isset($aData['UserId']) && (int)$aData['UserId'] > 0)
-		{
-			$oUser = $this->oApiUsersManager->getUserById($aData['UserId']);
-		}
-		else
-		{
-			$oUser = \CUser::createInstance();
-			
-			$iTenantId = (isset($aData['TenantId'])) ? (int)$aData['TenantId'] : 0;
-			if ($iTenantId)
-			{
-				$oUser->IdTenant = $iTenantId;
-			}
-
-			$sUserName = (isset($aData['UserName'])) ? $aData['UserName'] : '';
-			if ($sUserName)
-			{
-				$oUser->Name = $sUserName;
-			}
-				
-			if (!$this->oApiUsersManager->createUser($oUser))
-			{
-				$oUser = null;
-			}
-		}
-		
-		$oResult = $oUser;
-	}
-	
-	/**
-	 * @param int $iTenantId
-	 * @param string $sName
-	 * @param int $iRole
-	 * @return boolean
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function CreateUser($iTenantId = 0, $sName = '', $iRole = \EUserRole::PowerUser)
-	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		if ($iTenantId > 0 && $sName !== '')
-		{
-			$oUser = \CUser::createInstance();
-			
-			$oUser->Name = $sName;
-			$oUser->IdTenant = $iTenantId;
-			$oUser->Role = $iRole;
-
-			$this->oApiUsersManager->createUser($oUser);
-			return $oUser ? array(
-				'iObjectId' => $oUser->iId
-			) : false;
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
-		}
-
-		return false;
-	}
-
-	/**
-	 * 
-	 * @param int $iUserId
-	 * @param string $sUserName
-	 * @param int $iTenantId
-	 * @param int $iRole
-	 * @return boolean
-	 * @throws \System\Exceptions\ClientException
-	 */
-	public function UpdateUser($iUserId = 0, $sUserName = '', $iTenantId = 0, $iRole = -1)
-	{
-//		$oAccount = $this->getDefaultAccountFromParam();
-		
-//		if ($this->oApiCapabilityManager->isPersonalContactsSupported($oAccount))
-		
-		if ($iUserId > 0)
-		{
-			$oUser = $this->oApiUsersManager->getUserById($iUserId);
-			
-			if ($oUser)
-			{
-				$oUser->Name = $sUserName;
-				if ($iTenantId !== 0)
-				{
-					$oUser->IdTenant = $iTenantId;
-				}
-				if ($iRole !== -1)
-				{
-					$oUser->Role = $iRole;
-				}
-				$this->oApiUsersManager->updateUser($oUser);
-			}
-			
-			return $oUser ? array(
-				'iObjectId' => $oUser->iId
-			) : false;
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
-		}
-
-		return false;
-	}
-	
 	public function UpdateUserObject($oUser)
 	{
 		$this->oApiUsersManager->updateUser($oUser);
 	}
 	
 	/**
-	 * Deletes user.
+	 * Returns user object.
 	 * 
 	 * @param int $iUserId User identificator.
-	 * 
-	 * @return boolean
-	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @return \CUser
 	 */
-	public function DeleteUser($iUserId = 0)
-	{
-		if ($iUserId > 0)
-		{
-			$oUser = $this->oApiUsersManager->getUserById($iUserId);
-			
-			if ($oUser)
-			{
-				$this->oApiUsersManager->deleteUser($oUser);
-				$this->broadcastEvent($this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', array($oUser->iId));
-			}
-			
-			return $oUser ? array(
-				'iObjectId' => $oUser->iId
-			) : false;
-		}
-		else
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::UserNotAllowed);
-		}
-
-		return false;
-	}
-	
 	public function GetUser($iUserId = 0)
 	{
 		$oUser = $this->oApiUsersManager->getUserById((int) $iUserId);
@@ -972,79 +466,235 @@ class CoreModule extends AApiModule
 		return $oUser ? $oUser : null;
 	}
 	
+	/**
+	 * Creates and returns user with super administrator role.
+	 * 
+	 * @return \CUser
+	 */
 	public function GetAdminUser()
 	{
-		$oUser = new \CUser();
+		$oUser = new \CUser('Core', array());
 		$oUser->iId = -1;
-		$oUser->Role = 0;
+		$oUser->Role = \EUserRole::SuperAdmin;
 		$oUser->Name = 'Administrator';
 		
 		return $oUser;
 	}
 	
-	public function DeleteEntity($Type, $Id)
+	/**
+	 * Returns tenant object by identificator.
+	 * 
+	 * @param int $iIdTenant Tenane id.
+	 * @return \CTenant
+	 */
+	public function GetTenantById($iIdTenant)
 	{
-		switch ($Type)
-		{
-			case 'Tenant':
-				return $this->DeleteTenant($Id);
-			case 'User':
-				return $this->DeleteUser($Id);
-		}
-		return false;
+		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
+
+		return $oTenant ? $oTenant : null;
 	}
 	
-	public function CreateEntity($Type, $Data)
+	/**
+	 * Returns default global tenant.
+	 * 
+	 * @return \CTenant
+	 */
+	public function GetDefaultGlobalTenant()
 	{
-		switch ($Type)
+		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
+		
+		return $oTenant ? $oTenant : null;
+	}
+	/***** public functions *****/
+	
+	
+	/***** public functions might be called with web API *****/
+	/**
+	 * Does some pending actions to be executed when you log in.
+	 * 
+	 * @return boolean
+	 */
+	public function DoServerInitializations()
+	{
+		$iUserId = \CApi::getAuthenticatedUserId();
+
+		$bResult = false;
+
+		$oApiIntegrator = \CApi::GetSystemManager('integrator');
+
+		if ($iUserId && $oApiIntegrator)
 		{
-			case 'Tenant':
-				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
-				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
-				return $this->CreateTenant($iChannelId, $Data['Name'], $Data['Description']);
-			case 'User':
-				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
-				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
-				return $this->CreateUser($iTenantId, $Data['Name'], $Data['Role']);
+			$oApiIntegrator->resetCookies();
 		}
-		return false;
+
+		if ($this->oApiCapabilityManager->isGlobalContactsSupported($iUserId, true))
+		{
+			$bResult = \CApi::ExecuteMethod('Contact::SynchronizeExternalContacts', array('UserId' => $iUserId));
+		}
+
+		$oCacher = \CApi::Cacher();
+
+		$bDoGC = false;
+		$bDoHepdeskClear = false;
+		if ($oCacher && $oCacher->IsInited())
+		{
+			$iTime = $oCacher->GetTimer('Cache/ClearFileCache');
+			if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
+			{
+				if ($oCacher->SetTimer('Cache/ClearFileCache'))
+				{
+					$bDoGC = true;
+				}
+			}
+
+			if (\CApi::GetModuleManager()->ModuleExists('Helpdesk'))
+			{
+				$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
+				if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
+				{
+					if ($oCacher->SetTimer('Cache/ClearHelpdeskUsers'))
+					{
+						$bDoHepdeskClear = true;
+					}
+				}
+			}
+		}
+
+		if ($bDoGC)
+		{
+			\CApi::Log('GC: FileCache / Start');
+			$oApiFileCache = \Capi::GetSystemManager('filecache');
+			$oApiFileCache->gc();
+			$oCacher->gc();
+			\CApi::Log('GC: FileCache / End');
+		}
+
+		if ($bDoHepdeskClear && \CApi::GetModuleManager()->ModuleExists('Helpdesk'))
+		{
+			\CApi::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
+			\CApi::ExecuteMethod('Helpdesk::ClearAllOnline');
+		}
+
+		return $bResult;
 	}
 	
-	public function GetEntities($Type)
+	/**
+	 * Method is used for checking internet connection.
+	 * 
+	 * @return 'Pong'
+	 */
+	public function Ping()
 	{
-		switch ($Type)
-		{
-			case 'Tenant':
-				return $this->GetTenants();
-			case 'User':
-				return $this->GetUserList();
-		}
-		return null;
+		return 'Pong';
+	}	
+	
+	/**
+	 * Obtaines module settings for authenticated user.
+	 * 
+	 * @return array
+	 */
+	public function GetAppData()
+	{
+		$oUser = \CApi::getAuthenticatedUser();
+		return !empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin ? array(
+			'SiteName' => \CApi::GetSettingsConf('SiteName'),
+			'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
+			'DBHost' => \CApi::GetSettingsConf('DBHost'),
+			'DBName' => \CApi::GetSettingsConf('DBName'),
+			'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
+			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
+			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
+			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
+			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
+			'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
+			'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
+			'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
+			'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
+			'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel')
+		) : array(
+			'SiteName' => \CApi::GetSettingsConf('SiteName'),
+			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
+			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
+			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
+			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage')
+		);
 	}
 	
-	public function GetEntity($Type, $Id)
+	/**
+	 * Updates specified settings if super administrator is authenticated.
+	 * 
+	 * @param string $LicenseKey Value of license key.
+	 * @param string $DbLogin Database login.
+	 * @param string $DbPassword Database password.
+	 * @param string $DbName Database name.
+	 * @param string $DbHost Database host.
+	 * @param string $AdminLogin Login for super administrator.
+	 * @param string $Password Current password for super administrator.
+	 * @param string $NewPassword New password for super administrator.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
+			$DbPassword = null, $DbName = null, $DbHost = null,
+			$AdminLogin = null, $Password = null, $NewPassword = null)
 	{
-		switch ($Type)
+		$this->checkAdminAccess();
+		
+		$oSettings =& CApi::GetSettings();
+		if ($LicenseKey !== null)
 		{
-			case 'Tenant':
-				return $this->GetTenantById($Id);
-			case 'User':
-				return $this->GetUser($Id);
+			$oSettings->SetConf('LicenseKey', $LicenseKey);
 		}
-		return null;
+		if ($DbLogin !== null)
+		{
+			$oSettings->SetConf('DBLogin', $DbLogin);
+		}
+		if ($DbPassword !== null)
+		{
+			$oSettings->SetConf('DBPassword', $DbPassword);
+		}
+		if ($DbName !== null)
+		{
+			$oSettings->SetConf('DBName', $DbName);
+		}
+		if ($DbHost !== null)
+		{
+			$oSettings->SetConf('DBHost', $DbHost);
+		}
+		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
+		{
+			$this->broadcastEvent('CheckAccountExists', array($AdminLogin));
+		
+			$oSettings->SetConf('AdminLogin', $AdminLogin);
+		}
+		if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
+		{
+			if (empty($oSettings->GetConf('AdminPassword')) || 
+					crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
+			{
+				$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
+			}
+			else
+			{
+				throw new \System\Exceptions\ClientException(Errs::UserManager_AccountOldPasswordNotCorrect);
+			}
+		}
+		return $oSettings->Save();
 	}
 	
-	public function SaveEntity($Type, $Data)
+	/**
+	 * @ignore
+	 * Turns on or turns off mobile version.
+	 * @param boolean $Mobile Indicates if mobile version should be turned on or turned off.
+	 * @return boolean
+	 */
+	public function SetMobile($Mobile)
 	{
-		switch ($Type)
-		{
-			case 'Tenant':
-				return $this->UpdateTenant($Data['Id'], $Data['Name'], $Data['Description']);
-			case 'User':
-				return $this->UpdateUser($Data['Id'], $Data['Name'], 0, $Data['Role']);
-		}
-		return null;
-	}
+		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
+		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
+	}	
 	
 	/**
 	 * Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
@@ -1053,6 +703,8 @@ class CoreModule extends AApiModule
 	 */
 	public function CreateTables()
 	{
+		$this->checkAdminAccess();
+		
 		$bResult = false;
 		$oSettings =& CApi::GetSettings();
 		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
@@ -1103,8 +755,19 @@ class CoreModule extends AApiModule
 		return $bResult;
 	}
 	
+	/**
+	 * Tests connection to database with specified credentials.
+	 * 
+	 * @param string $DbLogin Database login.
+	 * @param string $DbName Database name.
+	 * @param string $DbHost Database host.
+	 * @param string $DbPassword Database password.
+	 * @return boolean
+	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
+		$this->checkAdminAccess();
+		
 		$oSettings =& CApi::GetSettings();
 		$oSettings->SetConf('DBLogin', $DbLogin);
 		if ($DbPassword !== null)
@@ -1118,42 +781,278 @@ class CoreModule extends AApiModule
 		return $oApiEavManager->testStorageConnection();
 	}
 	
-	public function GetUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
-	{
-		$aResults = $this->oApiUsersManager->getUserList($iOffset, $iLimit, $sOrderBy, $iOrderType, $sSearchDesc);
-		$aUsers = array();
-		foreach($aResults as $oUser)
+	/**
+	 * Logs out authenticated user. Clears session.
+	 * 
+	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function Logout()
+	{	
+		$mAuthToken = \CApi::getAuthenticatedUserAuthToken();
+		if ($mAuthToken !== false)
 		{
-			$aUsers[] = array(
-				'id' => $oUser->iId,
-				'name' => $oUser->Name
+			\CApi::UserSession()->Delete($mAuthToken);
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\Auth\Notifications::IncorrentAuthToken);
+		}
+
+		return true;
+	}
+	
+	/**
+	 * Returns entity list.
+	 * 
+	 * @param string $Type Entities type.
+	 * @return array|null
+	 */
+	public function GetEntityList($Type)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->GetTenantList();
+			case 'User':
+				return $this->GetUserList();
+		}
+		return null;
+	}
+	
+	/**
+	 * Returns entity.
+	 * 
+	 * @param string $Type Entity type.
+	 * @param int $Id Entity identificator.
+	 * @return array
+	 */
+	public function GetEntity($Type, $Id)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->GetTenantById($Id);
+			case 'User':
+				return $this->GetUser($Id);
+		}
+		return null;
+	}
+	
+	/**
+	 * Creates entity.
+	 * 
+	 * @param string $Type Entity type.
+	 * @param array $Data Entity data which fields depend on entity type.
+	 * @return boolean
+	 */
+	public function CreateEntity($Type, $Data)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
+				return $this->CreateTenant($iChannelId, $Data['Name'], $Data['Description']);
+			case 'User':
+				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
+				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
+				return $this->CreateUser($iTenantId, $Data['Name'], $Data['Role']);
+		}
+		return false;
+	}
+	
+	/**
+	 * Updates entity.
+	 * 
+	 * @param string $Type Entity type.
+	 * @param array $Data Entity data.
+	 * @return boolean
+	 */
+	public function UpdateEntity($Type, $Data)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->UpdateTenant($Data['Id'], $Data['Name'], $Data['Description']);
+			case 'User':
+				return $this->UpdateUser($Data['Id'], $Data['Name'], 0, $Data['Role']);
+		}
+		return false;
+	}
+	
+	/**
+	 * Deletes entity.
+	 * 
+	 * @param string $Type Entity type
+	 * @param int $Id Entity identificator.
+	 * @return boolean
+	 */
+	public function DeleteEntity($Type, $Id)
+	{
+		switch ($Type)
+		{
+			case 'Tenant':
+				return $this->DeleteTenant($Id);
+			case 'User':
+				return $this->DeleteUser($Id);
+		}
+		return false;
+	}
+	
+	/**
+	 * Creates channel with specified login and description.
+	 * 
+	 * @param string $Login New channel login.
+	 * @param string $Description New channel description.
+	 * 
+	 * @return int New channel identificator.
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function CreateChannel($Login, $Description = '')
+	{
+		$this->checkAdminAccess();
+		
+		if ($Login !== '')
+		{
+			$oChannel = \CChannel::createInstance();
+			
+			$oChannel->Login = $Login;
+			
+			if ($Description !== '')
+			{
+				$oChannel->Description = $Description;
+			}
+
+			if ($this->oApiChannelsManager->createChannel($oChannel))
+			{
+				return $oChannel->iId;
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+	}
+	
+	/**
+	 * Updates channel.
+	 * 
+	 * @param int $ChannelId Channel identificator.
+	 * @param string $Login New login for channel.
+	 * @param string $Description New description for channel.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
+	{
+		$this->checkAdminAccess();
+		
+		if ($ChannelId > 0)
+		{
+			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
+			
+			if ($oChannel)
+			{
+				if ($Login)
+				{
+					$oChannel->Login = $Login;
+				}
+				if ($Description)
+				{
+					$oChannel->Description = $Description;
+				}
+				
+				return $this->oApiChannelsManager->updateChannel($oChannel);
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Deletes channel.
+	 * 
+	 * @param int $iChannelId Identificator of channel to delete.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function DeleteChannel($iChannelId)
+	{
+		$this->checkAdminAccess();
+
+		if ($iChannelId > 0)
+		{
+			$oChannel = $this->oApiChannelsManager->getChannelById($iChannelId);
+			
+			if ($oChannel)
+			{
+				return $this->oApiChannelsManager->deleteChannel($oChannel);
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Obtains tenant list if super administrator is authenticated.
+	 * 
+	 * @return array {
+	 *		*int* **Id** Tenant identificator
+	 *		*string* **Name** Tenant name
+	 * }
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function GetTenantList()
+	{
+		$this->checkAdminAccess();
+		
+		$aTenants = $this->oApiTenantsManager->getTenantList();
+		$aItems = array();
+
+		foreach ($aTenants as $oTenat)
+		{
+			$aItems[] = array(
+				'Id' => $oTenat->iId,
+				'Name' => $oTenat->Name
 			);
 		}
-		return $aUsers;
-	}
-
-	public function GetTenantIdByName($sTenantName = '')
-	{
-		$oTenant = $this->oApiTenantsManager->getTenantIdByName((string) $sTenantName);
-
-		return $oTenant ? $oTenant : null;
-	}
-	
-	public function GetTenantById($iIdTenant)
-	{
-		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
-
-		return $oTenant ? $oTenant : null;
-	}
-	
-	
-	public function GetDefaultGlobalTenant()
-	{
-		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
 		
-		return $oTenant ? $oTenant : null;
+		return $aItems;
 	}
 	
+	/**
+	 * Returns tenant identificator by tenant name.
+	 * 
+	 * @param string $TenantName Tenant name.
+	 * @return int|null
+	 */
+	public function GetTenantIdByName($TenantName = '')
+	{
+		$iTenantId = $this->oApiTenantsManager->getTenantIdByName((string) $TenantName);
+
+		return $iTenantId ? $iTenantId : null;
+	}
+	
+	/**
+	 * Returns current tenant name.
+	 * 
+	 * @return string
+	 */
 	public function GetTenantName()
 	{
 		$sTenant = '';
@@ -1187,27 +1086,258 @@ class CoreModule extends AApiModule
 		return $sTenant;
 	}
 	
-	public function Logout()
-	{	
-		$mAuthToken = \CApi::getAuthenticatedUserAuthToken();
-		if ($mAuthToken !== false)
+	/**
+	 * Creates tenant.
+	 * 
+	 * @param int $ChannelId Identificator of channel new tenant belongs to.
+	 * @param string $Name New tenant name.
+	 * @param string $Description New tenant description.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function CreateTenant($ChannelId, $Name, $Description = '')
+	{
+		$this->checkAdminAccess();
+		
+		if ($Name !== '' && $ChannelId > 0)
 		{
-			\CApi::UserSession()->Delete($mAuthToken);
+			$oTenant = \CTenant::createInstance();
+
+			$oTenant->Name = $Name;
+			$oTenant->Description = $Description;
+			$oTenant->IdChannel = $ChannelId;
+
+			if ($this->oApiTenantsManager->createTenant($oTenant))
+			{
+				return $oTenant->iId;
+			}
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\Auth\Notifications::IncorrentAuthToken);
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
 		}
 
-		return true;
+		return false;
 	}
 	
-	protected function verifyAdminAccess()
+	/**
+	 * Updates tenant.
+	 * 
+	 * @param int $TenantId Identificator of tenant to update.
+	 * @param string $Name New tenant name.
+	 * @param string $Description New tenant description.
+	 * @param int $ChannelId Identificator of the new tenant channel.
+	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
-		$oUser = \CApi::getAuthenticatedUser();
-		if (empty($oUser) || $oUser->Role !== 0)
+		$this->checkAdminAccess();
+		
+		if (!empty($TenantId))
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::AccessDenied);
+			$oTenant = $this->oApiTenantsManager->getTenantById($TenantId);
+			
+			if ($oTenant)
+			{
+				if (!empty($Name))
+				{
+					$oTenant->Name = $Name;
+				}
+				if (!empty($Description))
+				{
+					$oTenant->Description = $Description;
+				}
+				if (!empty($ChannelId))
+				{
+					$oTenant->IdChannel = $ChannelId;
+				}
+				
+				return $this->oApiTenantsManager->updateTenant($oTenant);
+			}
 		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
 	}
+	
+	/**
+	 * Deletes tenant.
+	 * 
+	 * @param int $TenantId Identificator of tenant to delete.
+	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function DeleteTenant($TenantId)
+	{
+		$this->checkAdminAccess();
+		
+		if (!empty($TenantId))
+		{
+			$oTenant = $this->oApiTenantsManager->getTenantById($TenantId);
+			
+			if ($oTenant)
+			{
+				$sTenantSpacePath = PSEVEN_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
+				
+				if (@is_dir($sTenantSpacePath))
+				{
+					$this->deleteTree($sTenantSpacePath);
+				}
+						
+				return $this->oApiTenantsManager->deleteTenant($oTenant);
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Returns user list.
+	 * 
+	 * @param int $Offset Offset of user list.
+	 * @param int $Limit Limit of result user list.
+	 * @param string $OrderBy Name of field order by.
+	 * @param int $OrderType Order type.
+	 * @param string $Search Search string.
+	 * @return array {
+	 *		*int* **Id** Identificator of user.
+	 *		*string* **Name** User name.
+	 * }
+	 */
+	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'Name', $OrderType = \ESortOrder::ASC, $Search = '')
+	{
+		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
+		$aUsers = array();
+		foreach($aResults as $oUser)
+		{
+			$aUsers[] = array(
+				'Id' => $oUser->iId,
+				'Name' => $oUser->Name
+			);
+		}
+		return $aUsers;
+	}
+
+	/**
+	 * Creates user.
+	 * 
+	 * @param int $TenantId Identificator of tenant that will contain new user.
+	 * @param string $Name New user name.
+	 * @param int $Role New user role.
+	 * @return int|false
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function CreateUser($TenantId, $Name, $Role = \EUserRole::PowerUser)
+	{
+		$this->checkAdminAccess();
+		
+		if (!empty($TenantId) && !empty($Name))
+		{
+			$oUser = \CUser::createInstance();
+			
+			$oUser->Name = $Name;
+			$oUser->IdTenant = $TenantId;
+			$oUser->Role = $Role;
+
+			if ($this->oApiUsersManager->createUser($oUser));
+			{
+				return $oUser->iId;
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
+	}
+
+	/**
+	 * Updates user.
+	 * 
+	 * @param int $UserId Identificator of user to update.
+	 * @param string $UserName New user name.
+	 * @param int $TenantId Identificator of tenant that will contain the user.
+	 * @param int $Role New user role.
+	 * @return boolean
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function UpdateUser($UserId, $UserName = '', $TenantId = 0, $Role = -1)
+	{
+		$this->checkAdminAccess();
+		
+		if ($UserId > 0)
+		{
+			$oUser = $this->oApiUsersManager->getUserById($UserId);
+			
+			if ($oUser)
+			{
+				if (!empty($UserName))
+				{
+					$oUser->Name = $UserName;
+				}
+				if (!empty($TenantId))
+				{
+					$oUser->IdTenant = $TenantId;
+				}
+				if ($Role !== -1)
+				{
+					$oUser->Role = $Role;
+				}
+				
+				return $this->oApiUsersManager->updateUser($oUser);
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return false;
+	}
+	
+	/**
+	 * Deletes user.
+	 * 
+	 * @param int $UserId User identificator.
+	 * 
+	 * @return boolean
+	 * 
+	 * @throws \System\Exceptions\ClientException
+	 */
+	public function DeleteUser($UserId = 0)
+	{
+		$bResult = false;
+		
+		$this->checkAdminAccess();
+		
+		if (!empty($UserId))
+		{
+			$oUser = $this->oApiUsersManager->getUserById($UserId);
+			
+			if ($oUser)
+			{
+				$bResult = $this->oApiUsersManager->deleteUser($oUser);
+				$this->broadcastEvent($this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', array($oUser->iId));
+			}
+		}
+		else
+		{
+			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+		}
+
+		return $bResult;
+	}
+
+	/***** public functions might be called with web API *****/
 }
