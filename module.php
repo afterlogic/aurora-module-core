@@ -45,7 +45,7 @@ class CoreModule extends AApiModule
 	/***** static functions *****/
 	/**
 	 * @ignore
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function deleteTree($dir)
 	{
@@ -107,20 +107,6 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
-	 * Checks if authenticated user is super administrator.
-	 * 
-	 * @throws \System\Exceptions\ClientException
-	 */
-	protected function checkAdminAccess()
-	{
-		$oUser = \CApi::getAuthenticatedUser();
-		if (empty($oUser) || $oUser->Role !== \EUserRole::SuperAdmin)
-		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::AccessDenied);
-		}
-	}
-	
-	/**
 	 * Recursively deletes temporary files and folders on time.
 	 * 
 	 * @param string $sTempPath Path to the temporary folder.
@@ -173,7 +159,7 @@ class CoreModule extends AApiModule
 	 * @param int $iTime2Kill Interval in seconds at which files needs removing.
 	 * @param int $iNow Current Unix timestamp.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 */
 	protected function removeFilesByTime($sTempPath, $iTime2Kill, $iNow)
 	{
@@ -512,7 +498,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Does some pending actions to be executed when you log in.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 */
 	public function DoServerInitializations()
 	{
@@ -632,7 +618,7 @@ class CoreModule extends AApiModule
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
@@ -640,7 +626,7 @@ class CoreModule extends AApiModule
 			$DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$oSettings =& CApi::GetSettings();
 		if ($LicenseKey !== null)
@@ -687,8 +673,8 @@ class CoreModule extends AApiModule
 	/**
 	 * @ignore
 	 * Turns on or turns off mobile version.
-	 * @param boolean $Mobile Indicates if mobile version should be turned on or turned off.
-	 * @return boolean
+	 * @param bool $Mobile Indicates if mobile version should be turned on or turned off.
+	 * @return bool
 	 */
 	public function SetMobile($Mobile)
 	{
@@ -699,11 +685,11 @@ class CoreModule extends AApiModule
 	/**
 	 * Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 */
 	public function CreateTables()
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$bResult = false;
 		$oSettings =& CApi::GetSettings();
@@ -762,11 +748,11 @@ class CoreModule extends AApiModule
 	 * @param string $DbName Database name.
 	 * @param string $DbHost Database host.
 	 * @param string $DbPassword Database password.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$oSettings =& CApi::GetSettings();
 		$oSettings->SetConf('DBLogin', $DbLogin);
@@ -784,7 +770,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Logs out authenticated user. Clears session.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function Logout()
@@ -844,7 +830,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param string $Type Entity type.
 	 * @param array $Data Entity data which fields depend on entity type.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function CreateEntity($Type, $Data)
 	{
@@ -867,7 +853,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param string $Type Entity type.
 	 * @param array $Data Entity data.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function UpdateEntity($Type, $Data)
 	{
@@ -886,7 +872,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param string $Type Entity type
 	 * @param int $Id Entity identificator.
-	 * @return boolean
+	 * @return bool
 	 */
 	public function DeleteEntity($Type, $Id)
 	{
@@ -912,7 +898,7 @@ class CoreModule extends AApiModule
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if ($Login !== '')
 		{
@@ -943,13 +929,13 @@ class CoreModule extends AApiModule
 	 * @param string $Login New login for channel.
 	 * @param string $Description New description for channel.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if ($ChannelId > 0)
 		{
@@ -982,13 +968,13 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param int $iChannelId Identificator of channel to delete.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function DeleteChannel($iChannelId)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 
 		if ($iChannelId > 0)
 		{
@@ -1019,7 +1005,7 @@ class CoreModule extends AApiModule
 	 */
 	public function GetTenantList()
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$aTenants = $this->oApiTenantsManager->getTenantList();
 		$aItems = array();
@@ -1093,13 +1079,13 @@ class CoreModule extends AApiModule
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function CreateTenant($ChannelId, $Name, $Description = '')
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
@@ -1129,12 +1115,12 @@ class CoreModule extends AApiModule
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
 	 * @param int $ChannelId Identificator of the new tenant channel.
-	 * @return boolean
+	 * @return bool
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -1170,12 +1156,12 @@ class CoreModule extends AApiModule
 	 * Deletes tenant.
 	 * 
 	 * @param int $TenantId Identificator of tenant to delete.
-	 * @return boolean
+	 * @return bool
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function DeleteTenant($TenantId)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -1237,9 +1223,9 @@ class CoreModule extends AApiModule
 	 * @return int|false
 	 * @throws \System\Exceptions\ClientException
 	 */
-	public function CreateUser($TenantId, $Name, $Role = \EUserRole::PowerUser)
+	public function CreateUser($TenantId, $Name, $Role = \EUserRole::NormalUser)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
 		if (!empty($TenantId) && !empty($Name))
 		{
@@ -1269,12 +1255,12 @@ class CoreModule extends AApiModule
 	 * @param string $UserName New user name.
 	 * @param int $TenantId Identificator of tenant that will contain the user.
 	 * @param int $Role New user role.
-	 * @return boolean
+	 * @return bool
 	 * @throws \System\Exceptions\ClientException
 	 */
 	public function UpdateUser($UserId, $UserName = '', $TenantId = 0, $Role = -1)
 	{
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
 		if ($UserId > 0)
 		{
@@ -1311,7 +1297,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param int $UserId User identificator.
 	 * 
-	 * @return boolean
+	 * @return bool
 	 * 
 	 * @throws \System\Exceptions\ClientException
 	 */
@@ -1319,7 +1305,7 @@ class CoreModule extends AApiModule
 	{
 		$bResult = false;
 		
-		$this->checkAdminAccess();
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
 		if (!empty($UserId))
 		{
