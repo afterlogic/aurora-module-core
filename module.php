@@ -582,28 +582,29 @@ class CoreModule extends AApiModule
 	public function GetAppData()
 	{
 		$oUser = \CApi::getAuthenticatedUser();
-		return !empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin ? array(
+		$aSettings = array(
 			'SiteName' => \CApi::GetSettingsConf('SiteName'),
-			'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
-			'DBHost' => \CApi::GetSettingsConf('DBHost'),
-			'DBName' => \CApi::GetSettingsConf('DBName'),
-			'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
 			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
 			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
 			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
 			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
-			'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
-			'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
-			'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
-			'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
-			'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel')
-		) : array(
-			'SiteName' => \CApi::GetSettingsConf('SiteName'),
-			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
-			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
-			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
-			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage')
+			'EUserRole' => (new \EUserRole)->getMap(),
 		);
+		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
+		{
+			$aSettings = array_merge($aSettings, array(
+				'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
+				'DBHost' => \CApi::GetSettingsConf('DBHost'),
+				'DBName' => \CApi::GetSettingsConf('DBName'),
+				'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
+				'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
+				'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
+				'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
+				'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
+				'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel'),
+			));
+		}
+		return $aSettings;
 	}
 	
 	/**
