@@ -1261,7 +1261,14 @@ class CoreModule extends AApiModule
 	 */
 	public function UpdateUser($UserId, $UserName = '', $TenantId = 0, $Role = -1)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		if (!empty($UserName) && empty($TenantId) && $Role === -1 && $UserId === \CApi::getAuthenticatedUserId())
+		{
+			\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		}
+		else
+		{
+			\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		}
 		
 		if ($UserId > 0)
 		{
