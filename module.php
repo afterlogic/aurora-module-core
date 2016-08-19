@@ -12,25 +12,6 @@ class CoreModule extends AApiModule
 		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
 	);
 
-	/***** static functions *****/
-	/**
-	 * @ignore
-	 * @return bool
-	 */
-	public static function deleteTree($dir)
-	{
-		$files = array_diff(scandir($dir), array('.','..'));
-			
-		foreach ($files as $file)
-		{
-			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
-		}
-		
-		return rmdir($dir);
-	}
-	/***** static functions *****/
-	
-	/***** private functions *****/
 	/**
 	 * Initializes Core Module.
 	 */
@@ -61,6 +42,26 @@ class CoreModule extends AApiModule
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 	}
 	
+	/***** static functions *****/
+	/**
+	 * @ignore
+	 * @return bool
+	 */
+	public static function deleteTree($dir)
+	{
+		$files = array_diff(scandir($dir), array('.','..'));
+			
+		foreach ($files as $file)
+		{
+			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
+		}
+		
+		return rmdir($dir);
+	}
+	/***** static functions *****/
+	
+	
+	/***** private functions *****/
 	/**
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
@@ -620,7 +621,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return bool
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
 			$DbPassword = null, $DbName = null, $DbHost = null,
@@ -664,7 +665,7 @@ class CoreModule extends AApiModule
 			}
 			else
 			{
-				throw new \System\Exceptions\ClientException(Errs::UserManager_AccountOldPasswordNotCorrect);
+				throw new \System\Exceptions\AuroraApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
 			}
 		}
 		return $oSettings->Save();
@@ -771,7 +772,7 @@ class CoreModule extends AApiModule
 	 * Logs out authenticated user. Clears session.
 	 * 
 	 * @return bool
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function Logout()
 	{	
@@ -782,7 +783,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\Auth\Notifications::IncorrentAuthToken);
+			throw new \System\Exceptions\AuroraApiException(\Auth\Notifications::IncorrentAuthToken);
 		}
 
 		return true;
@@ -894,7 +895,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return int New channel identificator.
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
@@ -918,7 +919,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 	}
 	
@@ -931,7 +932,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return bool
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
@@ -957,7 +958,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -970,7 +971,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return bool
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function DeleteChannel($iChannelId)
 	{
@@ -987,7 +988,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1001,7 +1002,7 @@ class CoreModule extends AApiModule
 	 *		*string* **Name** Tenant name
 	 * }
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function GetTenantList()
 	{
@@ -1081,7 +1082,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return bool
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateTenant($ChannelId, $Name, $Description = '')
 	{
@@ -1102,7 +1103,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1116,7 +1117,7 @@ class CoreModule extends AApiModule
 	 * @param string $Description New tenant description.
 	 * @param int $ChannelId Identificator of the new tenant channel.
 	 * @return bool
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
@@ -1146,7 +1147,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1157,7 +1158,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param int $TenantId Identificator of tenant to delete.
 	 * @return bool
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function DeleteTenant($TenantId)
 	{
@@ -1181,7 +1182,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1221,7 +1222,7 @@ class CoreModule extends AApiModule
 	 * @param string $Name New user name.
 	 * @param int $Role New user role.
 	 * @return int|false
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateUser($TenantId, $Name, $Role = \EUserRole::NormalUser)
 	{
@@ -1242,7 +1243,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1256,7 +1257,7 @@ class CoreModule extends AApiModule
 	 * @param int $TenantId Identificator of tenant that will contain the user.
 	 * @param int $Role New user role.
 	 * @return bool
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateUser($UserId, $UserName = '', $TenantId = 0, $Role = -1)
 	{
@@ -1293,7 +1294,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1306,7 +1307,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return bool
 	 * 
-	 * @throws \System\Exceptions\ClientException
+	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function DeleteUser($UserId = 0)
 	{
@@ -1326,7 +1327,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			throw new \System\Exceptions\ClientException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return $bResult;
