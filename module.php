@@ -12,6 +12,25 @@ class CoreModule extends AApiModule
 		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
 	);
 
+	/***** static functions *****/
+	/**
+	 * @ignore
+	 * @return bool
+	 */
+	public static function deleteTree($dir)
+	{
+		$files = array_diff(scandir($dir), array('.','..'));
+			
+		foreach ($files as $file)
+		{
+			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
+		}
+		
+		return rmdir($dir);
+	}
+	/***** static functions *****/
+	
+	/***** private functions *****/
 	/**
 	 * Initializes Core Module.
 	 */
@@ -42,26 +61,6 @@ class CoreModule extends AApiModule
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 	}
 	
-	/***** static functions *****/
-	/**
-	 * @ignore
-	 * @return bool
-	 */
-	public static function deleteTree($dir)
-	{
-		$files = array_diff(scandir($dir), array('.','..'));
-			
-		foreach ($files as $file)
-		{
-			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
-		}
-		
-		return rmdir($dir);
-	}
-	/***** static functions *****/
-	
-	
-	/***** private functions *****/
 	/**
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
