@@ -436,6 +436,8 @@ class CoreModule extends AApiModule
 	 */
 	public function UpdateUserObject($oUser)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		
 		$this->oApiUsersManager->updateUser($oUser);
 	}
 	
@@ -447,6 +449,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetUser($iUserId = 0)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oUser = $this->oApiUsersManager->getUserById((int) $iUserId);
 		
 		return $oUser ? $oUser : null;
@@ -459,6 +463,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetAdminUser()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oUser = new \CUser('Core', array());
 		$oUser->iId = -1;
 		$oUser->Role = \EUserRole::SuperAdmin;
@@ -475,6 +481,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetTenantById($iIdTenant)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
 
 		return $oTenant ? $oTenant : null;
@@ -487,6 +495,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetDefaultGlobalTenant()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
 		
 		return $oTenant ? $oTenant : null;
@@ -502,6 +512,8 @@ class CoreModule extends AApiModule
 	 */
 	public function DoServerInitializations()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Customer);
+		
 		$iUserId = \CApi::getAuthenticatedUserId();
 
 		$bResult = false;
@@ -571,6 +583,8 @@ class CoreModule extends AApiModule
 	 */
 	public function Ping()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		return 'Pong';
 	}	
 	
@@ -581,7 +595,10 @@ class CoreModule extends AApiModule
 	 */
 	public function GetAppData()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oUser = \CApi::getAuthenticatedUser();
+		
 		$aSettings = array(
 			'SiteName' => \CApi::GetSettingsConf('SiteName'),
 			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
@@ -590,6 +607,7 @@ class CoreModule extends AApiModule
 			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
 			'EUserRole' => (new \EUserRole)->getMap(),
 		);
+		
 		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
 		{
 			$aSettings = array_merge($aSettings, array(
@@ -604,6 +622,7 @@ class CoreModule extends AApiModule
 				'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel'),
 			));
 		}
+		
 		return $aSettings;
 	}
 	
@@ -679,6 +698,8 @@ class CoreModule extends AApiModule
 	 */
 	public function SetMobile($Mobile)
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
 		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
 	}	
@@ -776,7 +797,10 @@ class CoreModule extends AApiModule
 	 */
 	public function Logout()
 	{	
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$mAuthToken = \CApi::getAuthenticatedUserAuthToken();
+		
 		if ($mAuthToken !== false)
 		{
 			\CApi::UserSession()->Delete($mAuthToken);
@@ -1030,6 +1054,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetTenantIdByName($TenantName = '')
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$iTenantId = $this->oApiTenantsManager->getTenantIdByName((string) $TenantName);
 
 		return $iTenantId ? $iTenantId : null;
@@ -1042,6 +1068,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetTenantName()
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
 		$sTenant = '';
 		$sAuthToken = $this->oHttp->GetPost('AuthToken', '');
 		if (!empty($sAuthToken))
@@ -1203,6 +1231,8 @@ class CoreModule extends AApiModule
 	 */
 	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'Name', $OrderType = \ESortOrder::ASC, $Search = '')
 	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
 		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
 		$aUsers = array();
 		foreach($aResults as $oUser)
@@ -1311,9 +1341,9 @@ class CoreModule extends AApiModule
 	 */
 	public function DeleteUser($UserId = 0)
 	{
-		$bResult = false;
-		
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
+		$bResult = false;
 		
 		if (!empty($UserId))
 		{
