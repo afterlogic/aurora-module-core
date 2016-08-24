@@ -449,7 +449,7 @@ class CoreModule extends AApiModule
 	 */
 	public function GetUser($iUserId = 0)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
 		
 		$oUser = $this->oApiUsersManager->getUserById((int) $iUserId);
 		
@@ -463,7 +463,7 @@ class CoreModule extends AApiModule
 	 */
 	public function GetAdminUser()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
 		$oUser = new \CUser('Core', array());
 		$oUser->iId = -1;
