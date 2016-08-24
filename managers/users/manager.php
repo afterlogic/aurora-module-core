@@ -5,7 +5,6 @@
 /**
  * CApiUsersManager class summary
  * 
- * @api
  * @package Users
  */
 class CApiCoreUsersManager extends AApiManager
@@ -28,7 +27,6 @@ class CApiCoreUsersManager extends AApiManager
 	/**
 	 * Retrieves information on particular WebMail Pro user. 
 	 * 
-	 * @api
 	 * @todo not used
 	 * 
 	 * @param int $iUserId User identifier.
@@ -83,8 +81,6 @@ class CApiCoreUsersManager extends AApiManager
 	/**
 	 * Obtains list of information about users for specific domain. Domain identifier is used for look up.
 	 * The answer contains information only about default account of founded user.
-	 * 
-	 * @api
 	 * 
 	 * @param int $iOffset
 	 * @param int $iLimit
@@ -149,8 +145,6 @@ class CApiCoreUsersManager extends AApiManager
 	/**
 	 * Determines how many users are in particular domain, with optional filtering. Domain identifier is used for look up.
 	 * 
-	 * @api
-	 * 
 	 * @param int $iDomainId Domain identifier.
 	 * @param string $sSearchDesc = '' If not empty, only users matching this pattern are counted.
 	 * 
@@ -190,8 +184,6 @@ class CApiCoreUsersManager extends AApiManager
 	/**
 	 * Determines how many users are in particular tenant. Tenant identifier is used for look up.
 	 * 
-	 * @api
-	 * 
 	 * @param int $iTenantId Tenant identifier.
 	 * 
 	 * @return int | false
@@ -212,8 +204,6 @@ class CApiCoreUsersManager extends AApiManager
 
 	/**
 	 * Calculates total number of users registered in WebMail Pro.
-	 * 
-	 * @api
 	 * 
 	 * @return int
 	 */
