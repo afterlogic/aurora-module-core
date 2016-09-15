@@ -589,7 +589,7 @@ class CoreModule extends AApiModule
 	}	
 	
 	/**
-	 * Obtaines module settings for authenticated user.
+	 * Obtaines list of module settings for authenticated user.
 	 * 
 	 * @return array
 	 */
