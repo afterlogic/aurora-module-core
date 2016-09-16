@@ -12,8 +12,11 @@ class CoreModule extends AApiModule
 		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
 	);
 
+	/***** private functions *****/
 	/**
 	 * Initializes Core Module.
+	 * 
+	 * @ignore
 	 */
 	public function init() {
 		
@@ -42,26 +45,6 @@ class CoreModule extends AApiModule
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 	}
 	
-	/***** static functions *****/
-	/**
-	 * @ignore
-	 * @return bool
-	 */
-	public static function deleteTree($dir)
-	{
-		$files = array_diff(scandir($dir), array('.','..'));
-			
-		foreach ($files as $file)
-		{
-			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
-		}
-		
-		return rmdir($dir);
-	}
-	/***** static functions *****/
-	
-	
-	/***** private functions *****/
 	/**
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
@@ -190,6 +173,23 @@ class CoreModule extends AApiModule
 	}
 	/***** private functions *****/
 	
+	/***** static functions *****/
+	/**
+	 * @ignore
+	 * @return bool
+	 */
+	public static function deleteTree($dir)
+	{
+		$files = array_diff(scandir($dir), array('.','..'));
+			
+		foreach ($files as $file)
+		{
+			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
+		}
+		
+		return rmdir($dir);
+	}
+	/***** static functions *****/
 	
 	/***** public functions *****/
 	/**
@@ -502,7 +502,6 @@ class CoreModule extends AApiModule
 		return $oTenant ? $oTenant : null;
 	}
 	/***** public functions *****/
-	
 	
 	/***** public functions might be called with web API *****/
 	/**
@@ -1362,6 +1361,5 @@ class CoreModule extends AApiModule
 
 		return $bResult;
 	}
-
 	/***** public functions might be called with web API *****/
 }
