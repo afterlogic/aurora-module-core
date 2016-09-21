@@ -1,2 +1,2 @@
 # aurora-module-core
-System module who provide core functionality such as User management, Tenants management
+System module that provides core functionality such as User management, Tenants management
