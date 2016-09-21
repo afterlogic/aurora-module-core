@@ -1086,10 +1086,10 @@ class CoreModule extends AApiModule
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$sTenant = '';
-		$sAuthToken = $this->oHttp->GetPost('AuthToken', '');
+		$sAuthToken = \CApi::getAutToken();
 		if (!empty($sAuthToken))
 		{
-			$iUserId = \CApi::getAuthenticatedUserId($sAuthToken);
+			$iUserId = \CApi::getAuthenticatedUserId();
 			if ($iUserId !== false && $iUserId > 0)
 			{
 				$oUser = $this->GetUser($iUserId);
