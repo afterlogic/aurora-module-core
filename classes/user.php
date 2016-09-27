@@ -34,8 +34,8 @@
  * @property string $EmailNotification
  * @property string $PasswordResetHash
  *
- * @package Users
- * @subpackage Classes
+ * @package Classes
+ * @subpackage Users
  */
 class CUser extends AEntity
 {

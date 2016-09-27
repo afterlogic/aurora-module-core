@@ -8,8 +8,8 @@
  * @property string $Password
  * @property string $Description
  *
- * @package Channels
- * @subpackage Classes
+ * @package Classes
+ * @subpackage Channels
  */
 class CChannel extends AEntity
 {

@@ -6,8 +6,8 @@
  * @property int $IdTenant
  * @property string $UrlIdentifier
  *
- * @package UserGroups
- * @subpackage Classes
+ * @package Classes
+ * @subpackage UserGroups
  */
 class CUserGroup extends AEntity
 {

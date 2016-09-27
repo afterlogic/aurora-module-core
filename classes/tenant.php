@@ -47,8 +47,8 @@
  * @property string $CalendarNotificationEmailAccount
  * @property string $InviteNotificationEmailAccount
  *
- * @package Tenants
- * @subpackage Classes
+ * @package Classes
+ * @subpackage Tenants
  */
 //class CTenant extends api_AContainer
 

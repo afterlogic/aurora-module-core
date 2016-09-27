@@ -15,8 +15,8 @@
  * @property string $TranslatedScopes
  * @property bool $HasApiKey
  *
- * @package Tenants
- * @subpackage Classes
+ * @package Classes
+ * @subpackage Tenants
  */
 class CTenantSocials extends api_AContainer
 {
