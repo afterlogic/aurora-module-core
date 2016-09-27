@@ -42,7 +42,6 @@ class CApiCoreUsersManager extends AApiManager
 			if (is_numeric($iUserId))
 			{
 				$iUserId = (int) $iUserId;
-				CApi::Plugin()->RunHook('api-get-user-by-id-precall', array(&$iUserId, &$oUser));
 				if (null === $oUser)
 				{
 					$oUser = $this->oEavManager->getEntityById($iUserId);
@@ -62,8 +61,6 @@ class CApiCoreUsersManager extends AApiManager
 						$oUser = null;
 					}
 				}
-				
-				CApi::Plugin()->RunHook('api-change-user-by-id', array(&$oUser));
 			}
 			else
 			{
