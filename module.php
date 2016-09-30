@@ -1248,7 +1248,7 @@ class CoreModule extends AApiModule
 	 */
 	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'Name', $OrderType = \ESortOrder::ASC, $Search = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
 		$aUsers = array();
@@ -1256,6 +1256,7 @@ class CoreModule extends AApiModule
 		{
 			$aUsers[] = array(
 				'Id' => $oUser->iId,
+				'UUID' => $oUser->sUUID,
 				'Name' => $oUser->Name
 			);
 		}
