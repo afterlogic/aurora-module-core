@@ -523,6 +523,43 @@ class CoreModule extends AApiModule
 	
 	/***** public functions might be called with web API *****/
 	/**
+	 * @api {post} ?/Api/ DoServerInitializations
+	 * @apiName DoServerInitializations
+	 * @apiGroup Core
+	 * @apiDescription Does some pending actions to be executed when you log in.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DoServerInitializations} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DoServerInitializations',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if server initializations were made successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DoServerInitializations',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DoServerInitializations',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Does some pending actions to be executed when you log in.
 	 * 
 	 * @return bool
@@ -594,6 +631,43 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ Ping
+	 * @apiName Ping
+	 * @apiGroup Core
+	 * @apiDescription Method is used for checking internet connection.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=Ping} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Ping',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {string} Result Just a string to indicate that connection to backend is working.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Ping',
+	 *	Result: 'Pong'
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Ping',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Method is used for checking internet connection.
 	 * 
 	 * @return 'Pong'
@@ -605,6 +679,43 @@ class CoreModule extends AApiModule
 		return 'Pong';
 	}	
 	
+	/**
+	 * @api {post} ?/Api/ GetAppData
+	 * @apiName GetAppData
+	 * @apiGroup Core
+	 * @apiDescription Obtaines list of module settings for authenticated user.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetAppData} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAppData',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if server initializations were made successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAppData',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAppData',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Obtaines list of module settings for authenticated user.
 	 * 
@@ -644,6 +755,55 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ UpdateSettings
+	 * @apiName UpdateSettings
+	 * @apiGroup Core
+	 * @apiDescription Updates specified settings if super administrator is authenticated.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=UpdateSettings} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **LicenseKey** *string* Value of license key.<br>
+	 * &emsp; **DbLogin** *string* Database login.<br>
+	 * &emsp; **DbPassword** *string* Database password.<br>
+	 * &emsp; **DbName** *string* Database name.<br>
+	 * &emsp; **DbHost** *string* Database host.<br>
+	 * &emsp; **AdminLogin** *string* Login for super administrator.<br>
+	 * &emsp; **Password** *string* Current password for super administrator.<br>
+	 * &emsp; **NewPassword** *string* New password for super administrator.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateSettings',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value"}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if settings were updated successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateSettings',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateSettings',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Updates specified settings if super administrator is authenticated.
 	 * 
 	 * @param string $LicenseKey Value of license key.
@@ -654,9 +814,7 @@ class CoreModule extends AApiModule
 	 * @param string $AdminLogin Login for super administrator.
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
-	 * 
 	 * @return bool
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
@@ -722,6 +880,43 @@ class CoreModule extends AApiModule
 	}	
 	
 	/**
+	 * @api {post} ?/Api/ CreateTables
+	 * @apiName CreateTables
+	 * @apiGroup Core
+	 * @apiDescription Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=CreateTables} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTables',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if tables was created successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTables',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTables',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
 	 * 
 	 * @return bool
@@ -781,6 +976,51 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ TestDbConnection
+	 * @apiName TestDbConnection
+	 * @apiGroup Core
+	 * @apiDescription Tests connection to database with specified credentials.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=TestDbConnection} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **DbLogin** *string* Database login.<br>
+	 * &emsp; **DbName** *string* Database name.<br>
+	 * &emsp; **DbHost** *string* Database host.<br>
+	 * &emsp; **DbPassword** *string* Database password.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'TestDbConnection',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value"}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'TestDbConnection',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'TestDbConnection',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Tests connection to database with specified credentials.
 	 * 
 	 * @param string $DbLogin Database login.
@@ -807,6 +1047,43 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ Logout
+	 * @apiName Logout
+	 * @apiGroup Core
+	 * @apiDescription Logs out authenticated user. Clears session.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=Logout} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Logout',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if logout was successful.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Logout',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Logout',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Logs out authenticated user. Clears session.
 	 * 
 	 * @return bool
@@ -831,6 +1108,48 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ GetEntityList
+	 * @apiName GetEntityList
+	 * @apiGroup Core
+	 * @apiDescription Returns entity list.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetEntityList} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Type** *string* Entities type.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntityList',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: "Tenant"}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {mixed} Result Object in case of success, otherwise - false.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntityList',
+	 *	Result: [{Id: 123, UUID: '', Name: 'name_value123'}, {Id: 124, UUID: '', Name: 'name_value124'}]
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntityList',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Returns entity list.
 	 * 
 	 * @param string $Type Entities type.
@@ -848,6 +1167,49 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetEntity
+	 * @apiName GetEntity
+	 * @apiGroup Core
+	 * @apiDescription Returns entity.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetEntity} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Type** *string* Entity type.<br>
+	 * &emsp; **Id** *int* Entity identificator.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: "User", Id: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {mixed} Result Object in case of success, otherwise - false.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntity',
+	 *	Result: {Name: 'name_value', Role: 2}
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Returns entity.
 	 * 
@@ -867,6 +1229,57 @@ class CoreModule extends AApiModule
 		return null;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ CreateEntity
+	 * @apiName CreateEntity
+	 * @apiGroup Core
+	 * @apiDescription Creates entity.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=CreateEntity} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Type** *string* Entity type.<br>
+	 * &emsp; **Data** *array* Entity data which fields depend on entity type.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: "Tenant", Data: {Name: "tenant_name_value", Description: "description_value"}}'
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: "User", Data: {Name: "user_name_value", Role: 2}}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if entity was created successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Creates entity.
 	 * 
@@ -891,6 +1304,57 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ UpdateEntity
+	 * @apiName UpdateEntity
+	 * @apiGroup Core
+	 * @apiDescription Updates entity.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=UpdateEntity} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Type** *string* Entity type.<br>
+	 * &emsp; **Data** *array* Entity data.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: 'Tenant', Data: {Id: 123, Name: 'tenant_name_value', Description: ''}}'
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: 'User', Data: {Id: 123, Name: 'user_name_value', Role: 2}}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if entity was updated successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Updates entity.
 	 * 
 	 * @param string $Type Entity type.
@@ -909,6 +1373,49 @@ class CoreModule extends AApiModule
 		return false;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ DeleteEntity
+	 * @apiName DeleteEntity
+	 * @apiGroup Core
+	 * @apiDescription Deletes entity.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteEntity} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Type** *string* Entity type.<br>
+	 * &emsp; **Id** *int* Entity identificator.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteEntity',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Type: 'Tenant', Id: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if entity was deleted successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteEntity',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Deletes entity.
 	 * 
@@ -929,13 +1436,54 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ CreateChannel
+	 * @apiName CreateChannel
+	 * @apiGroup Core
+	 * @apiDescription Creates channel with specified login and description.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=CreateChannel} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Login** *string* New channel login.<br>
+	 * &emsp; **Description** *string* New channel description.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateChannel',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Login: 'channel_login_value', Description: 'channel_description_value'}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {mixed} Result New channel identificator in case of success, otherwise - false.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateChannel',
+	 *	Result: 123
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Creates channel with specified login and description.
 	 * 
 	 * @param string $Login New channel login.
 	 * @param string $Description New channel description.
-	 * 
 	 * @return int New channel identificator.
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateChannel($Login, $Description = '')
@@ -965,14 +1513,56 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ UpdateChannel
+	 * @apiName UpdateChannel
+	 * @apiGroup Core
+	 * @apiDescription Updates channel.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=UpdateChannel} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **ChannelId** *int* Channel identificator.<br>
+	 * &emsp; **Login** *string* New login for channel.<br>
+	 * &emsp; **Description** *string* New description for channel.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateChannel',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{ChannelId: 123, Login: 'new_channel_login_value', Description: 'new_channel_description_value'}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if channel was updated successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateChannel',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Updates channel.
 	 * 
 	 * @param int $ChannelId Channel identificator.
 	 * @param string $Login New login for channel.
 	 * @param string $Description New description for channel.
-	 * 
 	 * @return bool
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
@@ -1006,21 +1596,61 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ DeleteChannel
+	 * @apiName DeleteChannel
+	 * @apiGroup Core
+	 * @apiDescription Deletes channel.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteChannel} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **ChannelId** *int* Identificator of channel to delete.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteChannel',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{ChannelId: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if channel was deleted successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteChannel',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Deletes channel.
 	 * 
-	 * @param int $iChannelId Identificator of channel to delete.
-	 * 
+	 * @param int $ChannelId Identificator of channel to delete.
 	 * @return bool
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function DeleteChannel($iChannelId)
+	public function DeleteChannel($ChannelId)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 
-		if ($iChannelId > 0)
+		if ($ChannelId > 0)
 		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($iChannelId);
+			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
 			
 			if ($oChannel)
 			{
@@ -1035,6 +1665,43 @@ class CoreModule extends AApiModule
 		return false;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetTenantList
+	 * @apiName GetTenantList
+	 * @apiGroup Core
+	 * @apiDescription Obtains tenant list if super administrator is authenticated.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetTenantList} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantList',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {array} Result List of tenants.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantList',
+	 *	Result: [{Id: 123, Name: 'name_value'}]
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantList',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Obtains tenant list if super administrator is authenticated.
 	 * 
@@ -1064,6 +1731,48 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ GetTenantIdByName
+	 * @apiName GetTenantIdByName
+	 * @apiGroup Core
+	 * @apiDescription Returns tenant identificator by tenant name.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetTenantIdByName} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **TenantName** *string* Tenant name.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantIdByName',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{TenantName: 'tenant_name_value'}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {mixed} Result Tenant identificator in case of success, otherwise - false.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantIdByName',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantIdByName',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Returns tenant identificator by tenant name.
 	 * 
 	 * @param string $TenantName Tenant name.
@@ -1078,6 +1787,43 @@ class CoreModule extends AApiModule
 		return $iTenantId ? $iTenantId : null;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetTenantName
+	 * @apiName GetTenantName
+	 * @apiGroup Core
+	 * @apiDescription Returns current tenant name.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetTenantName} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantName',
+	 *	AuthToken: 'token_value'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Tenant name for authenticated user.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantName',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantName',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Returns current tenant name.
 	 * 
@@ -1119,14 +1865,56 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ CreateTenant
+	 * @apiName CreateTenant
+	 * @apiGroup Core
+	 * @apiDescription Creates tenant.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=CreateTenant} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **ChannelId** *int* Identificator of channel new tenant belongs to.<br>
+	 * &emsp; **Name** *string* New tenant name.<br>
+	 * &emsp; **Description** *string* New tenant description.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTenant',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{ChannelId: 123, Name: 'name_value', Description: 'description_value'}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if tenant was created successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTenant',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Creates tenant.
 	 * 
 	 * @param int $ChannelId Identificator of channel new tenant belongs to.
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
-	 * 
 	 * @return bool
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateTenant($ChannelId, $Name, $Description = '')
@@ -1154,6 +1942,51 @@ class CoreModule extends AApiModule
 		return false;
 	}
 	
+	/**
+	 * @api {post} ?/Api/ UpdateTenant
+	 * @apiName UpdateTenant
+	 * @apiGroup Core
+	 * @apiDescription Updates tenant.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=UpdateTenant} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **TenantId** *int* Identificator of tenant to update.<br>
+	 * &emsp; **Name** *string* New tenant name.<br>
+	 * &emsp; **Description** *string* New tenant description.<br>
+	 * &emsp; **ChannelId** *int* Identificator of the new tenant channel.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateTenant',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{TenantId: 123, Name: 'name_value', Description: 'description_value', ChannelId: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if tenant was updated successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateTenant',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Updates tenant.
 	 * 
@@ -1199,6 +2032,48 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ DeleteTenant
+	 * @apiName DeleteTenant
+	 * @apiGroup Core
+	 * @apiDescription Deletes tenant.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteTenant} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **TenantId** *int* Identificator of tenant to delete.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenant',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{TenantId: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if tenant was deleted successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenant',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Deletes tenant.
 	 * 
 	 * @param int $TenantId Identificator of tenant to delete.
@@ -1234,6 +2109,52 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ GetUserList
+	 * @apiName GetUserList
+	 * @apiGroup Core
+	 * @apiDescription Returns user list.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetUserList} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Offset** *int* Offset of user list.<br>
+	 * &emsp; **Limit** *int* Limit of result user list.<br>
+	 * &emsp; **OrderBy** *string* Name of field order by.<br>
+	 * &emsp; **OrderType** *int* Order type.<br>
+	 * &emsp; **Search** *string* Search string.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUserList',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{Offset: 0, Limit: 0, OrderBy: '', OrderType: 0, Search: 0}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {array} Result List of users.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUserList',
+	 *	Result: [{Id: 123, Name: 'user123_name'}, {Id: 124, Name: 'user124_name'}]
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUserList',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Returns user list.
 	 * 
 	 * @param int $Offset Offset of user list.
@@ -1263,6 +2184,50 @@ class CoreModule extends AApiModule
 		return $aUsers;
 	}
 
+	/**
+	 * @api {post} ?/Api/ CreateUser
+	 * @apiName CreateUser
+	 * @apiGroup Core
+	 * @apiDescription Creates user.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=CreateUser} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **TenantId** *int* Identificator of tenant that will contain new user.<br>
+	 * &emsp; **Name** *string* New user name.<br>
+	 * &emsp; **Role** *int* New user role.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateUser',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{TenantId: 123, Name: 'name_value', Role: 2}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {mixed} Result User identificator in case of success, otherwise - false.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateUser',
+	 *	Result: 123
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'CreateUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Creates user.
 	 * 
@@ -1297,6 +2262,51 @@ class CoreModule extends AApiModule
 		return false;
 	}
 
+	/**
+	 * @api {post} ?/Api/ UpdateUser
+	 * @apiName UpdateUser
+	 * @apiGroup Core
+	 * @apiDescription Updates user.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=UpdateUser} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *int* Identificator of user to update.<br>
+	 * &emsp; **UserName** *string* New user name.<br>
+	 * &emsp; **TenantId** *int* Identificator of tenant that will contain the user.<br>
+	 * &emsp; **Role** *int* New user role.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateUser',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{UserId: 123, UserName: 'name_value', TenantId: 123, Role: 2}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if user was updated successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateUser',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'UpdateUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Updates user.
 	 * 
@@ -1349,12 +2359,52 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ DeleteUser
+	 * @apiName DeleteUser
+	 * @apiGroup Core
+	 * @apiDescription Deletes user.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteUser} Method Method name.
+	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *int* User identificator.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUser',
+	 *	AuthToken: 'token_value',
+	 *	Parameters: '{UserId: 123}'
+	 * }
+	 * 
+	 * @apiSuccess {string} Module Module name.
+	 * @apiSuccess {string} Method Method name.
+	 * @apiSuccess {bool} Result Indicates if user was deleted successfully.
+	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUser',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Deletes user.
 	 * 
 	 * @param int $UserId User identificator.
-	 * 
 	 * @return bool
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function DeleteUser($UserId = 0)
