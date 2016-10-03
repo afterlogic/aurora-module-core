@@ -658,14 +658,6 @@ class CoreModule extends AApiModule
 	 *	Method: 'Ping',
 	 *	Result: 'Pong'
 	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'Ping',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
 	 */
 	/**
 	 * Method is used for checking internet connection.
@@ -698,14 +690,14 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if server initializations were made successfully.
+	 * @apiSuccess {mixed} Result List of module settings in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetAppData',
-	 *	Result: true
+	 *	Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -780,7 +772,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateSettings',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value"}'
+	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -997,7 +989,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'TestDbConnection',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value"}'
+	 *	Parameters: '{ DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1126,19 +1118,19 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: "Tenant"}'
+	 *	Parameters: '{ Type: "Tenant" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Object in case of success, otherwise - false.
+	 * @apiSuccess {mixed} Result Array of objects in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
-	 *	Result: [{Id: 123, UUID: '', Name: 'name_value123'}, {Id: 124, UUID: '', Name: 'name_value124'}]
+	 *	Result: [{ Id: 123, UUID: "", Name: "name_value123" }, { Id: 124, UUID: "", Name: "name_value124" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1187,19 +1179,19 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'GetEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: "User", Id: 123}'
+	 *	Parameters: '{ Type: "User", Id: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Object in case of success, otherwise - false.
+	 * @apiSuccess {mixed} Result Object in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntity',
-	 *	Result: {Name: 'name_value', Role: 2}
+	 *	Result: { Name: "name_value", Role: 2 }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1249,7 +1241,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: "Tenant", Data: {Name: "tenant_name_value", Description: "description_value"}}'
+	 *	Parameters: '{ Type: "Tenant", Data: { Name: "name_value", Description: "description_value" } }'
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1257,7 +1249,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: "User", Data: {Name: "user_name_value", Role: 2}}'
+	 *	Parameters: '{ Type: "User", Data: { Name: "name_value", Role: 2 } }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1323,7 +1315,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: 'Tenant', Data: {Id: 123, Name: 'tenant_name_value', Description: ''}}'
+	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, Name: "name_value", Description: "description_value" } }'
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1331,7 +1323,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: 'User', Data: {Id: 123, Name: 'user_name_value', Role: 2}}'
+	 *	Parameters: '{ Type: "User", Data: { Id: 123, Name: "name_value", Role: 2 } }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1393,7 +1385,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'DeleteEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Type: 'Tenant', Id: 123}'
+	 *	Parameters: '{ Type: "Tenant", Id: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1455,12 +1447,12 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateChannel',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Login: 'channel_login_value', Description: 'channel_description_value'}'
+	 *	Parameters: '{ Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result New channel identificator in case of success, otherwise - false.
+	 * @apiSuccess {mixed} Result New channel identificator in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
@@ -1533,7 +1525,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateChannel',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ChannelId: 123, Login: 'new_channel_login_value', Description: 'new_channel_description_value'}'
+	 *	Parameters: '{ ChannelId: 123, Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1614,7 +1606,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'DeleteChannel',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ChannelId: 123}'
+	 *	Parameters: '{ ChannelId: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1684,14 +1676,14 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {array} Result List of tenants.
+	 * @apiSuccess {mixed} Result List of tenants in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetTenantList',
-	 *	Result: [{Id: 123, Name: 'name_value'}]
+	 *	Result: [{ Id: 123, Name: "name_value" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1709,7 +1701,6 @@ class CoreModule extends AApiModule
 	 *		*int* **Id** Tenant identificator
 	 *		*string* **Name** Tenant name
 	 * }
-	 * 
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function GetTenantList()
@@ -1749,19 +1740,19 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'GetTenantIdByName',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{TenantName: 'tenant_name_value'}'
+	 *	Parameters: '{ TenantName: "name_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Tenant identificator in case of success, otherwise - false.
+	 * @apiSuccess {mixed} Result Tenant identificator in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetTenantIdByName',
-	 *	Result: true
+	 *	Result: 123
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1806,14 +1797,14 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Tenant name for authenticated user.
+	 * @apiSuccess {mixed} Result Tenant name for authenticated user in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetTenantName',
-	 *	Result: true
+	 *	Result: 'TenantName'
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1885,7 +1876,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateTenant',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ChannelId: 123, Name: 'name_value', Description: 'description_value'}'
+	 *	Parameters: '{ ChannelId: 123, Name: "name_value", Description: "description_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1964,7 +1955,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateTenant',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{TenantId: 123, Name: 'name_value', Description: 'description_value', ChannelId: 123}'
+	 *	Parameters: '{ TenantId: 123, Name: "name_value", Description: "description_value", ChannelId: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -2050,7 +2041,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'DeleteTenant',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{TenantId: 123}'
+	 *	Parameters: '{ TenantId: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -2131,19 +2122,19 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'GetUserList',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{Offset: 0, Limit: 0, OrderBy: '', OrderType: 0, Search: 0}'
+	 *	Parameters: '{ Offset: 0, Limit: 0, OrderBy: "", OrderType: 0, Search: 0 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {array} Result List of users.
+	 * @apiSuccess {mixed} Result List of users in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetUserList',
-	 *	Result: [{Id: 123, Name: 'user123_name'}, {Id: 124, Name: 'user124_name'}]
+	 *	Result: [{ Id: 123, Name: 'user123_name' }, { Id: 124, Name: 'user124_name' }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -2205,12 +2196,12 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateUser',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{TenantId: 123, Name: 'name_value', Role: 2}'
+	 *	Parameters: '{ TenantId: 123, Name: "name_value", Role: 2 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
 	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result User identificator in case of success, otherwise - false.
+	 * @apiSuccess {mixed} Result User identificator in case of success, otherwise **false**.
 	 * @apiSuccess {int} [ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
@@ -2284,7 +2275,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateUser',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{UserId: 123, UserName: 'name_value', TenantId: 123, Role: 2}'
+	 *	Parameters: '{ UserId: 123, UserName: "name_value", TenantId: 123, Role: 2 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -2377,7 +2368,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'DeleteUser',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{UserId: 123}'
+	 *	Parameters: '{ UserId: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
