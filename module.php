@@ -2090,7 +2090,7 @@ class CoreModule extends AApiModule
 			
 			if ($oTenant)
 			{
-				$sTenantSpacePath = PSEVEN_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
+				$sTenantSpacePath = AURORA_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
 				
 				if (@is_dir($sTenantSpacePath))
 				{
