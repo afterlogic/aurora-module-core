@@ -1284,13 +1284,9 @@ class CoreModule extends AApiModule
 		switch ($Type)
 		{
 			case 'Tenant':
-				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
-				$iChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
-				return $this->CreateTenant($iChannelId, $Data['Name'], $Data['Description']);
+				return $this->CreateTenant(0, $Data['Name'], $Data['Description']);
 			case 'User':
-				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
-				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
-				return $this->CreateUser($iTenantId, $Data['PublicId'], $Data['Role']);
+				return $this->CreateUser(0, $Data['PublicId'], $Data['Role']);
 		}
 		return false;
 	}
@@ -1908,9 +1904,16 @@ class CoreModule extends AApiModule
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function CreateTenant($ChannelId, $Name, $Description = '')
+	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '')
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		
+		$oSettings =& CApi::GetSettings();
+		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
+		{
+			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
+		}
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
@@ -2229,9 +2232,16 @@ class CoreModule extends AApiModule
 	 * @return int|false
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function CreateUser($TenantId, $PublicId, $Role = \EUserRole::NormalUser)
+	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
+		$oSettings =& CApi::GetSettings();
+		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
+		{
+			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
+			$TenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
+		}
 		
 		if (!empty($TenantId) && !empty($PublicId))
 		{
