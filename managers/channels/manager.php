@@ -72,11 +72,11 @@ class CApiCoreChannelsManager extends AApiManager
 	/**
 	 * @param string $sSearchDesc Default value is empty string
 	 *
-	 * @return int|false
+	 * @return int
 	 */
 	public function getChannelCount($sSearchDesc = '')
 	{
-		$iResult = false;
+		$iResult = 0;
 		try
 		{
 			$aResults = $this->oEavManager->getEntitiesCount('CChannel', 
