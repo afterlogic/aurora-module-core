@@ -70,7 +70,7 @@ class CoreModule extends AApiModule
 	 * @param array $aData {
 	 *		*int* **UserId** Identificator of existing user.
 	 *		*int* **TenantId** Identificator of tenant for creating new user in it.
-	 *		*int* **UserName** New user name.
+	 *		*int* **$PublicId** New user name.
 	 * }
 	 * @param \CUser $oResult
 	 */
@@ -92,10 +92,10 @@ class CoreModule extends AApiModule
 				$oUser->IdTenant = $iTenantId;
 			}
 
-			$sUserName = (isset($aData['UserName'])) ? $aData['UserName'] : '';
-			if ($sUserName)
+			$PublicId = (isset($aData['PublicId'])) ? $aData['PublicId'] : '';
+			if ($PublicId)
 			{
-				$oUser->Name = $sUserName;
+				$oUser->PublicId = $PublicId;
 			}
 				
 			if (!$this->oApiUsersManager->createUser($oUser))
@@ -462,14 +462,14 @@ class CoreModule extends AApiModule
 	/**
 	 * Returns user object.
 	 * 
-	 * @param int $iUserId User identificator.
+	 * @param int $UserId User identificator.
 	 * @return \CUser
 	 */
-	public function GetUser($iUserId = 0)
+	public function GetUser($UserId = 0)
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
 		
-		$oUser = $this->oApiUsersManager->getUserById((int) $iUserId);
+		$oUser = $this->oApiUsersManager->getUserById((int) $UserId);
 		
 		return $oUser ? $oUser : null;
 	}
@@ -486,7 +486,7 @@ class CoreModule extends AApiModule
 		$oUser = new \CUser('Core', array());
 		$oUser->iId = -1;
 		$oUser->Role = \EUserRole::SuperAdmin;
-		$oUser->Name = 'Administrator';
+		$oUser->PublicId = 'Administrator';
 		
 		return $oUser;
 	}
@@ -1130,7 +1130,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
-	 *	Result: [{ Id: 123, UUID: "", Name: "name_value123" }, { Id: 124, UUID: "", Name: "name_value124" }]
+	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1191,7 +1191,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntity',
-	 *	Result: { Name: "name_value", Role: 2 }
+	 *	Result: { PublicId: "PublicId_value", Role: 2 }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1241,7 +1241,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "Tenant", Data: { Name: "name_value", Description: "description_value" } }'
+	 *	Parameters: '{ Type: "Tenant", Data: { PublicId: "PublicId_value", Description: "description_value" } }'
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1249,7 +1249,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "User", Data: { Name: "name_value", Role: 2 } }'
+	 *	Parameters: '{ Type: "User", Data: { PublicId: "PublicId_value", Role: 2 } }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1290,7 +1290,7 @@ class CoreModule extends AApiModule
 			case 'User':
 				$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
 				$iTenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
-				return $this->CreateUser($iTenantId, $Data['Name'], $Data['Role']);
+				return $this->CreateUser($iTenantId, $Data['PublicId'], $Data['Role']);
 		}
 		return false;
 	}
@@ -1315,7 +1315,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, Name: "name_value", Description: "description_value" } }'
+	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, PublicId: "PublicId_value", Description: "description_value" } }'
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1323,7 +1323,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "User", Data: { Id: 123, Name: "name_value", Role: 2 } }'
+	 *	Parameters: '{ Type: "User", Data: { Id: 123, PublicId: "PublicId_value", Role: 2 } }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -1358,9 +1358,9 @@ class CoreModule extends AApiModule
 		switch ($Type)
 		{
 			case 'Tenant':
-				return $this->UpdateTenant($Data['Id'], $Data['Name'], $Data['Description']);
+				return $this->UpdateTenant($Data['Id'], $Data['PublicId'], $Data['Description']);
 			case 'User':
-				return $this->UpdateUser($Data['Id'], $Data['Name'], 0, $Data['Role']);
+				return $this->UpdateUser($Data['Id'], $Data['PublicId'], 0, $Data['Role']);
 		}
 		return false;
 	}
@@ -2134,7 +2134,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetUserList',
-	 *	Result: [{ Id: 123, Name: 'user123_name' }, { Id: 124, Name: 'user124_name' }]
+	 *	Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -2155,10 +2155,10 @@ class CoreModule extends AApiModule
 	 * @param string $Search Search string.
 	 * @return array {
 	 *		*int* **Id** Identificator of user.
-	 *		*string* **Name** User name.
+	 *		*string* **PublicId** User name.
 	 * }
 	 */
-	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'Name', $OrderType = \ESortOrder::ASC, $Search = '')
+	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \ESortOrder::ASC, $Search = '')
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
@@ -2169,7 +2169,8 @@ class CoreModule extends AApiModule
 			$aUsers[] = array(
 				'Id' => $oUser->iId,
 				'UUID' => $oUser->sUUID,
-				'Name' => $oUser->Name
+				'Name' => $oUser->Name,
+				'PublicId' => $oUser->PublicId
 			);
 		}
 		return $aUsers;
@@ -2187,7 +2188,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identificator of tenant that will contain new user.<br>
-	 * &emsp; **Name** *string* New user name.<br>
+	 * &emsp; **PublicId** *string* New user name.<br>
 	 * &emsp; **Role** *int* New user role.<br>
 	 * }
 	 * 
@@ -2196,7 +2197,7 @@ class CoreModule extends AApiModule
 	 *	Module: 'Core',
 	 *	Method: 'CreateUser',
 	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ TenantId: 123, Name: "name_value", Role: 2 }'
+	 *	Parameters: '{ TenantId: 123, PublicId: "PublicId_value", Role: 2 }'
 	 * }
 	 * 
 	 * @apiSuccess {string} Module Module name.
@@ -2223,20 +2224,20 @@ class CoreModule extends AApiModule
 	 * Creates user.
 	 * 
 	 * @param int $TenantId Identificator of tenant that will contain new user.
-	 * @param string $Name New user name.
+	 * @param string $PublicId New user name.
 	 * @param int $Role New user role.
 	 * @return int|false
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function CreateUser($TenantId, $Name, $Role = \EUserRole::NormalUser)
+	public function CreateUser($TenantId, $PublicId, $Role = \EUserRole::NormalUser)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
-		if (!empty($TenantId) && !empty($Name))
+		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = \CUser::createInstance();
 			
-			$oUser->Name = $Name;
+			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
 			$oUser->Role = $Role;
 
@@ -2302,15 +2303,15 @@ class CoreModule extends AApiModule
 	 * Updates user.
 	 * 
 	 * @param int $UserId Identificator of user to update.
-	 * @param string $UserName New user name.
+	 * @param string $PublicId New user name.
 	 * @param int $TenantId Identificator of tenant that will contain the user.
 	 * @param int $Role New user role.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function UpdateUser($UserId, $UserName = '', $TenantId = 0, $Role = -1)
+	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1)
 	{
-		if (!empty($UserName) && empty($TenantId) && $Role === -1 && $UserId === \CApi::getAuthenticatedUserId())
+		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \CApi::getAuthenticatedUserId())
 		{
 			\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		}
@@ -2325,9 +2326,9 @@ class CoreModule extends AApiModule
 			
 			if ($oUser)
 			{
-				if (!empty($UserName))
+				if (!empty($PublicId))
 				{
-					$oUser->Name = $UserName;
+					$oUser->PublicId = $PublicId;
 				}
 				if (!empty($TenantId))
 				{

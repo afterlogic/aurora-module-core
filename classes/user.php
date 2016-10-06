@@ -60,6 +60,7 @@ class CUser extends AEntity
 
 //			'IdUser'							=> array('int', 0), //'id_user'),
 			'Name'								=> array('string', ''),
+			'PublicId'							=> array('string', ''),
 			'IdTenant'							=> array('int', 0),
 			'IsDisabled'						=> array('bool', false),
 			'IdSubscription'					=> array('int', 0), //'id_subscription'),
@@ -262,6 +263,7 @@ class CUser extends AEntity
 	{
 		return array(
 			'Name' => $this->Name,
+			'PublicId' => $this->PublicId,
 			'Role' => $this->Role
 		);
 	}
