@@ -548,24 +548,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if server initializations were made successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if server initializations were made successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DoServerInitializations',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DoServerInitializations',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DoServerInitializations',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DoServerInitializations',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -656,16 +661,19 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {string} Result Just a string to indicate that connection to backend is working.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {string} Result.Result Just a string to indicate that connection to backend is working.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'Ping',
-	 *	Result: 'Pong'
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'Ping',
+	 *		Result: 'Pong'
+	 *	}]
 	 * }
 	 */
 	/**
@@ -697,24 +705,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result List of module settings in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result List of module settings in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetAppData',
-	 *	Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetAppData',
+	 *		Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetAppData',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetAppData',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -784,24 +797,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if settings were updated successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if settings were updated successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateSettings',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateSettings',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateSettings',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateSettings',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -897,24 +915,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if tables was created successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if tables was created successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateTables',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateTables',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateTables',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateTables',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1001,24 +1024,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if test of database connection was successful.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'TestDbConnection',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'TestDbConnection',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'TestDbConnection',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'TestDbConnection',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1064,24 +1092,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if logout was successful.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if logout was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'Logout',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'Logout',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'Logout',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'Logout',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1130,24 +1163,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Type: "Tenant" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Array of objects in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result Array of objects in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntityList',
-	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetEntityList',
+	 *		Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntityList',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetEntityList',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1191,24 +1229,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Type: "User", Id: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Object in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result Object in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntity',
-	 *	Result: { PublicId: "PublicId_value", Role: 2 }
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetEntity',
+	 *		Result: { PublicId: "PublicId_value", Role: 2 }
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetEntity',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1261,24 +1304,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Type: "User", Data: { PublicId: "PublicId_value", Role: 2 } }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if entity was created successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if entity was created successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateEntity',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateEntity',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1331,24 +1379,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Type: "User", Data: { Id: 123, PublicId: "PublicId_value", Role: 2 } }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if entity was updated successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if entity was updated successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateEntity',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateEntity',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateEntity',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1393,24 +1446,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Type: "Tenant", Id: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if entity was deleted successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if entity was deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteEntity',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteEntity',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteEntity',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1455,24 +1513,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result New channel identificator in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result New channel identificator in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateChannel',
-	 *	Result: 123
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateChannel',
+	 *		Result: 123
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateChannel',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1533,24 +1596,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ ChannelId: 123, Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if channel was updated successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if channel was updated successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateChannel',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateChannel',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateChannel',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1614,24 +1682,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ ChannelId: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if channel was deleted successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if channel was deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteChannel',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteChannel',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteChannel',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1679,24 +1752,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result List of tenants in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result List of tenants in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantList',
-	 *	Result: [{ Id: 123, Name: "name_value" }]
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantList',
+	 *		Result: [{ Id: 123, Name: "name_value" }]
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantList',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantList',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1748,24 +1826,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ TenantName: "name_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Tenant identificator in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result Tenant identificator in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantIdByName',
-	 *	Result: 123
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantIdByName',
+	 *		Result: 123
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantIdByName',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantIdByName',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1800,24 +1883,29 @@ class CoreModule extends AApiModule
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result Tenant name for authenticated user in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result Tenant name for authenticated user in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantName',
-	 *	Result: 'TenantName'
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantName',
+	 *		Result: 'TenantName'
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantName',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetTenantName',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1884,24 +1972,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ ChannelId: 123, Name: "name_value", Description: "description_value" }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if tenant was created successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if tenant was created successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateTenant',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateTenant',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateTenant',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateTenant',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -1970,24 +2063,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ TenantId: 123, Name: "name_value", Description: "description_value", ChannelId: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if tenant was updated successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if tenant was updated successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateTenant',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateTenant',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateTenant',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateTenant',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -2056,24 +2154,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ TenantId: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if tenant was deleted successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if tenant was deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteTenant',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteTenant',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteTenant',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteTenant',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -2137,24 +2240,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ Offset: 0, Limit: 0, OrderBy: "", OrderType: 0, Search: 0 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result List of users in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result List of users in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUserList',
-	 *	Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetUserList',
+	 *		Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUserList',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'GetUserList',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -2212,24 +2320,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ TenantId: 123, PublicId: "PublicId_value", Role: 2 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {mixed} Result User identificator in case of success, otherwise **false**.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result User identificator in case of success, otherwise **false**.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateUser',
-	 *	Result: 123
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateUser',
+	 *		Result: 123
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateUser',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'CreateUser',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -2298,24 +2411,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ UserId: 123, UserName: "name_value", TenantId: 123, Role: 2 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if user was updated successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if user was updated successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateUser',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateUser',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateUser',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'UpdateUser',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
@@ -2391,24 +2509,29 @@ class CoreModule extends AApiModule
 	 *	Parameters: '{ UserId: 123 }'
 	 * }
 	 * 
-	 * @apiSuccess {string} Module Module name.
-	 * @apiSuccess {string} Method Method name.
-	 * @apiSuccess {bool} Result Indicates if user was deleted successfully.
-	 * @apiSuccess {int} [ErrorCode] Error code.
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if user was deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteUser',
-	 *	Result: true
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteUser',
+	 *		Result: true
+	 *	}]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteUser',
-	 *	Result: false,
-	 *	ErrorCode: 102
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'DeleteUser',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
 	 * }
 	 */
 	/**
