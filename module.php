@@ -413,6 +413,15 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * 
+	 * @return string
+	 */
+	public function GetVersion()
+	{
+		return \CApi::Version();
+	}
+	
+	/**
 	 * Clears temporary files by cron.
 	 * 
 	 * @ignore
