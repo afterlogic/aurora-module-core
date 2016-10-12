@@ -532,11 +532,14 @@ class CoreModule extends AApiModule
 	
 	/***** public functions might be called with web API *****/
 	/**
+	 * @apiDefine Core Core Module
+	 * System module that provides core functionality such as User management, Tenants management
+	 */
+	
+	/**
 	 * @api {post} ?/Api/ DoServerInitializations
 	 * @apiName DoServerInitializations
 	 * @apiGroup Core
-	 * @apiDefine Core Module
-	 * System module that provides core functionality such as User management, Tenants management
 	 * @apiDescription Does some pending actions to be executed when you log in.
 	 * 
 	 * @apiParam {string=Core} Module Module name.
