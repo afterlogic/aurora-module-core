@@ -689,19 +689,19 @@ class CoreModule extends AApiModule
 	}	
 	
 	/**
-	 * @api {post} ?/Api/ GetAppData
-	 * @apiName GetAppData
+	 * @api {post} ?/Api/ GetSettings
+	 * @apiName GetSettings
 	 * @apiGroup Core
 	 * @apiDescription Obtaines list of module settings for authenticated user.
 	 * 
 	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetAppData} Method Method name.
+	 * @apiParam {string=GetSettings} Method Method name.
 	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetAppData',
+	 *	Method: 'GetSettings',
 	 *	AuthToken: 'token_value'
 	 * }
 	 * 
@@ -715,7 +715,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Result: [{
 	 *		Module: 'Core',
-	 *		Method: 'GetAppData',
+	 *		Method: 'GetSettings',
 	 *		Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 *	}]
 	 * }
@@ -724,7 +724,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Result: [{
 	 *		Module: 'Core',
-	 *		Method: 'GetAppData',
+	 *		Method: 'GetSettings',
 	 *		Result: false,
 	 *		ErrorCode: 102
 	 *	}]
@@ -735,7 +735,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return array
 	 */
-	public function GetAppData()
+	public function GetSettings()
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
