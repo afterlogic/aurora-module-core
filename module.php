@@ -2566,7 +2566,7 @@ class CoreModule extends AApiModule
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
 				$this->broadcastEvent(
 					$this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', 
-					$oUser->iId
+					array($oUser->iId)
 				);
 			}
 		}
