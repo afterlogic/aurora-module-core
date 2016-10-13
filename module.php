@@ -74,37 +74,37 @@ class CoreModule extends AApiModule
 	 * }
 	 * @param \CUser $oResult
 	 */
-	public function onCreateAccount($aData, &$oResult)
+	public function onCreateAccount($TenantId, $UserId, $Login, $Password, &$Result)
 	{
 		$oUser = null;
 		
-		if (isset($aData['UserId']) && (int)$aData['UserId'] > 0)
+		if (isset($UserId) && (int)$UserId > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUserById($aData['UserId']);
+			$oUser = $this->oApiUsersManager->getUserById($UserId);
 		}
 		else
 		{
 			$oUser = \CUser::createInstance();
 			
-			$iTenantId = (isset($aData['TenantId'])) ? (int)$aData['TenantId'] : 0;
-			if ($iTenantId)
+			$TenantId = (isset($TenantId)) ? (int) $TenantId : 0;
+			if ($TenantId)
 			{
-				$oUser->IdTenant = $iTenantId;
+				$oUser->IdTenant = $TenantId;
 			}
-
+/*
 			$PublicId = (isset($aData['PublicId'])) ? $aData['PublicId'] : '';
 			if ($PublicId)
 			{
 				$oUser->PublicId = $PublicId;
 			}
-				
+*/				
 			if (!$this->oApiUsersManager->createUser($oUser))
 			{
 				$oUser = null;
 			}
 		}
 		
-		$oResult = $oUser;
+		$Result = $oUser;
 	}
 	
 	/**
@@ -870,7 +870,12 @@ class CoreModule extends AApiModule
 		}
 		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
 		{
-			$this->broadcastEvent('CheckAccountExists', array($AdminLogin));
+			$this->broadcastEvent(
+				'CheckAccountExists', 
+				array(
+					$AdminLogin
+				)
+			);
 		
 			$oSettings->SetConf('AdminLogin', $AdminLogin);
 		}
@@ -2559,7 +2564,10 @@ class CoreModule extends AApiModule
 			if ($oUser)
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
-				$this->broadcastEvent($this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', array($oUser->iId));
+				$this->broadcastEvent(
+					$this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', 
+					$oUser->iId
+				);
 			}
 		}
 		else
