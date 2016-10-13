@@ -657,13 +657,11 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=Ping} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'Ping',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'Ping'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -701,19 +699,33 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetSettings} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
+	 * @apiParam {string} [AuthToken] Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetSettings',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'GetSettings'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
 	 * @apiSuccess {mixed} Result.Result List of module settings in case of success, otherwise **false**.
+	 * @apiSuccess {string} Result.Result.SiteName Site name.
+	 * @apiSuccess {string} Result.Result.DefaultLanguage Language of interface.
+	 * @apiSuccess {int} Result.Result.DefaultTimeFormat Time format.
+	 * @apiSuccess {string} Result.Result.DefaultDateFormat Date format.
+	 * @apiSuccess {string} Result.Result.AppStyleImage URL of image that is displayed in top left corner of the screen if normal user is authenticated.
+	 * @apiSuccess {object} Result.Result.EUserRole Enumeration with user roles.
+	 * @apiSuccess {string} [Result.Result.LicenseKey] License key is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.DBHost] Database host is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.DBName] Database name is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.DBLogin] Database login is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.EnableEventLogging] Indicates if event logging is enabled. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.LoggingLevel] Value of logging level. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
