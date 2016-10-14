@@ -2578,11 +2578,13 @@ class CoreModule extends AApiModule
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
 				$aArgs = array();
+				$iUserId = 0;
 				$this->broadcastEvent(
 					$this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,
-					$oUser->iId
+					$iUserId
 				);
+				$oUser->iId = $iUserId;
 			}
 		}
 		else
