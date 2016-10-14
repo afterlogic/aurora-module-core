@@ -67,37 +67,37 @@ class CoreModule extends AApiModule
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
 	 * @ignore
-	 * @param array $aData {
+	 * @param array $aArgs {
 	 *		*int* **UserId** Identificator of existing user.
 	 *		*int* **TenantId** Identificator of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
 	 * @param \CUser $oResult
 	 */
-	public function onCreateAccount($TenantId, $UserId, $Login, $Password, &$Result)
+	public function onCreateAccount($Args, &$Result)
 	{
 		$oUser = null;
 		
-		if (isset($UserId) && (int)$UserId > 0)
+		if (isset($Args['UserId']) && (int)$Args['UserId'] > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUserById($UserId);
+			$oUser = $this->oApiUsersManager->getUserById($Args['UserId']);
 		}
 		else
 		{
 			$oUser = \CUser::createInstance();
 			
-			$TenantId = (isset($TenantId)) ? (int) $TenantId : 0;
+			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
 			if ($TenantId)
 			{
 				$oUser->IdTenant = $TenantId;
 			}
-/*
-			$PublicId = (isset($aData['PublicId'])) ? $aData['PublicId'] : '';
+
+			$PublicId = (isset($aArgs['PublicId'])) ? $aArgs['PublicId'] : '';
 			if ($PublicId)
 			{
 				$oUser->PublicId = $PublicId;
 			}
-*/				
+				
 			if (!$this->oApiUsersManager->createUser($oUser))
 			{
 				$oUser = null;
@@ -882,11 +882,12 @@ class CoreModule extends AApiModule
 		}
 		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
 		{
+			$aArgs = array(
+				'Login' => $AdminLogin
+			);
 			$this->broadcastEvent(
 				'CheckAccountExists', 
-				array(
-					$AdminLogin
-				)
+				$aArgs
 			);
 		
 			$oSettings->SetConf('AdminLogin', $AdminLogin);
@@ -2576,9 +2577,11 @@ class CoreModule extends AApiModule
 			if ($oUser)
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
+				$aArgs = array();
 				$this->broadcastEvent(
 					$this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', 
-					array($oUser->iId)
+					$aArgs,
+					$oUser->iId
 				);
 			}
 		}
