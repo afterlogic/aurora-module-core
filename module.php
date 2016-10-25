@@ -1099,6 +1099,93 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ Login
+	 * @apiName Login
+	 * @apiGroup Core
+	 * @apiDescription Broadcasts event Login to other modules, gets responses from them and returns AuthToken.
+	 * 
+	 * @apiParam {string=StandardAuth} Module Module name.
+	 * @apiParam {string=Login} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Login** *string* Account login.<br>
+	 * &emsp; **Password** *string* Account passwors.<br>
+	 * &emsp; **SignMe** *bool* Indicates if it is necessary to remember user between sessions. *optional*<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'Login',
+	 *	Parameters: '{ Login: "login_value", Password: "password_value", SignMe: true }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {mixed} Result.Result Object in case of success, otherwise **false**.
+	 * @apiSuccess {string} Result.Result.AuthToken Auth token.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'Login',
+	 *		Result: {AuthToken: 'token_value'}
+	 *	}]
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Result: [{
+	 *		Module: 'Core',
+	 *		Method: 'Login',
+	 *		Result: false,
+	 *		ErrorCode: 102
+	 *	}]
+	 * }
+	 */
+	/**
+	 * Broadcasts event Login to other modules, gets responses from them and returns AuthToken.
+	 * 
+	 * @param string $Login Account login.
+	 * @param string $Password Account passwors.
+	 * @param bool $SignMe Indicates if it is necessary to remember user between sessions.
+	 * @return array
+	 * @throws \System\Exceptions\AuroraApiException
+	 */
+	public function Login($Login, $Password, $SignMe = 0)
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		
+		$mResult = false;
+		
+		$aArgs = array (
+			'Login' => $Login,
+			'Password' => $Password,
+			'SignMe' => $SignMe
+		);
+		$this->broadcastEvent(
+			'Login', 
+			$aArgs,
+			$mResult
+		);
+		
+		if (is_array($mResult))
+		{
+			$mResult['time'] = $SignMe ? time() + 60 * 60 * 24 * 30 : 0;
+			$sAuthToken = \CApi::UserSession()->Set($mResult);
+			
+			return array(
+				'AuthToken' => $sAuthToken
+			);
+		}
+		
+		throw new \System\Exceptions\AuroraApiException(\System\Notifications::AuthError);
+	}
+	
+	/**
 	 * @api {post} ?/Api/ Logout
 	 * @apiName Logout
 	 * @apiGroup Core
