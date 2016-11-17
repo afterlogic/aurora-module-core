@@ -65,7 +65,10 @@ class CApiCoreTenantsManager extends AApiManager
 				$iOffset,
 				$iLimit,
 				array(
-					'Description' => '%'.$sSearchDesc.'%'
+					'Description' => array(
+						'%'.$sSearchDesc.'%',
+						'LIKE'
+					)
 				),
 				$sOrderBy,
 				$iOrderType
