@@ -1099,6 +1099,23 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * 
+	 * @param type $AuthToken
+	 */
+	public function GetAuthenticatedAccount($AuthToken)
+	{
+		$oAccount = null;
+		$oEavManager = \CApi::GetSystemManager('eav');
+		$aUserInfo = \CApi::getAuthenticatedUserInfo($AuthToken);
+		if (isset($aUserInfo['account']))
+		{
+			$oAccount = $oEavManager->getEntityById((int)$aUserInfo['account']);
+		}
+		
+		return $oAccount;
+	}
+	
+	/**
 	 * @api {post} ?/Api/ Login
 	 * @apiName Login
 	 * @apiGroup Core
@@ -1181,7 +1198,7 @@ class CoreModule extends AApiModule
 				'AuthToken' => $sAuthToken
 			);
 		}
-		
+
 		throw new \System\Exceptions\AuroraApiException(\System\Notifications::AuthError);
 	}
 	
