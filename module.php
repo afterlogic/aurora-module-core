@@ -561,21 +561,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DoServerInitializations',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DoServerInitializations',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DoServerInitializations',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DoServerInitializations',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -672,11 +668,9 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'Ping',
-	 *		Result: 'Pong'
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'Ping',
+	 *	Result: 'Pong'
 	 * }
 	 */
 	/**
@@ -730,21 +724,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetSettings',
-	 *		Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetSettings',
+	 *	Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetSettings',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetSettings',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -822,21 +812,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateSettings',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateSettings',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateSettings',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateSettings',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -946,21 +932,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateTables',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateTables',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateTables',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateTables',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1055,21 +1037,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'TestDbConnection',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'TestDbConnection',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'TestDbConnection',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'TestDbConnection',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1146,21 +1124,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'Login',
-	 *		Result: {AuthToken: 'token_value'}
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'Login',
+	 *	Result: {AuthToken: 'token_value'}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'Login',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'Login',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1227,21 +1201,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'Logout',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'Logout',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'Logout',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'Logout',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1298,21 +1268,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetEntityList',
-	 *		Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetEntityList',
+	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetEntityList',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetEntityList',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1364,21 +1330,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetEntity',
-	 *		Result: { PublicId: "PublicId_value", Role: 2 }
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetEntity',
+	 *	Result: { PublicId: "PublicId_value", Role: 2 }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetEntity',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1439,21 +1401,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateEntity',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateEntity',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1514,21 +1472,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateEntity',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateEntity',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1581,21 +1535,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteEntity',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteEntity',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteEntity',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteEntity',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1648,21 +1598,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateChannel',
-	 *		Result: 123
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateChannel',
+	 *	Result: 123
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateChannel',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1731,21 +1677,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateChannel',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateChannel',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateChannel',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1817,21 +1759,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteChannel',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteChannel',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteChannel',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteChannel',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1887,21 +1825,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantList',
-	 *		Result: [{ Id: 123, Name: "name_value" }]
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantList',
+	 *	Result: [{ Id: 123, Name: "name_value" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantList',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantList',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -1961,21 +1895,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantIdByName',
-	 *		Result: 123
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantIdByName',
+	 *	Result: 123
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantIdByName',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantIdByName',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2018,21 +1948,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantName',
-	 *		Result: 'TenantName'
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantName',
+	 *	Result: 'TenantName'
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetTenantName',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetTenantName',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2107,21 +2033,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateTenant',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateTenant',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateTenant',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2198,21 +2120,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateTenant',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateTenant',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateTenant',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2289,21 +2207,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteTenant',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenant',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteTenant',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenant',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2375,21 +2289,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetUserList',
-	 *		Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetUserList',
+	 *	Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'GetUserList',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'GetUserList',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2455,21 +2365,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateUser',
-	 *		Result: 123
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateUser',
+	 *	Result: 123
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'CreateUser',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'CreateUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2546,21 +2452,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateUser',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateUser',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'UpdateUser',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'UpdateUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
@@ -2644,21 +2546,17 @@ class CoreModule extends AApiModule
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteUser',
-	 *		Result: true
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUser',
+	 *	Result: true
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
-	 *	Result: [{
-	 *		Module: 'Core',
-	 *		Method: 'DeleteUser',
-	 *		Result: false,
-	 *		ErrorCode: 102
-	 *	}]
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
