@@ -594,11 +594,6 @@ class CoreModule extends AApiModule
 			$oApiIntegrator->resetCookies();
 		}
 
-		if ($this->oApiCapabilityManager->isGlobalContactsSupported($iUserId, true))
-		{
-			$bResult = \CApi::ExecuteMethod('Contact::SynchronizeExternalContacts', array('UserId' => $iUserId));
-		}
-
 		$oCacher = \CApi::Cacher();
 
 		$bDoGC = false;
