@@ -205,7 +205,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			//TODO verify logic
 //			$oTenant = $this->oStorage->getTenantById($mTenantId, $bIdIsHash);
-			$oResult = $this->oEavManager->getEntityById($mTenantId);
+			$oResult = $this->oEavManager->getEntity($mTenantId);
 				
 			if ($oResult instanceOf \CTenant)
 			{

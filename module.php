@@ -1082,7 +1082,7 @@ class CoreModule extends AApiModule
 		$aUserInfo = \CApi::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
-			$oAccount = $oEavManager->getEntityById((int)$aUserInfo['account']);
+			$oAccount = $oEavManager->getEntity((int)$aUserInfo['account']);
 		}
 		
 		return $oAccount;

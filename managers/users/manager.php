@@ -44,7 +44,7 @@ class CApiCoreUsersManager extends AApiManager
 				$iUserId = (int) $iUserId;
 				if (null === $oUser)
 				{
-					$oUser = $this->oEavManager->getEntityById($iUserId);
+					$oUser = $this->oEavManager->getEntity($iUserId);
 
 					if ($oUser instanceOf \CUser)
 					{
@@ -227,7 +227,7 @@ class CApiCoreUsersManager extends AApiManager
 	{
 		$bResult = false;
 		
-		$oResult = $this->oEavManager->getEntityById($oUser->iId);
+		$oResult = $this->oEavManager->getEntity($oUser->iId);
 				
 		if ($oResult instanceof \CUser)
 		{

@@ -105,7 +105,7 @@ class CApiCoreChannelsManager extends AApiManager
 		$oChannel = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntityById($iChannelId);
+			$oResult = $this->oEavManager->getEntity($iChannelId);
 			
 			if ($oResult instanceOf \CChannel)
 			{
