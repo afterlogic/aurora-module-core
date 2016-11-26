@@ -1094,7 +1094,7 @@ class CoreModule extends AApiModule
 	 * @apiGroup Core
 	 * @apiDescription Broadcasts event Login to other modules, gets responses from them and returns AuthToken.
 	 * 
-	 * @apiParam {string=StandardAuth} Module Module name.
+	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=Login} Method Method name.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
