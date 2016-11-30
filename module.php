@@ -460,12 +460,13 @@ class CoreModule extends AApiModule
 	 * Updates user by object.
 	 * 
 	 * @param \CUser $oUser
+	 * returns bool
 	 */
 	public function UpdateUserObject($oUser)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
-		$this->oApiUsersManager->updateUser($oUser);
+		return $this->oApiUsersManager->updateUser($oUser);
 	}
 	
 	/**
