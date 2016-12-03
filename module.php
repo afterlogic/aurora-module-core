@@ -485,6 +485,21 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
+	 * Returns user object.
+	 * 
+	 * @param int $UUID User uuid identificator.
+	 * @return \CUser
+	 */
+	public function GetUserByUUID($UUID)
+	{
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
+		
+		$oUser = $this->oApiUsersManager->getUserById($UUID);
+		
+		return $oUser ? $oUser : null;
+	}	
+	
+	/**
 	 * Creates and returns user with super administrator role.
 	 * 
 	 * @return \CUser

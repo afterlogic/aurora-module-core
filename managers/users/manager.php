@@ -39,32 +39,25 @@ class CApiCoreUsersManager extends AApiManager
 		try
 		{
 			
-			if (is_numeric($iUserId))
+			$iUserId = is_numeric($iUserId) ? (int) $iUserId : $iUserId;
+			if (null === $oUser)
 			{
-				$iUserId = (int) $iUserId;
-				if (null === $oUser)
-				{
-					$oUser = $this->oEavManager->getEntity($iUserId);
+				$oUser = $this->oEavManager->getEntity($iUserId);
 
-					if ($oUser instanceOf \CUser)
-					{
-						//TODO method needs to be refactored according to the new system of properties inheritance
+				if ($oUser instanceOf \CUser)
+				{
+					//TODO method needs to be refactored according to the new system of properties inheritance
 //						$oApiDomainsManager = CApi::GetCoreManager('domains');
 //						$oDomain = $oApiDomainsManager->getDefaultDomain();
-						
+
 //						$oUser->setInheritedSettings(array(
 //							'domain' => $oDomain
 //						));
-					}
-					else
-					{
-						$oUser = null;
-					}
 				}
-			}
-			else
-			{
-				throw new CApiBaseException(Errs::Validation_InvalidParameters);
+				else
+				{
+					$oUser = null;
+				}
 			}
 		}
 		catch (CApiBaseException $oException)
