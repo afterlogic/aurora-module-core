@@ -1089,7 +1089,7 @@ class CoreModule extends AApiModule
 	
 	/**
 	 * 
-	 * @param type $AuthToken
+	 * @param string $AuthToken
 	 */
 	public function GetAuthenticatedAccount($AuthToken)
 	{
@@ -1102,6 +1102,18 @@ class CoreModule extends AApiModule
 		}
 		
 		return $oAccount;
+	}
+	
+	/**
+	 * 
+	 * @param string $AuthToken
+	 * @param string $Type
+	 * 
+	 * @return array
+	 */
+	public function GetAccounts($AuthToken, $Type)
+	{
+		return array();
 	}
 	
 	/**
