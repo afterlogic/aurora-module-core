@@ -28,6 +28,7 @@ class CoreModule extends AApiModule
 	
 	protected $aSettingsMap = array(
 		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
+		'GetAccountWithPassword' =>  array(false, 'bool')
 	);
 
 	/***** private functions *****/
@@ -1111,9 +1112,32 @@ class CoreModule extends AApiModule
 	 * 
 	 * @return array
 	 */
-	public function GetAccounts($AuthToken, $Type)
+	public function GetAccounts($AuthToken, $Type = '')
 	{
-		return array();
+		$aArgs = array (
+			'AuthToken' => $AuthToken,
+			'WithPassword' => $this->getConfig('GetAccountWithPassword')
+		);
+		$aResult = array();
+		
+		$this->broadcastEvent(
+			'GetAccounts', 
+			$aArgs,
+			$aResult
+		);		
+		if (!empty($Type))
+		{
+			$aTempResult = array();
+			foreach ($aResult as $aItem)
+			{
+				if ($aItem['Type'] === $Type)
+				{
+					$aTempResult[] = $aItem;
+				}
+			}
+			$aResult = $aTempResult;
+		}
+		return $aResult;
 	}
 	
 	/**
