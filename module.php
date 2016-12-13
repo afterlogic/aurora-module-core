@@ -602,8 +602,6 @@ class CoreModule extends AApiModule
 		
 		$iUserId = \CApi::getAuthenticatedUserId();
 
-		$bResult = false;
-
 		$oApiIntegrator = \CApi::GetSystemManager('integrator');
 
 		if ($iUserId && $oApiIntegrator)
@@ -654,7 +652,7 @@ class CoreModule extends AApiModule
 			\CApi::ExecuteMethod('Helpdesk::ClearAllOnline');
 		}
 
-		return $bResult;
+		return true;
 	}
 	
 	/**
