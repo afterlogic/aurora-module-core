@@ -68,6 +68,16 @@ class CApiCoreUsersManager extends AApiManager
 		return $oUser;
 	}
 
+	public function getUserByPublicId($iUserPublicId)
+	{
+		$aUsers = $this->oEavManager->getEntities('CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \ESortOrder::ASC);
+		if (count($aUsers) > 0)
+		{
+			return $aUsers[0];
+		}
+		return null;
+	}
+
 	/**
 	 * Obtains list of information about users for specific domain. Domain identifier is used for look up.
 	 * The answer contains information only about default account of founded user.

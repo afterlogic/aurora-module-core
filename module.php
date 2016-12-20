@@ -2445,6 +2445,12 @@ class CoreModule extends AApiModule
 		
 		if (!empty($TenantId) && !empty($PublicId))
 		{
+			$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
+			if ($oUser instanceof \CUser)
+			{
+				throw new \System\Exceptions\AuroraApiException(\System\Notifications::UserAlreadyExists);
+			}
+			
 			$oUser = \CUser::createInstance();
 			
 			$oUser->PublicId = $PublicId;
