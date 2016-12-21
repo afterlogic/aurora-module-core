@@ -69,8 +69,8 @@ class CoreModule extends AApiModule
 	 * 
 	 * @ignore
 	 * @param array $aArgs {
-	 *		*int* **UserId** Identificator of existing user.
-	 *		*int* **TenantId** Identificator of tenant for creating new user in it.
+	 *		*int* **UserId** Identifier of existing user.
+	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
 	 * @param \CUser $oResult
@@ -473,7 +473,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Returns user object.
 	 * 
-	 * @param int $UserId User identificator.
+	 * @param int $UserId User identifier.
 	 * @return \CUser
 	 */
 	public function GetUser($UserId = 0)
@@ -488,7 +488,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Returns user object.
 	 * 
-	 * @param int $UUID User uuid identificator.
+	 * @param int $UUID User uuid identifier.
 	 * @return \CUser
 	 */
 	public function GetUserByUUID($UUID)
@@ -518,7 +518,7 @@ class CoreModule extends AApiModule
 	}
 	
 	/**
-	 * Returns tenant object by identificator.
+	 * Returns tenant object by identifier.
 	 * 
 	 * @param int $iIdTenant Tenane id.
 	 * @return \CTenant
@@ -699,7 +699,7 @@ class CoreModule extends AApiModule
 	 * @api {post} ?/Api/ GetSettings
 	 * @apiName GetSettings
 	 * @apiGroup Core
-	 * @apiDescription Obtaines list of module settings for authenticated user.
+	 * @apiDescription Obtains list of module settings for authenticated user.
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetSettings} Method Method name.
@@ -748,7 +748,7 @@ class CoreModule extends AApiModule
 	 * }
 	 */
 	/**
-	 * Obtaines list of module settings for authenticated user.
+	 * Obtains list of module settings for authenticated user.
 	 * 
 	 * @return array
 	 */
@@ -1356,7 +1356,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entity type.<br>
-	 * &emsp; **Id** *int* Entity identificator.<br>
+	 * &emsp; **Id** *int* Entity identifier.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1392,7 +1392,7 @@ class CoreModule extends AApiModule
 	 * Returns entity.
 	 * 
 	 * @param string $Type Entity type.
-	 * @param int $Id Entity identificator.
+	 * @param int $Id Entity identifier.
 	 * @return array
 	 */
 	public function GetEntity($Type, $Id)
@@ -1561,7 +1561,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entity type.<br>
-	 * &emsp; **Id** *int* Entity identificator.<br>
+	 * &emsp; **Id** *int* Entity identifier.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1597,7 +1597,7 @@ class CoreModule extends AApiModule
 	 * Deletes entity.
 	 * 
 	 * @param string $Type Entity type
-	 * @param int $Id Entity identificator.
+	 * @param int $Id Entity identifier.
 	 * @return bool
 	 */
 	public function DeleteEntity($Type, $Id)
@@ -1638,7 +1638,7 @@ class CoreModule extends AApiModule
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result New channel identificator in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result New channel identifier in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
@@ -1661,7 +1661,7 @@ class CoreModule extends AApiModule
 	 * 
 	 * @param string $Login New channel login.
 	 * @param string $Description New channel description.
-	 * @return int New channel identificator.
+	 * @return int New channel identifier.
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
 	public function CreateChannel($Login, $Description = '')
@@ -1701,7 +1701,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **ChannelId** *int* Channel identificator.<br>
+	 * &emsp; **ChannelId** *int* Channel identifier.<br>
 	 * &emsp; **Login** *string* New login for channel.<br>
 	 * &emsp; **Description** *string* New description for channel.<br>
 	 * }
@@ -1738,7 +1738,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Updates channel.
 	 * 
-	 * @param int $ChannelId Channel identificator.
+	 * @param int $ChannelId Channel identifier.
 	 * @param string $Login New login for channel.
 	 * @param string $Description New description for channel.
 	 * @return bool
@@ -1785,7 +1785,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **ChannelId** *int* Identificator of channel to delete.<br>
+	 * &emsp; **ChannelId** *int* Identifier of channel to delete.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1820,7 +1820,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Deletes channel.
 	 * 
-	 * @param int $ChannelId Identificator of channel to delete.
+	 * @param int $ChannelId Identifier of channel to delete.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
@@ -1887,7 +1887,7 @@ class CoreModule extends AApiModule
 	 * Obtains tenant list if super administrator is authenticated.
 	 * 
 	 * @return array {
-	 *		*int* **Id** Tenant identificator
+	 *		*int* **Id** Tenant identifier
 	 *		*string* **Name** Tenant name
 	 * }
 	 * @throws \System\Exceptions\AuroraApiException
@@ -1914,7 +1914,7 @@ class CoreModule extends AApiModule
 	 * @api {post} ?/Api/ GetTenantIdByName
 	 * @apiName GetTenantIdByName
 	 * @apiGroup Core
-	 * @apiDescription Returns tenant identificator by tenant name.
+	 * @apiDescription Returns tenant identifier by tenant name.
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetTenantIdByName} Method Method name.
@@ -1935,7 +1935,7 @@ class CoreModule extends AApiModule
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Tenant identificator in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result Tenant identifier in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
@@ -1954,7 +1954,7 @@ class CoreModule extends AApiModule
 	 * }
 	 */
 	/**
-	 * Returns tenant identificator by tenant name.
+	 * Returns tenant identifier by tenant name.
 	 * 
 	 * @param string $TenantName Tenant name.
 	 * @return int|null
@@ -2057,7 +2057,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **ChannelId** *int* Identificator of channel new tenant belongs to.<br>
+	 * &emsp; **ChannelId** *int* Identifier of channel new tenant belongs to.<br>
 	 * &emsp; **Name** *string* New tenant name.<br>
 	 * &emsp; **Description** *string* New tenant description.<br>
 	 * }
@@ -2094,7 +2094,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Creates tenant.
 	 * 
-	 * @param int $ChannelId Identificator of channel new tenant belongs to.
+	 * @param int $ChannelId Identifier of channel new tenant belongs to.
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
 	 * @return bool
@@ -2143,10 +2143,10 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **TenantId** *int* Identificator of tenant to update.<br>
+	 * &emsp; **TenantId** *int* Identifier of tenant to update.<br>
 	 * &emsp; **Name** *string* New tenant name.<br>
 	 * &emsp; **Description** *string* New tenant description.<br>
-	 * &emsp; **ChannelId** *int* Identificator of the new tenant channel.<br>
+	 * &emsp; **ChannelId** *int* Identifier of the new tenant channel.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -2181,10 +2181,10 @@ class CoreModule extends AApiModule
 	/**
 	 * Updates tenant.
 	 * 
-	 * @param int $TenantId Identificator of tenant to update.
+	 * @param int $TenantId Identifier of tenant to update.
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
-	 * @param int $ChannelId Identificator of the new tenant channel.
+	 * @param int $ChannelId Identifier of the new tenant channel.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
@@ -2233,7 +2233,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **TenantId** *int* Identificator of tenant to delete.<br>
+	 * &emsp; **TenantId** *int* Identifier of tenant to delete.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -2268,7 +2268,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Deletes tenant.
 	 * 
-	 * @param int $TenantId Identificator of tenant to delete.
+	 * @param int $TenantId Identifier of tenant to delete.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
@@ -2356,7 +2356,7 @@ class CoreModule extends AApiModule
 	 * @param int $OrderType Order type.
 	 * @param string $Search Search string.
 	 * @return array {
-	 *		*int* **Id** Identificator of user.
+	 *		*int* **Id** Identifier of user.
 	 *		*string* **PublicId** User name.
 	 * }
 	 */
@@ -2389,7 +2389,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **TenantId** *int* Identificator of tenant that will contain new user.<br>
+	 * &emsp; **TenantId** *int* Identifier of tenant that will contain new user.<br>
 	 * &emsp; **PublicId** *string* New user name.<br>
 	 * &emsp; **Role** *int* New user role.<br>
 	 * }
@@ -2405,7 +2405,7 @@ class CoreModule extends AApiModule
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result User identificator in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result User identifier in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
@@ -2426,7 +2426,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Creates user.
 	 * 
-	 * @param int $TenantId Identificator of tenant that will contain new user.
+	 * @param int $TenantId Identifier of tenant that will contain new user.
 	 * @param string $PublicId New user name.
 	 * @param int $Role New user role.
 	 * @return int|false
@@ -2481,9 +2481,9 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **UserId** *int* Identificator of user to update.<br>
+	 * &emsp; **UserId** *int* Identifier of user to update.<br>
 	 * &emsp; **UserName** *string* New user name.<br>
-	 * &emsp; **TenantId** *int* Identificator of tenant that will contain the user.<br>
+	 * &emsp; **TenantId** *int* Identifier of tenant that will contain the user.<br>
 	 * &emsp; **Role** *int* New user role.<br>
 	 * }
 	 * 
@@ -2519,9 +2519,9 @@ class CoreModule extends AApiModule
 	/**
 	 * Updates user.
 	 * 
-	 * @param int $UserId Identificator of user to update.
+	 * @param int $UserId Identifier of user to update.
 	 * @param string $PublicId New user name.
-	 * @param int $TenantId Identificator of tenant that will contain the user.
+	 * @param int $TenantId Identifier of tenant that will contain the user.
 	 * @param int $Role New user role.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
@@ -2578,7 +2578,7 @@ class CoreModule extends AApiModule
 	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **UserId** *int* User identificator.<br>
+	 * &emsp; **UserId** *int* User identifier.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -2613,7 +2613,7 @@ class CoreModule extends AApiModule
 	/**
 	 * Deletes user.
 	 * 
-	 * @param int $UserId User identificator.
+	 * @param int $UserId User identifier.
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
