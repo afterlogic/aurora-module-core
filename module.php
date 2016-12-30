@@ -81,7 +81,7 @@ class CoreModule extends AApiModule
 		
 		if (isset($Args['UserId']) && (int)$Args['UserId'] > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUserById($Args['UserId']);
+			$oUser = $this->oApiUsersManager->getUser($Args['UserId']);
 		}
 		else
 		{
@@ -473,14 +473,14 @@ class CoreModule extends AApiModule
 	/**
 	 * Returns user object.
 	 * 
-	 * @param int $UserId User identifier.
+	 * @param int|string $UserId User identifier or UUID.
 	 * @return \CUser
 	 */
-	public function GetUser($UserId = 0)
+	public function GetUser($UserId = '')
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
 		
-		$oUser = $this->oApiUsersManager->getUserById((int) $UserId);
+		$oUser = $this->oApiUsersManager->getUser($UserId);
 		
 		return $oUser ? $oUser : null;
 	}
@@ -495,7 +495,7 @@ class CoreModule extends AApiModule
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
 		
-		$oUser = $this->oApiUsersManager->getUserById($UUID);
+		$oUser = $this->oApiUsersManager->getUser($UUID);
 		
 		return $oUser ? $oUser : null;
 	}	
@@ -2539,7 +2539,7 @@ class CoreModule extends AApiModule
 		
 		if ($UserId > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUserById($UserId);
+			$oUser = $this->oApiUsersManager->getUser($UserId);
 			
 			if ($oUser)
 			{
@@ -2625,7 +2625,7 @@ class CoreModule extends AApiModule
 		
 		if (!empty($UserId))
 		{
-			$oUser = $this->oApiUsersManager->getUserById($UserId);
+			$oUser = $this->oApiUsersManager->getUser($UserId);
 			
 			if ($oUser)
 			{

@@ -43,38 +43,16 @@ class CApiCoreUsersManager extends AApiManager
 	/**
 	 * Retrieves information on particular WebMail Pro user. 
 	 * 
-	 * @todo not used
-	 * 
-	 * @param int $iUserId User identifier.
+	 * @param int|string $mUserId User identifier or UUID.
 	 * 
 	 * @return CUser | false
 	 */
-	public function getUserById($iUserId)
+	public function getUser($mUserId)
 	{
-		$oUser = null;
+		$oUser = false;
 		try
 		{
-			
-			$iUserId = is_numeric($iUserId) ? (int) $iUserId : $iUserId;
-			if (null === $oUser)
-			{
-				$oUser = $this->oEavManager->getEntity($iUserId);
-
-				if ($oUser instanceOf \CUser)
-				{
-					//TODO method needs to be refactored according to the new system of properties inheritance
-//						$oApiDomainsManager = CApi::GetCoreManager('domains');
-//						$oDomain = $oApiDomainsManager->getDefaultDomain();
-
-//						$oUser->setInheritedSettings(array(
-//							'domain' => $oDomain
-//						));
-				}
-				else
-				{
-					$oUser = null;
-				}
-			}
+			$oUser = $this->oEavManager->getEntity($mUserId);
 		}
 		catch (CApiBaseException $oException)
 		{
