@@ -93,7 +93,7 @@ class CoreModule extends AApiModule
 				$oUser->IdTenant = $TenantId;
 			}
 
-			$PublicId = (isset($aArgs['PublicId'])) ? $aArgs['PublicId'] : '';
+			$PublicId = (isset($Args['PublicId'])) ? $Args['PublicId'] : '';
 			if ($PublicId)
 			{
 				$oUser->PublicId = $PublicId;
