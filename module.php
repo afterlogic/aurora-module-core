@@ -26,11 +26,6 @@ class CoreModule extends AApiModule
 	
 	public $oApiUsersManager = null;
 	
-	protected $aSettingsMap = array(
-		'LoggingLevel' => array(ELogLevel::Full, 'spec', 'ELogLevel'),
-		'GetAccountWithPassword' =>  array(false, 'bool')
-	);
-
 	/***** private functions *****/
 	/**
 	 * Initializes Core Module.
