@@ -1,4 +1,14 @@
 {
-	"LoggingLevel": ["Full", "spec", "ELogLevel"],
-	"GetAccountWithPassword": true
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"LoggingLevel": [
+		["Full", "spec", "ELogLevel"],
+		"array"
+	],
+	"GetAccountWithPassword": [
+		true,
+		"bool"
+	]
 }
