@@ -33,12 +33,10 @@ class CUserGroup extends AEntity
 
 		$this->__USE_TRIM_IN_STRINGS__ = true;
 		
-		$this->aStaticMap = array(
+		$this->setStaticMap(array(
 			'UrlIdentifier'	=> array('string', ''),
 			'IdTenant'	=> array('string', '')
-		);
-		
-		$this->SetDefaults();
+		));
 	}
 	
 	public static function createInstance($sModule = 'Core')
