@@ -690,29 +690,6 @@ class CoreModule extends AApiModule
 		return 'Pong';
 	}	
 	
-	private function getLanguageList($aSystemList)
-	{
-		$aResultList = [];
-		$aLanguageNames = $this->getConfig('LanguageNames', false);
-		foreach ($aSystemList as $sLanguage) {
-			if (isset($aLanguageNames[$sLanguage]))
-			{
-				$aResultList[] = [
-					'name' => $aLanguageNames[$sLanguage],
-					'value' => $sLanguage
-				];
-			}
-			else
-			{
-				$aResultList[] = [
-					'name' => $sLanguage,
-					'value' => $sLanguage
-				];
-			}
-		}
-		return $aResultList;
-	}
-	
 	/**
 	 * @api {post} ?/Api/ GetSettings
 	 * @apiName GetSettings
@@ -736,8 +713,7 @@ class CoreModule extends AApiModule
 	 * @apiSuccess {string} Result.Result.SiteName Site name.
 	 * @apiSuccess {string} Result.Result.Language Language of interface.
 	 * @apiSuccess {int} Result.Result.TimeFormat Time format.
-	 * @apiSuccess {string} Result.Result.DefaultDateFormat Date format.
-	 * @apiSuccess {string} Result.Result.LogoUrl URL of image that is displayed in top left corner of the screen if normal user is authenticated.
+	 * @apiSuccess {string} Result.Result.DateFormat Date format.
 	 * @apiSuccess {object} Result.Result.EUserRole Enumeration with user roles.
 	 * @apiSuccess {string} [Result.Result.LicenseKey] License key is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBHost] Database host is returned only if super administrator is authenticated.
@@ -754,7 +730,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetSettings',
-	 *	Result: { SiteName: "Aurora Cloud", Language: "English", TimeFormat: 1, DateFormat: "MM/DD/YYYY", LogoUrl: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
+	 *	Result: { SiteName: "Aurora Cloud", Language: "English", TimeFormat: 1, DateFormat: "MM/DD/YYYY", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -786,35 +762,17 @@ class CoreModule extends AApiModule
 		$oSettings =& CApi::GetSettings();
 		
 		$aSettings = array(
-			'AllowChangeSettings' => $this->getConfig('AllowChangeSettings', false),
-			'AllowClientDebug' => $this->getConfig('AllowClientDebug', false),
-			'AllowIosProfile' => $this->getConfig('AllowIosProfile', false),
-			'AllowMobile' => $this->getConfig('AllowMobile', false),
-			'AllowPrefetch' => $this->getConfig('AllowPrefetch', false),
-			'AttachmentSizeLimit' => $this->getConfig('AttachmentSizeLimit', 0),
-			'CustomLogoutUrl' => $this->getConfig('CustomLogoutUrl', ''),
-			'DateFormat' => $oSettings->GetConf('DefaultDateFormat'),
-			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY']),
-			'EntryModule' => $this->getConfig('EntryModule', ''),
+			'DateFormat' => $this->getConfig('DateFormat'),
+			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \EUserRole)->getMap(),
-			'GoogleAnalyticsAccount' => $this->getConfig('GoogleAnalyticsAccount', ''),
-			'IsDemo' => $this->getConfig('IsDemo', false),
-			'IsMailsuite' => $this->getConfig('IsMailsuite', false),
-			'IsMobile' => $this->getConfig('IsMobile', false),
 			'Language' => $oUser ? $oUser->Language : $this->getConf('Language'),
-			'LanguageList' => $this->getLanguageList($oApiIntegrator->getLanguageList()),
+			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
-			'LogoUrl' => $oSettings->GetConf('LogoUrl'),
-			'RedirectToHelpdesk' => $this->getConfig('RedirectToHelpdesk', false),
-			'ShowQuotaBar' => $this->getConfig('ShowQuotaBar', false),
 			'SiteName' => $oSettings->GetConf('SiteName'),
 			'SocialName' => '',
-			'SyncIosAfterLogin' => $this->getConfig('SyncIosAfterLogin', false),
 			'TenantName' => \CApi::getTenantName(),
-			'ThemeList' => $this->getConfig('ThemeList', ['Default']),
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConf('TimeFormat'),
 			'UserId' => \CApi::getAuthenticatedUserId(),
-			'HeaderModulesOrder' => $this->getConfig('HeaderModulesOrder', ['mail', 'contacts', 'files']),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)

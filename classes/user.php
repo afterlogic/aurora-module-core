@@ -27,7 +27,7 @@
  * @property string $Language
  * @property int $DefaultTimeZone
  * @property int $TimeFormat
- * @property string $DefaultDateFormat
+ * @property string $DateFormat
  * @property string $Question1
  * @property string $Question2
  * @property string $Answer1
@@ -91,7 +91,7 @@ class CUser extends AEntity
 
 			'DefaultTimeZone'					=> array('int', 0), //'def_timezone'),
 			'TimeFormat'						=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
-			'DefaultDateFormat'					=> array('string', ''), //'def_date_fmt'),
+			'DateFormat'						=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
 			'ClientTimeZone'					=> array('string', ''), //'client_timezone'),
 
 			'Question1'							=> array('string', ''), //'question_1'),

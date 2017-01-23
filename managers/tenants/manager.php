@@ -575,7 +575,6 @@ class CApiCoreTenantsManager extends AApiManager
 					$this->oSettings->SetConf('Helpdesk/FetcherType', $oTenant->{'HelpDesk::FetcherType'});
 
 					$this->oSettings->SetConf('Common/LoginStyleImage', $oTenant->LoginStyleImage);
-					$this->oSettings->SetConf('Common/LogoUrl', $oTenant->LogoUrl);
 
 					$this->oSettings->SetConf('Helpdesk/FacebookAllow', $oTenant->HelpdeskFacebookAllow);
 					$this->oSettings->SetConf('Helpdesk/FacebookId', $oTenant->HelpdeskFacebookId);
