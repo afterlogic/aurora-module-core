@@ -63,7 +63,7 @@ class CoreModule extends AApiModule
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
 	 * @ignore
-	 * @param array $aArgs {
+	 * @param array $Args {
 	 *		*int* **UserId** Identifier of existing user.
 	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
@@ -690,6 +690,29 @@ class CoreModule extends AApiModule
 		return 'Pong';
 	}	
 	
+	private function getLanguageList($aSystemList)
+	{
+		$aResultList = [];
+		$aLanguageNames = $this->getConfig('LanguageNames', false);
+		foreach ($aSystemList as $sLanguage) {
+			if (isset($aLanguageNames[$sLanguage]))
+			{
+				$aResultList[] = [
+					'name' => $aLanguageNames[$sLanguage],
+					'value' => $sLanguage
+				];
+			}
+			else
+			{
+				$aResultList[] = [
+					'name' => $sLanguage,
+					'value' => $sLanguage
+				];
+			}
+		}
+		return $aResultList;
+	}
+	
 	/**
 	 * @api {post} ?/Api/ GetSettings
 	 * @apiName GetSettings
@@ -711,10 +734,10 @@ class CoreModule extends AApiModule
 	 * @apiSuccess {string} Result.Method Method name.
 	 * @apiSuccess {mixed} Result.Result List of module settings in case of success, otherwise **false**.
 	 * @apiSuccess {string} Result.Result.SiteName Site name.
-	 * @apiSuccess {string} Result.Result.DefaultLanguage Language of interface.
-	 * @apiSuccess {int} Result.Result.DefaultTimeFormat Time format.
+	 * @apiSuccess {string} Result.Result.Language Language of interface.
+	 * @apiSuccess {int} Result.Result.TimeFormat Time format.
 	 * @apiSuccess {string} Result.Result.DefaultDateFormat Date format.
-	 * @apiSuccess {string} Result.Result.AppStyleImage URL of image that is displayed in top left corner of the screen if normal user is authenticated.
+	 * @apiSuccess {string} Result.Result.LogoUrl URL of image that is displayed in top left corner of the screen if normal user is authenticated.
 	 * @apiSuccess {object} Result.Result.EUserRole Enumeration with user roles.
 	 * @apiSuccess {string} [Result.Result.LicenseKey] License key is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBHost] Database host is returned only if super administrator is authenticated.
@@ -731,7 +754,7 @@ class CoreModule extends AApiModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetSettings',
-	 *	Result: { SiteName: "Aurora Cloud", DefaultLanguage: "English", DefaultTimeFormat: 1, DefaultDateFormat: "MM/DD/YYYY", AppStyleImage: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
+	 *	Result: { SiteName: "Aurora Cloud", Language: "English", TimeFormat: 1, DateFormat: "MM/DD/YYYY", LogoUrl: "", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -753,27 +776,59 @@ class CoreModule extends AApiModule
 		
 		$oUser = \CApi::getAuthenticatedUser();
 		
+		$oApiIntegrator = \CApi::GetSystemManager('integrator');
+		$iLastErrorCode = $oApiIntegrator->getLastErrorCode();
+		if (0 < $iLastErrorCode)
+		{
+			$oApiIntegrator->clearLastErrorCode();
+		}
+		
+		$oSettings =& CApi::GetSettings();
+		
 		$aSettings = array(
-			'SiteName' => \CApi::GetSettingsConf('SiteName'),
-			'DefaultLanguage' => \CApi::GetSettingsConf('DefaultLanguage'),
-			'DefaultTimeFormat' => \CApi::GetSettingsConf('DefaultTimeFormat'),
-			'DefaultDateFormat' => \CApi::GetSettingsConf('DefaultDateFormat'),
-			'AppStyleImage' => \CApi::GetSettingsConf('AppStyleImage'),
+			'AllowChangeSettings' => $this->getConfig('AllowChangeSettings', false),
+			'AllowClientDebug' => $this->getConfig('AllowClientDebug', false),
+			'AllowIosProfile' => $this->getConfig('AllowIosProfile', false),
+			'AllowMobile' => $this->getConfig('AllowMobile', false),
+			'AllowPrefetch' => $this->getConfig('AllowPrefetch', false),
+			'AttachmentSizeLimit' => $this->getConfig('AttachmentSizeLimit', 0),
+			'CustomLogoutUrl' => $this->getConfig('CustomLogoutUrl', ''),
+			'DateFormat' => $oSettings->GetConf('DefaultDateFormat'),
+			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY']),
+			'EntryModule' => $this->getConfig('EntryModule', ''),
 			'EUserRole' => (new \EUserRole)->getMap(),
+			'GoogleAnalyticsAccount' => $this->getConfig('GoogleAnalyticsAccount', ''),
+			'IsDemo' => $this->getConfig('IsDemo', false),
+			'IsMailsuite' => $this->getConfig('IsMailsuite', false),
+			'IsMobile' => $this->getConfig('IsMobile', false),
+			'Language' => $oUser ? $oUser->Language : $this->getConf('Language'),
+			'LanguageList' => $this->getLanguageList($oApiIntegrator->getLanguageList()),
+			'LastErrorCode' => $iLastErrorCode,
+			'LogoUrl' => $oSettings->GetConf('LogoUrl'),
+			'RedirectToHelpdesk' => $this->getConfig('RedirectToHelpdesk', false),
+			'ShowQuotaBar' => $this->getConfig('ShowQuotaBar', false),
+			'SiteName' => $oSettings->GetConf('SiteName'),
+			'SocialName' => '',
+			'SyncIosAfterLogin' => $this->getConfig('SyncIosAfterLogin', false),
+			'TenantName' => \CApi::getTenantName(),
+			'ThemeList' => $this->getConfig('ThemeList', ['Default']),
+			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConf('TimeFormat'),
+			'UserId' => \CApi::getAuthenticatedUserId(),
+			'HeaderModulesOrder' => $this->getConfig('HeaderModulesOrder', ['mail', 'contacts', 'files']),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
 		{
 			$aSettings = array_merge($aSettings, array(
-				'LicenseKey' => \CApi::GetSettingsConf('LicenseKey'),
-				'DBHost' => \CApi::GetSettingsConf('DBHost'),
-				'DBName' => \CApi::GetSettingsConf('DBName'),
-				'DBLogin' => \CApi::GetSettingsConf('DBLogin'),
-				'AdminLogin' => \CApi::GetSettingsConf('AdminLogin'),
-				'AdminHasPassword' => !empty(\CApi::GetSettingsConf('AdminPassword')),
-				'EnableLogging' => \CApi::GetSettingsConf('EnableLogging'),
-				'EnableEventLogging' => \CApi::GetSettingsConf('EnableEventLogging'),
-				'LoggingLevel' => \CApi::GetSettingsConf('LoggingLevel'),
+				'LicenseKey' => $oSettings->GetConf('LicenseKey'),
+				'DBHost' => $oSettings->GetConf('DBHost'),
+				'DBName' => $oSettings->GetConf('DBName'),
+				'DBLogin' => $oSettings->GetConf('DBLogin'),
+				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
+				'AdminHasPassword' => !empty($oSettings->GetConf('AdminPassword')),
+				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
+				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
+				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
 			));
 		}
 		
@@ -844,57 +899,76 @@ class CoreModule extends AApiModule
 	 * @return bool
 	 * @throws \System\Exceptions\AuroraApiException
 	 */
-	public function UpdateSettings($LicenseKey = null, $DbLogin = null, 
+	public function UpdateSettings($LicenseKey = null, $DbLogin = null,
 			$DbPassword = null, $DbName = null, $DbHost = null,
-			$AdminLogin = null, $Password = null, $NewPassword = null)
+			$AdminLogin = null, $Password = null, $NewPassword = null,
+			$Language = null, $TimeFormat = null)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
+		$oUser = \CApi::getAuthenticatedUser();
 		$oSettings =& CApi::GetSettings();
-		if ($LicenseKey !== null)
+		if ($oUser->Role === \EUserRole::SuperAdmin)
 		{
-			$oSettings->SetConf('LicenseKey', $LicenseKey);
+			if ($LicenseKey !== null)
+			{
+				$oSettings->SetConf('LicenseKey', $LicenseKey);
+			}
+			if ($DbLogin !== null)
+			{
+				$oSettings->SetConf('DBLogin', $DbLogin);
+			}
+			if ($DbPassword !== null)
+			{
+				$oSettings->SetConf('DBPassword', $DbPassword);
+			}
+			if ($DbName !== null)
+			{
+				$oSettings->SetConf('DBName', $DbName);
+			}
+			if ($DbHost !== null)
+			{
+				$oSettings->SetConf('DBHost', $DbHost);
+			}
+			if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
+			{
+				$aArgs = array(
+					'Login' => $AdminLogin
+				);
+				$this->broadcastEvent(
+					'CheckAccountExists', 
+					$aArgs
+				);
+
+				$oSettings->SetConf('AdminLogin', $AdminLogin);
+			}
+			if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
+			{
+				if (empty($oSettings->GetConf('AdminPassword')) || 
+						crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
+				{
+					$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
+				}
+				else
+				{
+					throw new \System\Exceptions\AuroraApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
+				}
+			}
 		}
-		if ($DbLogin !== null)
-		{
-			$oSettings->SetConf('DBLogin', $DbLogin);
-		}
-		if ($DbPassword !== null)
-		{
-			$oSettings->SetConf('DBPassword', $DbPassword);
-		}
-		if ($DbName !== null)
-		{
-			$oSettings->SetConf('DBName', $DbName);
-		}
-		if ($DbHost !== null)
-		{
-			$oSettings->SetConf('DBHost', $DbHost);
-		}
-		if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
-		{
-			$aArgs = array(
-				'Login' => $AdminLogin
-			);
-			$this->broadcastEvent(
-				'CheckAccountExists', 
-				$aArgs
-			);
 		
-			$oSettings->SetConf('AdminLogin', $AdminLogin);
-		}
-		if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
+		if ($oUser->Role === \EUserRole::NormalUser)
 		{
-			if (empty($oSettings->GetConf('AdminPassword')) || 
-					crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
+			if ($Language !== null)
 			{
-				$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
+				$oUser->Language = $Language;
 			}
-			else
+			if ($TimeFormat !== null)
 			{
-				throw new \System\Exceptions\AuroraApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
+				$oUser->TimeFormat = $TimeFormat;
 			}
+			$this->UpdateUserObject($oUser);
 		}
+		
 		return $oSettings->Save();
 	}
 	

@@ -10,5 +10,94 @@
 	"GetAccountWithPassword": [
 		true,
 		"bool"
+	],
+    "AllowChangeSettings": [
+		false,
+		"bool"
+	],
+    "AllowClientDebug": [
+		false,
+		"bool"
+	],
+    "AllowIosProfile": [
+		false,
+		"bool"
+	],
+    "AllowMobile": [
+		false,
+		"bool"
+	],
+    "AllowPrefetch": [
+		false,
+		"bool"
+	],
+    "AttachmentSizeLimit": [
+		0,
+		"int"
+	],
+    "CustomLogoutUrl": [
+		"",
+		"string"
+	],
+    "Language": [
+        "English",
+        "string"
+    ],
+    "DateFormatList": [
+		["DD/MM/YYYY", "MM/DD/YYYY"],
+		"array"
+	],
+    "EntryModule": [
+		"",
+		"string"
+	],
+    "GoogleAnalyticsAccount": [
+		"",
+		"string"
+	],
+    "IsDemo": [
+		false,
+		"bool"
+	],
+    "IsMailsuite": [
+		false,
+		"bool"
+	],
+    "IsMobile": [
+		false,
+		"bool"
+	],
+    "LanguageList": [
+		[],
+		"array"
+	],
+    "LogoUrl": [
+		"",
+		"string"
+	],
+    "RedirectToHelpdesk": [
+		false,
+		"bool"
+	],
+    "ShowQuotaBar": [
+		false,
+		"bool"
+	],
+    "SyncIosAfterLogin": [
+		false,
+		"string"
+	],
+    "TimeFormat": [
+        "F24",
+        "spec",
+        "ETimeFormat"
+    ],
+    "ThemeList": [
+		[],
+		"array"
+	],
+    "HeaderModulesOrder": [
+		[],
+		"array"
 	]
 }

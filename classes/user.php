@@ -20,15 +20,13 @@
  * @property int $IdUser
  * @property int $IdSubscription
  * @property int $ContactsPerPage
- * @property int $AutoRefreshInterval
  * @property int $CreatedTime
  * @property int $LastLogin
  * @property int $LastLoginNow
  * @property int $LoginsCount
- * @property string $DefaultSkin
- * @property string $DefaultLanguage
+ * @property string $Language
  * @property int $DefaultTimeZone
- * @property int $DefaultTimeFormat
+ * @property int $TimeFormat
  * @property string $DefaultDateFormat
  * @property string $Question1
  * @property string $Question2
@@ -70,6 +68,8 @@ class CUser extends AEntity
 		
 		$this->__USE_TRIM_IN_STRINGS__ = true;
 		
+		$oModuleManager = \CApi::GetModuleManager();
+		
 		$this->setStaticMap(array(
 
 //			'IdUser'							=> array('int', 0), //'id_user'),
@@ -81,18 +81,16 @@ class CUser extends AEntity
 			'Role'								=> array('int', \EUserRole::NormalUser),
 
 			'ContactsPerPage'					=> array('int', 0), //'contacts_per_page'),
-			'AutoRefreshInterval'				=> array('int', 0), //'auto_checkmail_interval'),
 
 			'CreatedTime'						=> array('string', ''), //'created_time'), //must be datetime
 			'LastLogin'							=> array('string', ''), //'last_login', true, false), //must be datetime
 			'LastLoginNow'						=> array('string', ''), //'last_login_now', true, false), //must be datetime
 			'LoginsCount'						=> array('int', 0), //'logins_count', true, false),
 
-			'DefaultSkin'						=> array('string', ''), //'def_skin'),
-			'DefaultLanguage'					=> array('string', ''), //'def_lang'),
+			'Language'							=> array('string', $oModuleManager->getModuleConfigValue('Core', 'Language')),
 
 			'DefaultTimeZone'					=> array('int', 0), //'def_timezone'),
-			'DefaultTimeFormat'					=> array('int', 0), //'def_time_fmt'),
+			'TimeFormat'						=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
 			'DefaultDateFormat'					=> array('string', ''), //'def_date_fmt'),
 			'ClientTimeZone'					=> array('string', ''), //'client_timezone'),
 
@@ -123,66 +121,8 @@ class CUser extends AEntity
 		$this->oSubCache = null;
 		
 //		$this->SetUpper(array('Capa'));
-
-		$this->setInheritedSettings($oParams);
-
 	}
 	
-	/**
-	 * temp method
-	 */
-	public function setInheritedSettings($oParams = array())
-	{
-		$oSettings =& CApi::GetSettings();
-		
-		if (isset($oParams['domain']))
-		{
-//				array(
-	//			'IdUser'							=> 0,
-	//			'IdSubscription'					=> 0,
-
-				$this->ContactsPerPage = $oParams['domain']->ContactsPerPage;
-				$this->AutoRefreshInterval = $oParams['domain']->AutoRefreshInterval;
-
-	//			'CreatedTime'						=> 0,
-	//			'LastLogin'							=> 0,
-	//			'LastLoginNow'						=> 0,
-	//			'LoginsCount'						=> 0,
-
-				$this->DefaultSkin = $oParams['domain']->DefaultSkin;
-				$this->DefaultLanguage = $oParams['domain']->DefaultLanguage;
-
-				$this->DefaultTimeZone = 0; // $oDomain->DefaultTimeZone, // TODO
-				$this->DefaultTimeFormat = $oParams['domain']->DefaultTimeFormat;
-				$this->DefaultDateFormat = $oParams['domain']->DefaultDateFormat;
-
-	//			'Question1'							=> '',
-	//			'Question2'							=> '',
-	//			'Answer1'							=> '',
-	//			'Answer2'							=> '',
-
-	//			'SipEnable'							=> true,
-	//			'SipImpi'							=> '',
-	//			'SipPassword'						=> '',
-
-	//			'Capa'								=> '',
-	//			'ClientTimeZone'					=> '',
-	//			'DesktopNotifications'				=> false,
-	//			'EnableOpenPgp'						=> false,
-	//			'AutosignOutgoingEmails'			=> false,
-	//			'CustomFields'						=> '',
-	//
-	//			'FilesEnable'						=> true,
-	//			
-	//			'EmailNotification'					=> '',
-	//			
-	//			'PasswordResetHash'					=> ''
-//			);
-		}
-
-//		CDomain $oDomain
-	}
-
 	/**
 	 * @ignore
 	 * @todo not used

@@ -41,7 +41,7 @@
  * @property bool $AllowChangeAdminPassword
  *
  * @property string $LoginStyleImage
- * @property string $AppStyleImage
+ * @property string $LogoUrl
  * 
  * @property bool $SipAllow
  * @property bool $SipAllowConfiguration
@@ -101,7 +101,7 @@ class CTenant extends AEntity
 			'IsTrial'					=> array('bool', false),
 
 			'LoginStyleImage'			=> array('string', ''),
-			'AppStyleImage'				=> array('string', ''),
+			'LogoUrl'					=> array('string', ''),
 
 //			'SipAllow'					=> array('bool', false, false), //!!$oSettings->GetConf('Sip/AllowSip')
 //			'SipAllowConfiguration'		=> array('bool', false),
