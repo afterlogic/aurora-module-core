@@ -765,13 +765,13 @@ class CoreModule extends AApiModule
 			'DateFormat' => $this->getConfig('DateFormat'),
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \EUserRole)->getMap(),
-			'Language' => $oUser ? $oUser->Language : $this->getConf('Language'),
+			'Language' => $oUser ? $oUser->Language : $this->getConfig('Language'),
 			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
 			'SiteName' => $oSettings->GetConf('SiteName'),
 			'SocialName' => '',
 			'TenantName' => \CApi::getTenantName(),
-			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConf('TimeFormat'),
+			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
 			'UserId' => \CApi::getAuthenticatedUserId(),
 		);
 		
