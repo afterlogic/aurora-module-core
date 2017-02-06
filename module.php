@@ -787,6 +787,7 @@ class CoreModule extends AApiModule
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
+				'ELogLevel' => (new \ELogLevel)->getMap()
 			));
 		}
 		
@@ -927,6 +928,28 @@ class CoreModule extends AApiModule
 			$this->UpdateUserObject($oUser);
 		}
 		
+		return $oSettings->Save();
+	}
+	
+	public function UpdateLoggingSettings($EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		
+		$oSettings =& CApi::GetSettings();
+
+		if ($EnableLogging !== null)
+		{
+			$oSettings->SetConf('EnableLogging', $EnableLogging);
+		}
+		if ($EnableEventLogging !== null)
+		{
+			$oSettings->SetConf('EnableEventLogging', $EnableEventLogging);
+		}
+		if ($LoggingLevel !== null)
+		{
+			$oSettings->SetConf('LoggingLevel', $LoggingLevel);
+		}
+
 		return $oSettings->Save();
 	}
 	
@@ -2672,6 +2695,39 @@ class CoreModule extends AApiModule
 		}
 
 		return $bResult;
+	}
+	
+	public function GetLogFile()
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+	}
+	
+	public function GetLog($iPartSize = 10240, $bEventLogType)
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		
+		$logFilePrefix = $bEventLogType ? 'event-' : '';
+		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+		
+		$logData = '';
+		
+		if (file_exists($sFileName))
+		{
+			$iOffset = filesize($sFileName) - $iPartSize;
+			$logData = file_get_contents($sFileName, false, null, $iOffset, $iPartSize);
+		}
+		
+		return $logData;
+	}
+	
+	public function ClearLog($bEventLogType)
+	{
+		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		
+		$logFilePrefix = $bEventLogType ? 'event-' : '';
+		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+		
+		return \CApi::ClearLog($sFileName);
 	}
 	/***** public functions might be called with web API *****/
 }
