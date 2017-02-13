@@ -2420,7 +2420,7 @@ class CoreModule extends AApiModule
 		{
 			$aUsers[] = array(
 				'Id' => $oUser->iId,
-				'UUID' => $oUser->sUUID,
+				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId
 			);
