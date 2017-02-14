@@ -2697,9 +2697,31 @@ class CoreModule extends AApiModule
 		return $bResult;
 	}
 	
-	public function GetLogFile()
+	public function GetLogFile($bEventLogType)
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		
+		$logFilePrefix = $bEventLogType ? 'event-' : '';
+		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+
+		$mResult = fopen($sFileName, "r");
+
+		if (false !== $mResult && is_resource($mResult)) 
+		{
+			$sContentType = \MailSo\Base\Utils::MimeContentType($sFileName);
+			\CApiResponseManager::OutputHeaders(true, $sContentType, $sFileName);
+
+			if ($sContentType === 'text/plain') 
+			{
+				echo(stream_get_contents($mResult));
+			} 
+			else 
+			{
+				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($mResult);
+			}
+
+			@fclose($mResult);
+		}
 	}
 	
 	public function GetLog($iPartSize = 10240, $bEventLogType)
