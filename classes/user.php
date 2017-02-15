@@ -33,7 +33,6 @@
  * @property string $Answer1
  * @property string $Answer2
  * @property string $Capa
- * @property string $ClientTimeZone
  * @property bool $DesktopNotifications
  * @property bool $EnableOpenPgp
  * @property bool $AutosignOutgoingEmails
@@ -92,7 +91,6 @@ class CUser extends AEntity
 			'DefaultTimeZone'					=> array('int', 0), //'def_timezone'),
 			'TimeFormat'						=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
 			'DateFormat'						=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
-			'ClientTimeZone'					=> array('string', ''), //'client_timezone'),
 
 			'Question1'							=> array('string', ''), //'question_1'),
 			'Question2'							=> array('string', ''), //'question_2'),
