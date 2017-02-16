@@ -137,45 +137,6 @@ class CApiCoreUsersManager extends AApiManager
 	}
 
 	/**
-	 * Determines how many users are in particular domain, with optional filtering. Domain identifier is used for look up.
-	 * 
-	 * @param int $iDomainId Domain identifier.
-	 * @param string $sSearchDesc = '' If not empty, only users matching this pattern are counted.
-	 * 
-	 * @return int | false
-	 */
-	public function getUsersCountForDomain($iDomainId, $sSearchDesc = '')
-	{
-		$mResult = false;
-		try
-		{
-//			$mResult = $this->oStorage->getUsersCountForDomain($iDomainId, $sSearchDesc);
-						
-			$aFilters = array (
-				'IsDefaultAccount' => true,
-				'IdDomain' => $iDomainId
-			);
-			
-			if ($sSearchDesc !== '')
-			{
-				$aFilters['Email'] = '%'.$sSearchDesc.'%';
-				$aFilters['FriendlyName'] = '%'.$sSearchDesc.'%';
-			}
-			
-			//TODO rewrite logic to use corresponding objects
-			$mResult = $this->oEavManager->getEntitiesCount(
-				'CAccount', 
-				$aFilters
-			);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $mResult;
-	}
-
-	/**
 	 * Determines how many users are in particular tenant. Tenant identifier is used for look up.
 	 * 
 	 * @param int $iTenantId Tenant identifier.
