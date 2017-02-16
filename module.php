@@ -505,7 +505,7 @@ class CoreModule extends AApiModule
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
 		$oUser = new \CUser('Core', array());
-		$oUser->iId = -1;
+		$oUser->EntityId = -1;
 		$oUser->Role = \EUserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
 		
@@ -1029,7 +1029,7 @@ class CoreModule extends AApiModule
 				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
 				if (is_array($aChannels) && count($aChannels) === 1)
 				{
-					$iChannelId = $aChannels[0]->iId;
+					$iChannelId = $aChannels[0]->EntityId;
 				}
 				else
 				{
@@ -1731,7 +1731,7 @@ class CoreModule extends AApiModule
 
 			if ($this->oApiChannelsManager->createChannel($oChannel))
 			{
-				return $oChannel->iId;
+				return $oChannel->EntityId;
 			}
 		}
 		else
@@ -1952,7 +1952,7 @@ class CoreModule extends AApiModule
 		foreach ($aTenants as $oTenat)
 		{
 			$aItems[] = array(
-				'Id' => $oTenat->iId,
+				'Id' => $oTenat->EntityId,
 				'Name' => $oTenat->Name
 			);
 		}
@@ -2158,7 +2158,7 @@ class CoreModule extends AApiModule
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
 		{
 			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
-			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->iId : 0;
+			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->EntityId : 0;
 		}
 		
 		if ($Name !== '' && $ChannelId > 0)
@@ -2171,7 +2171,7 @@ class CoreModule extends AApiModule
 
 			if ($this->oApiTenantsManager->createTenant($oTenant))
 			{
-				return $oTenant->iId;
+				return $oTenant->EntityId;
 			}
 		}
 		else
@@ -2419,7 +2419,7 @@ class CoreModule extends AApiModule
 		foreach($aResults as $oUser)
 		{
 			$aUsers[] = array(
-				'Id' => $oUser->iId,
+				'Id' => $oUser->EntityId,
 				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId
@@ -2490,7 +2490,7 @@ class CoreModule extends AApiModule
 		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
 		{
 			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
-			$TenantId = count($aTenants) === 1 ? $aTenants[0]->iId : 0;
+			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
 		if (!empty($TenantId) && !empty($PublicId))
@@ -2509,7 +2509,7 @@ class CoreModule extends AApiModule
 
 			if ($this->oApiUsersManager->createUser($oUser))
 			{
-				return $oUser->iId;
+				return $oUser->EntityId;
 			}
 		}
 		else
@@ -2686,7 +2686,7 @@ class CoreModule extends AApiModule
 					$aArgs,
 					$UserId
 				);
-				$oUser->iId = $UserId;
+				$oUser->EntityId = $UserId;
 			}
 		}
 		else

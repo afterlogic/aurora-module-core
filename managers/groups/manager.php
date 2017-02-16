@@ -77,7 +77,7 @@ class CApiCoreUserGroupsManager extends AApiManager
 			
 			foreach($aResultGroups as $oUserGroup)
 			{
-				$aResult[$oUserGroup->iObjectId] = array(
+				$aResult[$oUserGroup->EntityId] = array(
 					$oUserGroup->UrlIdentifier,
 					$oUserGroup->IdTenant
 				);
@@ -164,7 +164,7 @@ class CApiCoreUserGroupsManager extends AApiManager
 //			{
 //				foreach($aResultChannels as $oObject)
 //				{
-//					if ($oObject->iObjectId !== $oGroup->iObjectId)
+//					if ($oObject->EntityId !== $oGroup->EntityId)
 //					{
 //						$bResult = true;
 //						break;
@@ -265,7 +265,7 @@ class CApiCoreUserGroupsManager extends AApiManager
 		{
 //			$oTenantsApi = $this->oModule->GetManager('tenants');
 //			
-//			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oGroup->iObjectId, true))
+//			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oGroup->EntityId, true))
 //			{
 //				$oException = $oTenantsApi->GetLastException();
 //				if ($oException)
@@ -274,7 +274,7 @@ class CApiCoreUserGroupsManager extends AApiManager
 //				}
 //			}
 
-//			$bResult = $this->oEavManager->deleteObject($oGroup->iObjectId);
+//			$bResult = $this->oEavManager->deleteObject($oGroup->EntityId);
 		}
 		catch (CApiBaseException $oException)
 		{

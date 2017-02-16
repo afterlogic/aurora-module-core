@@ -232,7 +232,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				/* @var $oTenant CTenant */
 				
-				$mTenantId = $oTenant->iId;
+				$mTenantId = $oTenant->EntityId;
 
 				$iFilesUsageInMB = 0;
 				if (0 < strlen($oTenant->FilesUsageInBytes))
@@ -328,7 +328,7 @@ class CApiCoreTenantsManager extends AApiManager
 			$oTenant = $this->getTenantByName($sTenantName);
 			if ($oTenant)
 			{
-				$iResult = $oTenant->iId;
+				$iResult = $oTenant->EntityId;
 			}
 		}
 
@@ -418,7 +418,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				foreach($aResultTenants as $oObject)
 				{
-					if ($oObject->iId !== $oTenant->iId)
+					if ($oObject->EntityId !== $oTenant->EntityId)
 					{
 						$bResult = true;
 						break;
@@ -467,7 +467,7 @@ class CApiCoreTenantsManager extends AApiManager
 				{
 					foreach ($aResultDomains as $oDomain)
 					{
-						$aSortedDomains[$oDomain->iId] = $oDomain->Name;
+						$aSortedDomains[$oDomain->EntityId] = $oDomain->Name;
 					}
 					
 					$mResult = $aSortedDomains;
@@ -523,7 +523,7 @@ class CApiCoreTenantsManager extends AApiManager
 						throw new CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
 					}
 					
-					if ($oTenant->iId)
+					if ($oTenant->EntityId)
 					{
 						$this->oEavManager->saveEntity($oTenant);
 					}
@@ -561,7 +561,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			if ($oTenant->validate())
 			{
-				if ($oTenant->IsDefault && 0 === $oTenant->iId)
+				if ($oTenant->IsDefault && 0 === $oTenant->EntityId)
 				{
 					//TODO remove update settings
 					$this->oSettings->SetConf('Helpdesk/AdminEmailAccount', $oTenant->{'HelpDesk::AdminEmailAccount'});
@@ -609,7 +609,7 @@ class CApiCoreTenantsManager extends AApiManager
 						$iQuota = $oTenant->QuotaInMB;
 						if (0 < $iQuota)
 						{
-							$iSize = $this->getTenantAllocatedSize($oTenant->iId);
+							$iSize = $this->getTenantAllocatedSize($oTenant->EntityId);
 							if ($iSize > $iQuota)
 							{
 								throw new CApiManagerException(Errs::TenantsManager_QuotaLimitExided);
@@ -626,7 +626,7 @@ class CApiCoreTenantsManager extends AApiManager
 					{
 						/* @var $oDomainsApi CApiDomainsManager */
 						$oDomainsApi = CApi::GetSystemManager('domains');
-						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->iId, !$oTenant->IsDisabled))
+						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->EntityId, !$oTenant->IsDisabled))
 						{
 							$oException = $oDomainsApi->GetLastException();
 							if ($oException)
@@ -669,7 +669,7 @@ class CApiCoreTenantsManager extends AApiManager
 	{
 		try
 		{
-			if ($oTenant && 0 < $oTenant->iId)
+			if ($oTenant && 0 < $oTenant->EntityId)
 			{
 				$iNewUsedInMB = (int) round($iNewAllocatedSizeInBytes / (1024 * 1024));
 
@@ -685,7 +685,7 @@ class CApiCoreTenantsManager extends AApiManager
 								$iNewAllocatedSizeInBytes, 
 								$oTenant->getType('FilesUsageInBytes'), 
 								false, 
-								$oTenant->iId
+								$oTenant->EntityId
 							)
 					);
 				}
@@ -755,7 +755,7 @@ class CApiCoreTenantsManager extends AApiManager
 		{
 			foreach ($aTenants as $oTenant)
 			{
-				if (!$oTenant->IsDefault && 0 < $oTenant->iId)
+				if (!$oTenant->IsDefault && 0 < $oTenant->EntityId)
 				{
 					$iResult &= $this->deleteTenant($oTenant);
 				}
@@ -783,7 +783,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				/* @var $oDomainsApi CApiDomainsManager */
 //				$oDomainsApi = CApi::GetCoreManager('domains');
-//				if (!$oDomainsApi->deleteDomainsByTenantId($oTenant->iObjectId, true))
+//				if (!$oDomainsApi->deleteDomainsByTenantId($oTenant->EntityId, true))
 //				{
 //					$oException = $oDomainsApi->GetLastException();
 //					if ($oException)
@@ -792,12 +792,12 @@ class CApiCoreTenantsManager extends AApiManager
 //					}
 //				}
 
-				$bResult = $this->oEavManager->deleteEntity($oTenant->iId);
+				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId);
 				
 				// TODO subscriptions
 				//if ($bResult)
 				//{
-				//	$this->oStorage->deleteTenantSubscriptions($oTenant->iObjectId);
+				//	$this->oStorage->deleteTenantSubscriptions($oTenant->EntityId);
 				//}
 			}
 		}

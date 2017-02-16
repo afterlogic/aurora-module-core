@@ -194,7 +194,7 @@ GROUP BY _settings.id_subscription';
 		$aResult = api_AContainer::DbUpdateArray($oTenant, $this->oHelper);
 
 		$sSql = 'UPDATE %sawm_tenants SET %s WHERE id_tenant = %d';
-		return sprintf($sSql, $this->prefix(), implode(', ', $aResult), $oTenant->iId);
+		return sprintf($sSql, $this->prefix(), implode(', ', $aResult), $oTenant->EntityId);
 	}
 
 	/**
@@ -221,7 +221,7 @@ GROUP BY _settings.id_subscription';
 	public function allocateFileUsage($oTenant, $iAllocatedSizeInBytes)
 	{
 		$sSql = 'UPDATE %sawm_tenants SET files_usage_bytes = %d WHERE id_tenant = %d';
-		return sprintf($sSql, $this->prefix(), abs($iAllocatedSizeInBytes), $oTenant->iId);
+		return sprintf($sSql, $this->prefix(), abs($iAllocatedSizeInBytes), $oTenant->EntityId);
 	}
 
 	/**

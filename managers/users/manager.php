@@ -114,7 +114,7 @@ class CApiCoreUsersManager extends AApiManager
 			
 //			foreach($aResults as $oUser)
 //			{
-//				$aResult[$oUser->iId] = array(
+//				$aResult[$oUser->EntityId] = array(
 //					$oUser->Name,
 ////					$oUser->IsMailingList,
 ////					$oUser->Email,
@@ -185,7 +185,7 @@ class CApiCoreUsersManager extends AApiManager
 	{
 		$bResult = false;
 		
-		$oResult = $this->oEavManager->getEntity($oUser->iId);
+		$oResult = $this->oEavManager->getEntity($oUser->EntityId);
 				
 		if ($oResult instanceof \CUser)
 		{
@@ -206,7 +206,7 @@ class CApiCoreUsersManager extends AApiManager
 //			{
 //				foreach($aResults as $oObject)
 //				{
-//					if ($oObject->iObjectId !== $oUser->iObjectId)
+//					if ($oObject->EntityId !== $oUser->EntityId)
 //					{
 //						$bResult = true;
 //						break;
@@ -309,7 +309,7 @@ class CApiCoreUsersManager extends AApiManager
 		{
 //			if ($oUser->validate())
 //			{
-				if (!$this->oEavManager->deleteEntity($oUser->iId))
+				if (!$this->oEavManager->deleteEntity($oUser->EntityId))
 				{
 					throw new CApiManagerException(Errs::UsersManager_UserDeleteFailed);
 				}

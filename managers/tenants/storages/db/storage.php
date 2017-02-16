@@ -166,7 +166,7 @@ class CApiTenantsDbStorage extends CApiTenantsStorage
 			
 			if ($oTenant !== null)
 			{
-				$oTenant->Socials = $this->getSocials($oTenant->iId);
+				$oTenant->Socials = $this->getSocials($oTenant->EntityId);
 			}
 		}
 
@@ -302,7 +302,7 @@ class CApiTenantsDbStorage extends CApiTenantsStorage
 	public function isTenantExists(CTenant $oTenant)
 	{
 		$bResult = false;
-		$niExceptTenantId = (0 < $oTenant->iId) ? $oTenant->iId : null;
+		$niExceptTenantId = (0 < $oTenant->EntityId) ? $oTenant->EntityId : null;
 
 		if ($this->oConnection->Execute(
 			$this->oCommandCreator->isTenantExists($oTenant->Login, $niExceptTenantId)))
@@ -353,7 +353,7 @@ class CApiTenantsDbStorage extends CApiTenantsStorage
 		if ($this->oConnection->Execute($this->oCommandCreator->createTenant($oTenant)))
 		{
 			$bResult = true;
-			$oTenant->iId = $this->oConnection->GetLastInsertId('awm_tenants', 'id_tenant');
+			$oTenant->EntityId = $this->oConnection->GetLastInsertId('awm_tenants', 'id_tenant');
 		}
 
 		$this->throwDbExceptionIfExist();
@@ -370,10 +370,10 @@ class CApiTenantsDbStorage extends CApiTenantsStorage
 		$bResult = $this->oConnection->Execute($this->oCommandCreator->updateTenant($oTenant));
 		if ($bResult)
 		{
-			$this->deleteSocialsByTenantId($oTenant->iId);
+			$this->deleteSocialsByTenantId($oTenant->EntityId);
 			foreach ($oTenant->Socials as $sKey => $oSocial)
 			{
-				$oSocial->IdTenant = $oTenant->iId;
+				$oSocial->IdTenant = $oTenant->EntityId;
 				$this->createSocial($oSocial);
 			}
 		}

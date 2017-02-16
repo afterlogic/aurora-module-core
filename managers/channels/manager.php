@@ -157,7 +157,7 @@ class CApiCoreChannelsManager extends AApiManager
 			
 			if (isset($aResultChannels[0]) && $aResultChannels[0] instanceOf \CChannel)
 			{
-				$iChannelId = $aResultChannels[0]->iId;
+				$iChannelId = $aResultChannels[0]->EntityId;
 			}
 		}
 		catch (CApiBaseException $oException)
@@ -189,7 +189,7 @@ class CApiCoreChannelsManager extends AApiManager
 			{
 				foreach($aResultChannels as $oObject)
 				{
-					if ($oObject->iId !== $oChannel->iId)
+					if ($oObject->EntityId !== $oChannel->EntityId)
 					{
 						$bResult = true;
 						break;
@@ -293,7 +293,7 @@ class CApiCoreChannelsManager extends AApiManager
 //			$oTenantsApi = CApi::GetCoreManager('tenants');
 			$oTenantsApi = $this->oModule->GetManager('tenants');
 			
-			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oChannel->iId, true))
+			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oChannel->EntityId, true))
 			{
 				$oException = $oTenantsApi->GetLastException();
 				if ($oException)
@@ -302,7 +302,7 @@ class CApiCoreChannelsManager extends AApiManager
 				}
 			}
 
-			$bResult = $this->oEavManager->deleteEntity($oChannel->iId);
+			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId);
 		}
 		catch (CApiBaseException $oException)
 		{
