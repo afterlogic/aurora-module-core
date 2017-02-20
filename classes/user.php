@@ -68,8 +68,6 @@ class CUser extends AEntity
 		$oModuleManager = \CApi::GetModuleManager();
 		
 		$this->setStaticMap(array(
-
-//			'IdUser'							=> array('int', 0), //'id_user'),
 			'Name'								=> array('string', ''),
 			'PublicId'							=> array('string', ''),
 			'IdTenant'							=> array('int', 0),
