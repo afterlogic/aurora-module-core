@@ -112,7 +112,7 @@ class CUser extends AEntity
 		$this->oSubCache = null;
 
 		parent::__construct($sModule);
-		
+
 //		$this->SetUpper(array('Capa'));
 	}
 	
