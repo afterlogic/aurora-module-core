@@ -68,11 +68,7 @@
 
 class CTenant extends AEntity
 {
-	public function __construct($sModule)
-	{
-		parent::__construct(get_class($this), $sModule);
-
-		$this->setStaticMap(array(
+	protected $aStaticMap = array(
 			'IdTenant'					=> array('int', 0),
 			'IdChannel'					=> array('int', 0),
 			'IsDisabled'				=> array('bool', false),
@@ -110,12 +106,8 @@ class CTenant extends AEntity
 			
 //			'Socials'					=> array('array', array(), false), //$this->getDefaultSocials()
 			'CalendarNotificationEmailAccount'	=> array('string', ''),
-			'InviteNotificationEmailAccount'	=> array('string', '')
-		));
-		
-		$this->setInheritedSettings();
-		
-	}
+			'InviteNotificationEmailAccount'	=> array('string', '')		
+	);
 	
 	/**
 	 * temp method
@@ -184,11 +176,6 @@ class CTenant extends AEntity
 //		{
 //			$this->Socials = $this->getDefaultSocials();
 //		}
-	}
-	
-	public static function createInstance($sModule = 'Core')
-	{
-		return new CTenant($sModule);
 	}
 	
 	/**

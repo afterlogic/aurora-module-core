@@ -29,24 +29,11 @@
  */
 class CChannel extends AEntity
 {
-	public function __construct($sModule)
-	{
-		parent::__construct(get_class($this), $sModule);
-
-		$this->setStaticMap(array(
-			'Login'			=> array('string', ''),
-			'Password'		=> array('string', ''),
-			'Description'	=> array('string', '')
-		));
-		
-		//TODO
-//		$this->SetLower(array('Login'));
-	}
-	
-	public static function createInstance($sModule = 'Core')
-	{
-		return new CChannel($sModule);
-	}
+	protected $aStaticMap = array(
+		'Login'			=> array('string', ''),
+		'Password'		=> array('string', ''),
+		'Description'	=> array('string', '')
+	);	
 
 	/**
 	 * @throws CApiValidationException

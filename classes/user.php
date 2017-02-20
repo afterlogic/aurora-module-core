@@ -60,14 +60,11 @@ class CUser extends AEntity
 	 * 
 	 * @return void
 	 */
-	public function __construct($sModule, $oParams)
+	public function __construct($sModule)
 	{
-		//parent::__construct(get_class($this), 'IdUser');
-		parent::__construct(get_class($this), $sModule);
-		
 		$oModuleManager = \CApi::GetModuleManager();
 		
-		$this->setStaticMap(array(
+		$this->aStaticMap = array(
 			'Name'								=> array('string', ''),
 			'PublicId'							=> array('string', ''),
 			'IdTenant'							=> array('int', 0),
@@ -110,9 +107,11 @@ class CUser extends AEntity
 			'EmailNotification'					=> array('string', ''), //'email_notification'),
 			
 			'PasswordResetHash'					=> array('string', ''), //'password_reset_hash')
-		));
+		);
 
 		$this->oSubCache = null;
+
+		parent::__construct($sModule);
 		
 //		$this->SetUpper(array('Capa'));
 	}
@@ -190,7 +189,7 @@ class CUser extends AEntity
 	 * 
 	 * @return bool
 	 */
-	public function isValid()
+	public function validate()
 	{
 		switch (true)
 		{
@@ -200,11 +199,6 @@ class CUser extends AEntity
 		}
 
 		return true;
-	}
-	
-	public static function createInstance($sModule = 'Core', $oParams = array())
-	{
-		return new CUser($sModule, $oParams);
 	}
 	
 	public function toResponseArray()

@@ -27,20 +27,10 @@
  */
 class CUserGroup extends AEntity
 {
-	public function __construct($sModule)
-	{
-		parent::__construct(get_class($this), $sModule);
-
-		$this->setStaticMap(array(
-			'UrlIdentifier'	=> array('string', ''),
-			'IdTenant'	=> array('string', '')
-		));
-	}
-	
-	public static function createInstance($sModule = 'Core')
-	{
-		return new CUserGroup($sModule);
-	}
+	protected $aStaticMap = array(
+		'UrlIdentifier'	=> array('string', ''),
+		'IdTenant'	=> array('string', '')
+	);
 
 	/**
 	 * @throws CApiValidationException
