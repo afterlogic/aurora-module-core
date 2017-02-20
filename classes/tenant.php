@@ -66,7 +66,7 @@
  */
 //class CTenant extends api_AContainer
 
-class CTenant extends AEntity
+class CTenant extends CEntity
 {
 	protected $aStaticMap = array(
 			'IdTenant'					=> array('int', 0),

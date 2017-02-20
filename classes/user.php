@@ -48,7 +48,7 @@
  * @package Classes
  * @subpackage Users
  */
-class CUser extends AEntity
+class CUser extends CEntity
 {
 	/**
 	 * @var CSubscription

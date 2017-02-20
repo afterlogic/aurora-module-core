@@ -27,7 +27,7 @@
  * @package Classes
  * @subpackage Channels
  */
-class CChannel extends AEntity
+class CChannel extends CEntity
 {
 	protected $aStaticMap = array(
 		'Login'			=> array('string', ''),

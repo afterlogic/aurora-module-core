@@ -25,7 +25,7 @@
  * @package Classes
  * @subpackage UserGroups
  */
-class CUserGroup extends AEntity
+class CUserGroup extends CEntity
 {
 	protected $aStaticMap = array(
 		'UrlIdentifier'	=> array('string', ''),
