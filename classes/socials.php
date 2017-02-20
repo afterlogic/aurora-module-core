@@ -40,8 +40,6 @@ class CTenantSocials extends api_AContainer
 	{
 		parent::__construct(get_class($this), 'Id');
 
-		$this->__USE_TRIM_IN_STRINGS__ = true;
-
 		$this->SetDefaults(array(
 			'Id'							=> 0,
 			'IdTenant'						=> 0,

@@ -33,8 +33,6 @@ class CChannel extends AEntity
 	{
 		parent::__construct(get_class($this), $sModule);
 
-		$this->__USE_TRIM_IN_STRINGS__ = true;
-		
 		$this->setStaticMap(array(
 			'Login'			=> array('string', ''),
 			'Password'		=> array('string', ''),

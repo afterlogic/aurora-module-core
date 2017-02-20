@@ -65,8 +65,6 @@ class CUser extends AEntity
 		//parent::__construct(get_class($this), 'IdUser');
 		parent::__construct(get_class($this), $sModule);
 		
-		$this->__USE_TRIM_IN_STRINGS__ = true;
-		
 		$oModuleManager = \CApi::GetModuleManager();
 		
 		$this->setStaticMap(array(
