@@ -80,7 +80,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			$oUser = \CUser::createInstance();
+			$oUser = new CUser();
 			
 			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
 			if ($TenantId)
@@ -1720,7 +1720,7 @@ class CoreModule extends AApiModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = \CChannel::createInstance();
+			$oChannel = new CChannel();
 			
 			$oChannel->Login = $Login;
 			
@@ -2163,7 +2163,7 @@ class CoreModule extends AApiModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = \CTenant::createInstance();
+			$oTenant = new CTenant();
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;
@@ -2501,7 +2501,7 @@ class CoreModule extends AApiModule
 				throw new \System\Exceptions\AuroraApiException(\System\Notifications::UserAlreadyExists);
 			}
 			
-			$oUser = \CUser::createInstance();
+			$oUser = new CUser();
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;

@@ -73,36 +73,29 @@ class CApiCoreUsersManager extends AApiManager
 	}
 
 	/**
-	 * Obtains list of information about users for specific domain. Domain identifier is used for look up.
-	 * The answer contains information only about default account of founded user.
-	 * 
+	 * Obtains list of information about users.
 	 * @param int $iOffset
 	 * @param int $iLimit
 	 * @param string $sOrderBy = 'Email'. Field by which to sort.
 	 * @param int $iOrderType = 0
 	 * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
-	 * 
-	 * @return array | false [IdAccount => [IsMailingList, Email, FriendlyName, IsDisabled, IdUser, StorageQuota, LastLogin]]
+	 * @return array | false
 	 */
 	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try
 		{
-//			$aResult = $this->oStorage->getUserList($iDomainId, $iPage, $iUsersPerPage, $sOrderBy, $bAscOrderType, $sSearchDesc);
-			
 			$aFilters =  array();
 			
 			if ($sSearchDesc !== '')
 			{
-//				$aFilters['FriendlyName'] = '%'.$sSearchDesc.'%';
 				$aFilters['Name'] = '%'.$sSearchDesc.'%';
 			}
 				
 			$aResult = $this->oEavManager->getEntities(
 				'CUser', 
 				array(
-//					'IsMailingList', 'Email', 'FriendlyName', 'IsDisabled', 'IdUser', 'StorageQuota', 'LastLogin'
 					'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
 				$iOffset,
@@ -111,21 +104,6 @@ class CApiCoreUsersManager extends AApiManager
 				$sOrderBy,
 				$iOrderType
 			);
-			
-//			foreach($aResults as $oUser)
-//			{
-//				$aResult[$oUser->EntityId] = array(
-//					$oUser->Name,
-////					$oUser->IsMailingList,
-////					$oUser->Email,
-////					$oUser->FriendlyName,
-//					$oUser->IsDisabled,
-////					$oUser->IdUser,
-////					$oUser->StorageQuota,
-//					$oUser->LastLogin,
-//					$oUser->IdTenant
-//				);
-//			}
 
 		}
 		catch (CApiBaseException $oException)

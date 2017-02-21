@@ -23,7 +23,6 @@
  *
  * @package Tenants
  */
-//class CApiTenantsManager extends AApiManagerWithStorage
 class CApiCoreTenantsManager extends AApiManager
 {
 	/**
@@ -124,59 +123,6 @@ class CApiCoreTenantsManager extends AApiManager
 	}
 
 	/**
-	 * @param int $iTenantId
-	 *
-	 * @return int
-	 */
-	public function getTenantAllocatedSize($iTenantId)
-	{
-		//TODO use new logic then Account class will be rewrited
-		return 0;
-		
-		
-		$iResult = 0;
-		if (0 < $iTenantId)
-		{
-			try
-			{
-//				$iResult = $this->oStorage->getTenantAllocatedSize($iTenantId);
-				
-				//$oAccountsApi = CApi::GetCoreManager('users');
-				//TODO move account request to manager of Accounts
-				$aResults = $this->oEavManager->getEntities(
-					'CAccount', 
-					array(
-						'StorageQuota'
-					),
-					0,
-					0,
-					array('IdTenant' => $iTenantId)
-				);
-				
-				if (is_array($aResults))
-				{
-					$iQuotaSum = 0;
-					foreach ($aResults as $oAccount)
-					{
-						$iQuotaSum += $oAccount->StorageQuota;
-					}
-					
-					if ($iQuotaSum > 0)
-					{
-						$iResult = $iQuotaSum / 1024;
-					}
-				}
-			}
-			catch (CApiBaseException $oException)
-			{
-				$this->setLastException($oException);
-			}
-		}
-
-		return $iResult;
-	}
-
-	/**
 	 * @return CTenant
 	 */
 	public function getDefaultGlobalTenant()
@@ -219,40 +165,11 @@ class CApiCoreTenantsManager extends AApiManager
 		$oTenant = null;
 		try
 		{
-			//TODO verify logic
-//			$oTenant = $this->oStorage->getTenantById($mTenantId, $bIdIsHash);
 			$oResult = $this->oEavManager->getEntity($mTenantId);
 				
 			if ($oResult instanceOf \CTenant)
 			{
 				$oTenant = $oResult;
-			}
-			
-			if ($oTenant)
-			{
-				/* @var $oTenant CTenant */
-				
-				$mTenantId = $oTenant->EntityId;
-
-				$iFilesUsageInMB = 0;
-				if (0 < strlen($oTenant->FilesUsageInBytes))
-				{
-					$iFilesUsageInMB = (int) ($oTenant->FilesUsageInBytes / (1024 * 1024));
-				}
-				$oTenant->AllocatedSpaceInMB = $this->getTenantAllocatedSize($mTenantId) + $iFilesUsageInMB;
-
-//				$oTenant->FlushObsolete('AllocatedSpaceInMB');
-
-				$oTenant->FilesUsageInMB = $iFilesUsageInMB;
-//				$oTenant->FlushObsolete('FilesUsageInMB');
-
-				if (0 < $oTenant->QuotaInMB)
-				{
-					$oTenant->FilesUsageDynamicQuotaInMB = $oTenant->QuotaInMB - $oTenant->AllocatedSpaceInMB + $oTenant->FilesUsageInMB;
-					$oTenant->FilesUsageDynamicQuotaInMB = 0 < $oTenant->FilesUsageDynamicQuotaInMB ?
-						$oTenant->FilesUsageDynamicQuotaInMB : 0;
-//					$oTenant->FlushObsolete('FilesUsageDynamicQuotaInMB');
-				}
 			}
 		}
 		catch (CApiBaseException $oException)
@@ -334,64 +251,6 @@ class CApiCoreTenantsManager extends AApiManager
 
 		return 0 < $iResult ? $iResult : false;
 	}
-	
-	
-	/**
-	 * @param int $iDomainId
-	 *
-	 * @return int
-	 */
-	public function getTenantIdByDomainId($iDomainId)
-	{
-		//TODO use DOMAIN Manager for that
-		$iTenantId = 0;
-		try
-		{
-			if (0 < $iDomainId)
-			{
-				$iTenantId = $this->oStorage->getTenantIdByDomainId($iDomainId);
-			}
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		
-		return $iTenantId;
-	}
-
-	/**
-	 * @TODO
-	 * @param int $iIdTenant
-	 * @param bool $bUseCache Default value is **false**.
-	 *
-	 * @return string
-	 */
-	public function getTenantLoginById($iIdTenant, $bUseCache = false)
-	{
-		$sResult = '';
-		try
-		{
-			if (0 < $iIdTenant)
-			{
-				if ($bUseCache && !empty(self::$aTenantNameCache[$iIdTenant]))
-				{
-					return self::$aTenantNameCache[$iIdTenant];
-				}
-
-				$sResult = $this->oStorage->getTenantLoginById($iIdTenant);
-				if ($bUseCache && !empty($sResult))
-				{
-					self::$aTenantNameCache[$iIdTenant] = $sResult;
-				}
-			}
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $sResult;
-	}
 
 	/**
 	 * @param CTenant $oTenant
@@ -431,54 +290,6 @@ class CApiCoreTenantsManager extends AApiManager
 			$this->setLastException($oException);
 		}
 		return $bResult;
-	}
-
-	/**
-	 * @TODO use domains manager
-	 * @param int $iTenantId
-	 *
-	 * @return array|bool
-	 */
-	public function getTenantDomains($iTenantId)
-	{
-		$mResult = false;
-		if (0 < $iTenantId)
-		{
-			try
-			{
-//				$mResult = $this->oStorage->getTenantDomains($iTenantId);
-
-				//TODO move domains request to manager of Domains
-				$aResultDomains = $this->oEavManager->getEntities(
-					'CDomain', 
-					array(
-						'Name'
-					),
-					0,
-					0,
-					array(
-						'IdTenant' => $iTenantId
-					)
-				);
-				
-				$aSortedDomains = array();
-				
-				if (is_array($aResultDomains))
-				{
-					foreach ($aResultDomains as $oDomain)
-					{
-						$aSortedDomains[$oDomain->EntityId] = $oDomain->Name;
-					}
-					
-					$mResult = $aSortedDomains;
-				}
-			}
-			catch (CApiBaseException $oException)
-			{
-				$this->setLastException($oException);
-			}
-		}
-		return $mResult;
 	}
 
 	/**
@@ -559,86 +370,10 @@ class CApiCoreTenantsManager extends AApiManager
 		$bResult = false;
 		try
 		{
-			if ($oTenant->validate())
+			if ($oTenant->validate() && $oTenant->EntityId !== 0)
 			{
-				if ($oTenant->IsDefault && 0 === $oTenant->EntityId)
-				{
-					//TODO remove update settings
-					$this->oSettings->SetConf('Helpdesk/AdminEmailAccount', $oTenant->{'HelpDesk::AdminEmailAccount'});
-					$this->oSettings->SetConf('Helpdesk/ClientIframeUrl', $oTenant->{'HelpDesk::ClientIframeUrl'});
-					$this->oSettings->SetConf('Helpdesk/AgentIframeUrl', $oTenant->{'HelpDesk::AgentIframeUrl'});
-					$this->oSettings->SetConf('Helpdesk/SiteName', $oTenant->{'HelpDesk::SiteName'});
-					$this->oSettings->SetConf('Helpdesk/StyleAllow', $oTenant->{'HelpDesk::StyleAllow'});
-					$this->oSettings->SetConf('Helpdesk/StyleImage', $oTenant->{'HelpDesk::StyleImage'});
-					$this->oSettings->SetConf('Helpdesk/StyleText', $oTenant->{'HelpDesk::StyleText'});
-
-					$this->oSettings->SetConf('Helpdesk/FetcherType', $oTenant->{'HelpDesk::FetcherType'});
-
-					$this->oSettings->SetConf('Common/LoginStyleImage', $oTenant->LoginStyleImage);
-
-					$this->oSettings->SetConf('Helpdesk/FacebookAllow', $oTenant->HelpdeskFacebookAllow);
-					$this->oSettings->SetConf('Helpdesk/FacebookId', $oTenant->HelpdeskFacebookId);
-					$this->oSettings->SetConf('Helpdesk/FacebookSecret', $oTenant->HelpdeskFacebookSecret);
-					$this->oSettings->SetConf('Helpdesk/GoogleAllow', $oTenant->HelpdeskGoogleAllow);
-					$this->oSettings->SetConf('Helpdesk/GoogleId', $oTenant->HelpdeskGoogleId);
-					$this->oSettings->SetConf('Helpdesk/GoogleSecret', $oTenant->HelpdeskGoogleSecret);
-					$this->oSettings->SetConf('Helpdesk/TwitterAllow', $oTenant->HelpdeskTwitterAllow);
-					$this->oSettings->SetConf('Helpdesk/TwitterId', $oTenant->HelpdeskTwitterId);
-					$this->oSettings->SetConf('Helpdesk/TwitterSecret', $oTenant->HelpdeskTwitterSecret);
-
-					$this->oSettings->SetConf('Sip/AllowSip', $oTenant->SipAllow);
-					$this->oSettings->SetConf('Sip/Realm', $oTenant->SipRealm);
-					$this->oSettings->SetConf('Sip/WebsocketProxyUrl', $oTenant->SipWebsocketProxyUrl);
-					$this->oSettings->SetConf('Sip/OutboundProxyUrl', $oTenant->SipOutboundProxyUrl);
-					$this->oSettings->SetConf('Sip/CallerID', $oTenant->SipCallerID);
-
-					$this->oSettings->SetConf('Twilio/AllowTwilio', $oTenant->TwilioAllow);
-					$this->oSettings->SetConf('Twilio/PhoneNumber', $oTenant->TwilioPhoneNumber);
-					$this->oSettings->SetConf('Twilio/AccountSID', $oTenant->TwilioAccountSID);
-					$this->oSettings->SetConf('Twilio/AuthToken', $oTenant->TwilioAuthToken);
-					$this->oSettings->SetConf('Twilio/AppSID', $oTenant->TwilioAppSID);
-					$this->oSettings->SetConf('Common/InvitationEmail', $oTenant->InviteNotificationEmailAccount);
-					$this->oSettings->SetConf('Socials', $oTenant->getSocialsForSettings());
-
-					$bResult = $this->oSettings->SaveToXml();
-				}
-				else
-				{
-					if (null !== $oTenant->QuotaInMB)
-					{
-						$iQuota = $oTenant->QuotaInMB;
-						if (0 < $iQuota)
-						{
-							$iSize = $this->getTenantAllocatedSize($oTenant->EntityId);
-							if ($iSize > $iQuota)
-							{
-								throw new CApiManagerException(Errs::TenantsManager_QuotaLimitExided);
-							}
-						}
-					}
-					
-					if (!$this->oEavManager->saveEntity($oTenant))
-					{
-						throw new CApiManagerException(Errs::TenantsManager_TenantUpdateFailed);
-					}
-					
-					if (null !== $oTenant->IsDisabled)
-					{
-						/* @var $oDomainsApi CApiDomainsManager */
-						$oDomainsApi = CApi::GetSystemManager('domains');
-						if (!$oDomainsApi->enableOrDisableDomainsByTenantId($oTenant->EntityId, !$oTenant->IsDisabled))
-						{
-							$oException = $oDomainsApi->GetLastException();
-							if ($oException)
-							{
-								throw $oException;
-							}
-						}
-					}
-				}
+				$bResult = $this->oEavManager->saveEntity($oTenant);
 			}
-
-			$bResult = true;
 		}
 		catch (CApiBaseException $oException)
 		{
@@ -657,63 +392,6 @@ class CApiCoreTenantsManager extends AApiManager
 	public function updateTenantMainCapa($iTenantID)
 	{
 		return false;
-	}
-
-	/**
-	 * @param CTenant $oTenant
-	 * @param int $iNewAllocatedSizeInBytes
-	 *
-	 * @return bool
-	 */
-	public function allocateFileUsage($oTenant, $iNewAllocatedSizeInBytes)
-	{
-		try
-		{
-			if ($oTenant && 0 < $oTenant->EntityId)
-			{
-				$iNewUsedInMB = (int) round($iNewAllocatedSizeInBytes / (1024 * 1024));
-
-				if (0 < $oTenant->QuotaInMB && $oTenant->FilesUsageDynamicQuotaInMB < $iNewUsedInMB)
-				{
-					return false;
-				}
-				else
-				{
-					$this->oEavManager->setAttribute(
-							\CAttribute::createInstance(
-								'FilesUsageInBytes', 
-								$iNewAllocatedSizeInBytes, 
-								$oTenant->getType('FilesUsageInBytes'), 
-								false, 
-								$oTenant->EntityId
-							)
-					);
-				}
-			}
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-
-		return false;
-	}
-
-	/**
-	 * @param int $iTenantID
-	 * @param int|null $iExceptUserId Default value is **null**.
-	 *
-	 * @return array|bool
-	 */
-	public function getSubscriptionUserUsage($iTenantID, $iExceptUserId = null)
-	{
-		$mResult = false;
-		if (0 < $iTenantID)
-		{
-			$mResult = $this->oStorage->getSubscriptionUserUsage($iTenantID, $iExceptUserId);
-		}
-
-		return $mResult;
 	}
 
 	/**
@@ -779,209 +457,13 @@ class CApiCoreTenantsManager extends AApiManager
 		$bResult = false;
 		try
 		{
-			if ($oTenant && !$oTenant->IsDefault)
+			if ($oTenant)
 			{
-				/* @var $oDomainsApi CApiDomainsManager */
-//				$oDomainsApi = CApi::GetCoreManager('domains');
-//				if (!$oDomainsApi->deleteDomainsByTenantId($oTenant->EntityId, true))
-//				{
-//					$oException = $oDomainsApi->GetLastException();
-//					if ($oException)
-//					{
-//						throw $oException;
-//					}
-//				}
-
 				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId);
-				
-				// TODO subscriptions
-				//if ($bResult)
-				//{
-				//	$this->oStorage->deleteTenantSubscriptions($oTenant->EntityId);
-				//}
 			}
 		}
 		catch (CApiBaseException $oException)
 		{
-			$this->setLastException($oException);
-		}
-
-		return $bResult;
-	}
-	
-	/**
-	 * @param int $iIdTenant
-	 *
-	 * @return array|false
-	 */
-	public function getSocials($iIdTenant)
-	{
-		$aResult = false;
-		try
-		{
-			$aResult = $this->oStorage->getSocials($iIdTenant);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $aResult;
-	}	
-	
-	/**
-	 * @param int $iIdSocial
-	 *
-	 * @return CTenantSocials|null
-	 */
-	public function getSocialById($iIdSocial)
-	{
-		$oSocial = null;
-		try
-		{
-			$oSocial = $this->oStorage->getSocialById($iIdSocial);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-
-		return $oSocial;
-	}		
-	
-	/**
-	 * @param int $iIdTenant
-	 * @param string $sSocialName
-	 *
-	 * @return CTenantSocials|null
-	 */
-	public function getSocialByName($iIdTenant, $sSocialName)
-	{
-		$oSocial = null;
-		try
-		{
-			$oSocial = $this->oStorage->getSocialByName($iIdTenant, $sSocialName);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-
-		return $oSocial;
-	}
-	
-	/**
-	 * @param CTenantSocials $oSocial
-	 *
-	 * @return bool
-	 */
-	public function isSocialExists(CTenantSocials $oSocial)
-	{
-		$bResult = false;
-		try
-		{
-			$bResult = $this->oStorage->isSocialExists($oSocial);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $bResult;
-	}	
-	
-	/**
-	 * @param CTenantSocials $oSocial
-	 *
-	 * @return bool
-	 */
-	public function createSocial(CTenantSocials $oSocial)
-	{
-		$bResult = false;
-		try
-		{
-			if (!$this->isSocialExists($oSocial))
-			{
-				if (!$this->oStorage->createTenant($oSocial))
-				{
-					throw new CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
-				}
-			}
-			else
-			{
-				throw new CApiManagerException(Errs::TenantsManager_TenantAlreadyExists);
-			}
-
-			$bResult = true;
-		}
-		catch (CApiBaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
-
-		return $bResult;
-	}
-	
-	/**
-	 * @param CTenantSocials $oSocial
-	 *
-	 * @return bool
-	 */
-	public function deleteSocial(CTenantSocials $oSocial)
-	{
-		$bResult = false;
-		try
-		{
-			$bResult = $this->oStorage->deleteSocial($oSocial->Id);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
-
-		return $bResult;
-	}
-	
-	/**
-	 * @param int $iTenanatId
-	 *
-	 * @return bool
-	 */
-	public function deleteSocialsByTenantId($iTenanatId)
-	{
-		$bResult = false;
-		try
-		{
-			$bResult = $this->oStorage->deleteSocialsByTenantId($iTenanatId);
-		}
-		catch (CApiBaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
-
-		return $bResult;
-	}
-
-	/**
-	 * @param CTenantSocials $oSocial
-	 *
-	 * @return bool
-	 */
-	public function updateSocial(CTenantSocials $oSocial)
-	{
-		$bResult = false;
-		try
-		{
-			if (!$this->oStorage->updateSocial($oSocial))
-			{
-				throw new CApiManagerException(Errs::TenantsManager_TenantUpdateFailed);
-			}
-			$bResult = true;
-		}
-		catch (CApiBaseException $oException)
-		{
-			$bResult = false;
 			$this->setLastException($oException);
 		}
 

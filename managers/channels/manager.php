@@ -42,15 +42,6 @@ class CApiCoreChannelsManager extends AApiManager
 	}
 
 	/**
-	 * @TODO rename to createChannel
-	 * @return CChannel
-	 */
-	public function newChannel()
-	{
-		return CChannel::createInstance();
-	}
-
-	/**
 	 * @param int $iOffset
 	 * @param int $iLimit
 	 * @param string $sOrderBy Default value is **Login**

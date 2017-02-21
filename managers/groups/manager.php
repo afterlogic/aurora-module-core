@@ -42,14 +42,6 @@ class CApiCoreUserGroupsManager extends AApiManager
 	}
 
 	/**
-	 * @return CUserGroup
-	 */
-	public function createUserGroup()
-	{
-		return CUserGroup::createInstance();
-	}
-
-	/**
 	 * @param int $iPage
 	 * @param int $iItemsPerPage
 	 * @param string $sOrderBy Default value is **Login**

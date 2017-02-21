@@ -26,13 +26,7 @@
  * @property string $Email
  * @property string $PasswordHash
  * @property string $Description
- * @property int $QuotaInMB
- * @property int $AllocatedSpaceInMB
- * @property string $FilesUsageInBytes
- * @property int $FilesUsageInMB
- * @property int $FilesUsageDynamicQuotaInMB
  * @property int $UserCountLimit
- * @property int $DomainCountLimit
  * @property string $Capa
  * @property int $Expared
  * @property string $PayUrl
@@ -78,13 +72,7 @@ class CTenant extends CEntity
 //			'Email'						=> array('string', ''),
 //			'PasswordHash'				=> array('string', ''),
 			'Description'				=> array('string', ''),
-			'AllocatedSpaceInMB'		=> array('int', 0),
-			'FilesUsageInMB'			=> array('int', 0),
-			'FilesUsageDynamicQuotaInMB'=> array('int', 0),
-			'FilesUsageInBytes'			=> array('string', '0'),
-			'QuotaInMB'					=> array('int', 0),
 			'UserCountLimit'			=> array('int', 0),
-			'DomainCountLimit'			=> array('int', 0),
 			'Capa'						=> array('string', '', false), //(string) $oSettings->GetConf('TenantGlobalCapa')
 			
 			'AllowChangeAdminEmail'		=> array('bool', true),
@@ -265,12 +253,6 @@ class CTenant extends CEntity
 		return $oUsersApi->getUsersCountForTenant($this->EntityId);
 	}
 
-	public function getDomainCount()
-	{
-		$oDomainsApi = CApi::GetSystemManager('domains');
-		return $oDomainsApi->getDomainCount('', $this->EntityId);
-	}
-
 	/**
 	 * @return bool
 	 *
@@ -331,52 +313,6 @@ class CTenant extends CEntity
 		}
 		
 		return $aResult;
-	}
-	
-	/**
-	 * @return array
-	 */
-	public function getSocialByName($sName)
-	{
-		return isset($this->Socials[strtolower($sName)]) ? $this->Socials[strtolower($sName)] : null;
-	}
-
-	/**
-	 * @return array
-	 */
-	public function getSocials()
-	{
-		$aSocials = array();
-		if ($this->EntityId > 0 && count($this->Socials) === 0)
-		{
-			foreach ($this->getDefaultSocials() as $sKey => $oTenantSocial)
-			{
-				$sSocialApiKey = $oTenantSocial->SocialApiKey !== null ? '' : null;
-				$oTenantSocial = new CTenantSocials();
-				$oTenantSocial->IdTenant = $this->EntityId;
-				$oTenantSocial->SocialName = ucfirst($sKey);
-				$oTenantSocial->SocialApiKey = $sSocialApiKey;
-				$aSocials[strtolower($sKey)] = $oTenantSocial;
-			}
-		}
-		else 
-		{
-			$aSocials = $this->Socials;
-			foreach ($this->getDefaultSocials() as $sKey => $oTenantSocial)
-			{
-				if (!isset($aSocials[strtolower($sKey)]))
-				{
-					$sSocialApiKey = $oTenantSocial->SocialApiKey !== null ? '' : null;
-					$oTenantSocial = new CTenantSocials();
-					$oTenantSocial->IdTenant = $this->EntityId;
-					$oTenantSocial->SocialName = ucfirst($sKey);
-					$oTenantSocial->SocialApiKey = $sSocialApiKey;
-					$aSocials[strtolower($sKey)] = $oTenantSocial;
-				}
-			}			
-		}
-		$this->Socials = $aSocials;
-		return $this->Socials;
 	}
 	
 	/**
