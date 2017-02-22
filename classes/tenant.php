@@ -102,7 +102,7 @@ class CTenant extends CEntity
 	 */
 	public function setInheritedSettings()
 	{
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$oMap = $this->getStaticMap();
 		
 		if (isset($oMap['Capa'][2]) && !$oMap['Capa'][2])
@@ -249,7 +249,7 @@ class CTenant extends CEntity
 
 	public function getUserCount()
 	{
-		$oUsersApi = CApi::GetSystemManager('users');
+		$oUsersApi =\CApi::GetSystemManager('users');
 		return $oUsersApi->getUsersCountForTenant($this->EntityId);
 	}
 
@@ -290,7 +290,7 @@ class CTenant extends CEntity
 	public function getDefaultSocials()
 	{
 		$aResult = array();
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$aSocials = $oSettings->GetConf('Socials');
 		if (isset($aSocials) && is_array($aSocials))
 		{

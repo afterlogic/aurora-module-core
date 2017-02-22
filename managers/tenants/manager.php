@@ -306,7 +306,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				if (!$this->isTenantExists($oTenant))
 				{
-					if (0 < $oTenant->IdChannel && CApi::GetConf('tenant', false))
+					if (0 < $oTenant->IdChannel &&\CApi::GetConf('tenant', false))
 					{
 						/* @var $oChannelsApi CApiChannelsManager */
 						

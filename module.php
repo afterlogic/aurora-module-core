@@ -18,7 +18,10 @@
  * @package Modules
  */
 
-class CoreModule extends AApiModule
+
+namespace Aurora\Modules;
+
+class CoreModule extends \AApiModule
 {
 	public $oApiTenantsManager = null;
 	
@@ -80,7 +83,7 @@ class CoreModule extends AApiModule
 		}
 		else
 		{
-			$oUser = new CUser();
+			$oUser = new \CUser();
 			
 			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
 			if ($TenantId)
@@ -427,14 +430,14 @@ class CoreModule extends AApiModule
 	 */
 	public function ClearTempFiles()
 	{
-		$sTempPath = CApi::DataPath().'/temp';
+		$sTempPath =\CApi::DataPath().'/temp';
 		if (@is_dir($sTempPath))
 		{
 			$iNow = time();
 
-			$iTime2Run = CApi::GetConf('temp.cron-time-to-run', 10800);
-			$iTime2Kill = CApi::GetConf('temp.cron-time-to-kill', 10800);
-			$sDataFile = CApi::GetConf('temp.cron-time-file', '.clear.dat');
+			$iTime2Run =\CApi::GetConf('temp.cron-time-to-run', 10800);
+			$iTime2Kill =\CApi::GetConf('temp.cron-time-to-kill', 10800);
+			$sDataFile =\CApi::GetConf('temp.cron-time-file', '.clear.dat');
 
 			$iFiletTime = -1;
 			if (@file_exists(CApi::DataPath().'/'.$sDataFile))
@@ -445,7 +448,7 @@ class CoreModule extends AApiModule
 			if ($iFiletTime === -1 || $iNow - $iFiletTime > $iTime2Run)
 			{
 				$this->removeDirByTime($sTempPath, $iTime2Kill, $iNow);
-				@file_put_contents( CApi::DataPath().'/'.$sDataFile, $iNow);
+				@file_put_contents(\CApi::DataPath().'/'.$sDataFile, $iNow);
 			}
 		}
 
@@ -759,7 +762,7 @@ class CoreModule extends AApiModule
 			$oApiIntegrator->clearLastErrorCode();
 		}
 		
-		$oSettings =& CApi::GetSettings();
+		$oSettings =& \CApi::GetSettings();
 		
 		$aSettings = array(
 			'DateFormat' => $this->getConfig('DateFormat'),
@@ -866,7 +869,7 @@ class CoreModule extends AApiModule
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
 		$oUser = \CApi::getAuthenticatedUser();
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		if ($oUser->Role === \EUserRole::SuperAdmin)
 		{
 			if ($LicenseKey !== null)
@@ -935,7 +938,7 @@ class CoreModule extends AApiModule
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 
 		if ($EnableLogging !== null)
 		{
@@ -1015,8 +1018,8 @@ class CoreModule extends AApiModule
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$bResult = false;
-		$oSettings =& CApi::GetSettings();
-		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
+		$oSettings =&\CApi::GetSettings();
+		$oApiEavManager =\CApi::GetSystemManager('eav', 'db');
 		if ($oApiEavManager->createTablesFromFile())
 		{
 			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
@@ -1123,7 +1126,7 @@ class CoreModule extends AApiModule
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		$oSettings->SetConf('DBLogin', $DbLogin);
 		if ($DbPassword !== null)
 		{
@@ -1132,7 +1135,7 @@ class CoreModule extends AApiModule
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$oApiEavManager = CApi::GetSystemManager('eav', 'db');
+		$oApiEavManager =\CApi::GetSystemManager('eav', 'db');
 		return $oApiEavManager->testStorageConnection();
 	}
 	
@@ -2154,7 +2157,7 @@ class CoreModule extends AApiModule
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
 		{
 			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
@@ -2486,7 +2489,7 @@ class CoreModule extends AApiModule
 	{
 		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
-		$oSettings =& CApi::GetSettings();
+		$oSettings =&\CApi::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
 		{
 			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);

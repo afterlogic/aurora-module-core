@@ -281,7 +281,7 @@ class CApiCoreChannelsManager extends AApiManager
 		try
 		{
 			/* @var $oTenantsApi CApiTenantsManager */
-//			$oTenantsApi = CApi::GetCoreManager('tenants');
+//			$oTenantsApi =\CApi::GetCoreManager('tenants');
 			$oTenantsApi = $this->oModule->GetManager('tenants');
 			
 			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oChannel->EntityId, true))
