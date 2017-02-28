@@ -21,7 +21,7 @@
 
 namespace Aurora\Modules;
 
-class CoreModule extends \AApiModule
+class CoreModule extends \Aurora\System\AbstractModule
 {
 	public $oApiTenantsManager = null;
 	
@@ -236,13 +236,13 @@ class CoreModule extends \AApiModule
 		if ('js' === $sType)
 		{
 			@header('Content-Type: application/javascript; charset=utf-8');
-			$sResult = \CApi::Plugin()->CompileJs();
+			$sResult = \Aurora\System\Api::Plugin()->CompileJs();
 		}
 		else if ('images' === $sType)
 		{
 			if (!empty($aPaths[2]) && !empty($aPaths[3]))
 			{
-				$oPlugin = \CApi::Plugin()->GetPluginByName($aPaths[2]);
+				$oPlugin = \Aurora\System\Api::Plugin()->GetPluginByName($aPaths[2]);
 				if ($oPlugin)
 				{
 					echo $oPlugin->GetImage($aPaths[3]);exit;
@@ -253,7 +253,7 @@ class CoreModule extends \AApiModule
 		{
 			if (!empty($aPaths[2]) && !empty($aPaths[3]))
 			{
-				$oPlugin = \CApi::Plugin()->GetPluginByName($aPaths[2]);
+				$oPlugin = \Aurora\System\Api::Plugin()->GetPluginByName($aPaths[2]);
 				if ($oPlugin)
 				{
 					echo $oPlugin->GetFont($aPaths[3]);exit;
@@ -271,11 +271,11 @@ class CoreModule extends \AApiModule
 	{
 		if ($this->oApiCapabilityManager->isNotLite())
 		{
-			$oApiIntegrator = \CApi::GetSystemManager('integrator');
+			$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 			$oApiIntegrator->setMobile(true);
 		}
 
-		\CApi::Location('./');
+		\Aurora\System\Api::Location('./');
 	}
 	
 	/**
@@ -284,8 +284,8 @@ class CoreModule extends \AApiModule
 	 */
 	public function EntrySpeclogon()
 	{
-		\CApi::SpecifiedUserLogging(true);
-		\CApi::Location('./');
+		\Aurora\System\Api::SpecifiedUserLogging(true);
+		\Aurora\System\Api::Location('./');
 	}
 	
 	/**
@@ -294,8 +294,8 @@ class CoreModule extends \AApiModule
 	 */
 	public function EntrySpeclogoff()
 	{
-		\CApi::SpecifiedUserLogging(false);
-		\CApi::Location('./');
+		\Aurora\System\Api::SpecifiedUserLogging(false);
+		\Aurora\System\Api::Location('./');
 	}
 
 	/**
@@ -303,15 +303,15 @@ class CoreModule extends \AApiModule
 	 */
 	public function EntrySso()
 	{
-		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
+		$oApiIntegratorManager = \Aurora\System\Api::GetSystemManager('integrator');
 
 		try
 		{
 			$sHash = $this->oHttp->GetRequest('hash');
 			if (!empty($sHash))
 			{
-				$sData = \CApi::Cacher()->get('SSO:'.$sHash, true);
-				$aData = \CApi::DecodeKeyValues($sData);
+				$sData = \Aurora\System\Api::Cacher()->get('SSO:'.$sHash, true);
+				$aData = \Aurora\System\Api::DecodeKeyValues($sData);
 
 				if (!empty($aData['Email']) && isset($aData['Password'], $aData['Login']))
 				{
@@ -329,10 +329,10 @@ class CoreModule extends \AApiModule
 		}
 		catch (\Exception $oExc)
 		{
-			\CApi::LogException($oExc);
+			\Aurora\System\Api::LogException($oExc);
 		}
 
-		\CApi::Location('./');		
+		\Aurora\System\Api::Location('./');		
 	}	
 	
 	/**
@@ -340,18 +340,18 @@ class CoreModule extends \AApiModule
 	 */
 	public function EntryPostlogin()
 	{
-		if (\CApi::GetConf('labs.allow-post-login', false))
+		if (\Aurora\System\Api::GetConf('labs.allow-post-login', false))
 		{
-			$oApiIntegrator = \CApi::GetSystemManager('integrator');
+			$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 					
 			$sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
 			$sLogin = (string) $this->oHttp->GetRequest('Login', '');
 			$sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
-			$sAtDomain = trim(\CApi::GetSettingsConf('WebMail/LoginAtDomainValue'));
-			if (\ELoginFormType::Login === (int) \CApi::GetSettingsConf('WebMail/LoginFormType') && 0 < strlen($sAtDomain))
+			$sAtDomain = trim(\Aurora\System\Api::GetSettingsConf('WebMail/LoginAtDomainValue'));
+			if (\ELoginFormType::Login === (int) \Aurora\System\Api::GetSettingsConf('WebMail/LoginFormType') && 0 < strlen($sAtDomain))
 			{
-				$sEmail = \api_Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
+				$sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
 				$sLogin = $sEmail;
 			}
 
@@ -396,8 +396,8 @@ class CoreModule extends \AApiModule
 								break;
 						}
 					}
-					$sReditectUrl = \CApi::GetConf('labs.post-login-error-redirect-url', './');
-					\CApi::Location($sReditectUrl . '?error=' . $iErrorCode);
+					$sReditectUrl = \Aurora\System\Api::GetConf('labs.post-login-error-redirect-url', './');
+					\Aurora\System\Api::Location($sReditectUrl . '?error=' . $iErrorCode);
 					exit;
 				}
 
@@ -407,7 +407,7 @@ class CoreModule extends \AApiModule
 				}
 			}
 
-			\CApi::Location('./');
+			\Aurora\System\Api::Location('./');
 		}
 	}
 	
@@ -417,7 +417,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetVersion()
 	{
-		return \CApi::Version();
+		return \Aurora\System\Api::Version();
 	}
 	
 	/**
@@ -430,25 +430,25 @@ class CoreModule extends \AApiModule
 	 */
 	public function ClearTempFiles()
 	{
-		$sTempPath =\CApi::DataPath().'/temp';
+		$sTempPath =\Aurora\System\Api::DataPath().'/temp';
 		if (@is_dir($sTempPath))
 		{
 			$iNow = time();
 
-			$iTime2Run =\CApi::GetConf('temp.cron-time-to-run', 10800);
-			$iTime2Kill =\CApi::GetConf('temp.cron-time-to-kill', 10800);
-			$sDataFile =\CApi::GetConf('temp.cron-time-file', '.clear.dat');
+			$iTime2Run =\Aurora\System\Api::GetConf('temp.cron-time-to-run', 10800);
+			$iTime2Kill =\Aurora\System\Api::GetConf('temp.cron-time-to-kill', 10800);
+			$sDataFile =\Aurora\System\Api::GetConf('temp.cron-time-file', '.clear.dat');
 
 			$iFiletTime = -1;
-			if (@file_exists(CApi::DataPath().'/'.$sDataFile))
+			if (@file_exists(\Aurora\System\Api::DataPath().'/'.$sDataFile))
 			{
-				$iFiletTime = (int) @file_get_contents(CApi::DataPath().'/'.$sDataFile);
+				$iFiletTime = (int) @file_get_contents(\Aurora\System\Api::DataPath().'/'.$sDataFile);
 			}
 
 			if ($iFiletTime === -1 || $iNow - $iFiletTime > $iTime2Run)
 			{
 				$this->removeDirByTime($sTempPath, $iTime2Kill, $iNow);
-				@file_put_contents(\CApi::DataPath().'/'.$sDataFile, $iNow);
+				@file_put_contents(\Aurora\System\Api::DataPath().'/'.$sDataFile, $iNow);
 			}
 		}
 
@@ -463,7 +463,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function UpdateUserObject($oUser)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
 		return $this->oApiUsersManager->updateUser($oUser);
 	}
@@ -523,7 +523,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetTenantById($iIdTenant)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
 
@@ -537,7 +537,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetDefaultGlobalTenant()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
 		
@@ -596,18 +596,18 @@ class CoreModule extends \AApiModule
 	 */
 	public function DoServerInitializations()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Customer);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Customer);
 		
-		$iUserId = \CApi::getAuthenticatedUserId();
+		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
-		$oApiIntegrator = \CApi::GetSystemManager('integrator');
+		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 
 		if ($iUserId && $oApiIntegrator)
 		{
 			$oApiIntegrator->resetCookies();
 		}
 
-		$oCacher = \CApi::Cacher();
+		$oCacher = \Aurora\System\Api::Cacher();
 
 		$bDoGC = false;
 		$bDoHepdeskClear = false;
@@ -622,7 +622,7 @@ class CoreModule extends \AApiModule
 				}
 			}
 
-			if (\CApi::GetModuleManager()->ModuleExists('Helpdesk'))
+			if (\Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
 			{
 				$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
 				if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
@@ -637,17 +637,17 @@ class CoreModule extends \AApiModule
 
 		if ($bDoGC)
 		{
-			\CApi::Log('GC: FileCache / Start');
-			$oApiFileCache = \Capi::GetSystemManager('filecache');
+			\Aurora\System\Api::Log('GC: FileCache / Start');
+			$oApiFileCache = \Aurora\System\Api::GetSystemManager('filecache');
 			$oApiFileCache->gc();
 			$oCacher->gc();
-			\CApi::Log('GC: FileCache / End');
+			\Aurora\System\Api::Log('GC: FileCache / End');
 		}
 
-		if ($bDoHepdeskClear && \CApi::GetModuleManager()->ModuleExists('Helpdesk'))
+		if ($bDoHepdeskClear && \Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
 		{
-			\CApi::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
-			\CApi::ExecuteMethod('Helpdesk::ClearAllOnline');
+			\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
+			\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearAllOnline');
 		}
 
 		return true;
@@ -688,7 +688,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function Ping()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		return 'Pong';
 	}	
@@ -751,18 +751,18 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetSettings()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
-		$oUser = \CApi::getAuthenticatedUser();
+		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		$oApiIntegrator = \CApi::GetSystemManager('integrator');
+		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 		$iLastErrorCode = $oApiIntegrator->getLastErrorCode();
 		if (0 < $iLastErrorCode)
 		{
 			$oApiIntegrator->clearLastErrorCode();
 		}
 		
-		$oSettings =& \CApi::GetSettings();
+		$oSettings =& \Aurora\System\Api::GetSettings();
 		
 		$aSettings = array(
 			'DateFormat' => $this->getConfig('DateFormat'),
@@ -773,9 +773,9 @@ class CoreModule extends \AApiModule
 			'LastErrorCode' => $iLastErrorCode,
 			'SiteName' => $oSettings->GetConf('SiteName'),
 			'SocialName' => '',
-			'TenantName' => \CApi::getTenantName(),
+			'TenantName' => \Aurora\System\Api::getTenantName(),
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
-			'UserId' => \CApi::getAuthenticatedUserId(),
+			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
@@ -866,10 +866,10 @@ class CoreModule extends \AApiModule
 			$AdminLogin = null, $Password = null, $NewPassword = null,
 			$Language = null, $TimeFormat = null)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
-		$oUser = \CApi::getAuthenticatedUser();
-		$oSettings =&\CApi::GetSettings();
+		$oUser = \Aurora\System\Api::getAuthenticatedUser();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		if ($oUser->Role === \EUserRole::SuperAdmin)
 		{
 			if ($LicenseKey !== null)
@@ -907,9 +907,9 @@ class CoreModule extends \AApiModule
 			if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
 			{
 				if (empty($oSettings->GetConf('AdminPassword')) || 
-						crypt(trim($Password), \CApi::$sSalt) === $oSettings->GetConf('AdminPassword'))
+						crypt(trim($Password), \Aurora\System\Api::$sSalt) === $oSettings->GetConf('AdminPassword'))
 				{
-					$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \CApi::$sSalt));
+					$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \Aurora\System\Api::$sSalt));
 				}
 				else
 				{
@@ -936,9 +936,9 @@ class CoreModule extends \AApiModule
 	
 	public function UpdateLoggingSettings($EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 
 		if ($EnableLogging !== null)
 		{
@@ -964,9 +964,9 @@ class CoreModule extends \AApiModule
 	 */
 	public function SetMobile($Mobile)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
-		$oApiIntegratorManager = \CApi::GetSystemManager('integrator');
+		$oApiIntegratorManager = \Aurora\System\Api::GetSystemManager('integrator');
 		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
 	}	
 	
@@ -1015,11 +1015,11 @@ class CoreModule extends \AApiModule
 	 */
 	public function CreateTables()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$bResult = false;
-		$oSettings =&\CApi::GetSettings();
-		$oApiEavManager =\CApi::GetSystemManager('eav', 'db');
+		$oSettings =&\Aurora\System\Api::GetSettings();
+		$oApiEavManager =\Aurora\System\Api::GetSystemManager('eav', 'db');
 		if ($oApiEavManager->createTablesFromFile())
 		{
 			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
@@ -1124,9 +1124,9 @@ class CoreModule extends \AApiModule
 	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$oSettings->SetConf('DBLogin', $DbLogin);
 		if ($DbPassword !== null)
 		{
@@ -1135,7 +1135,7 @@ class CoreModule extends \AApiModule
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$oApiEavManager =\CApi::GetSystemManager('eav', 'db');
+		$oApiEavManager =\Aurora\System\Api::GetSystemManager('eav', 'db');
 		return $oApiEavManager->testStorageConnection();
 	}
 	
@@ -1146,8 +1146,8 @@ class CoreModule extends \AApiModule
 	public function GetAuthenticatedAccount($AuthToken)
 	{
 		$oAccount = null;
-		$oEavManager = \CApi::GetSystemManager('eav');
-		$aUserInfo = \CApi::getAuthenticatedUserInfo($AuthToken);
+		$oEavManager = \Aurora\System\Api::GetSystemManager('eav');
+		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
 			$oAccount = $oEavManager->getEntity((int)$aUserInfo['account']);
@@ -1246,7 +1246,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function Login($Login, $Password, $SignMe = 0)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$mResult = false;
 		
@@ -1264,7 +1264,7 @@ class CoreModule extends \AApiModule
 		if (is_array($mResult))
 		{
 			$mResult['time'] = $SignMe ? time() + 60 * 60 * 24 * 30 : 0;
-			$sAuthToken = \CApi::UserSession()->Set($mResult);
+			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult);
 			
 			return array(
 				'AuthToken' => $sAuthToken
@@ -1320,13 +1320,13 @@ class CoreModule extends \AApiModule
 	 */
 	public function Logout()
 	{	
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
-		$mAuthToken = \CApi::getAuthenticatedUserAuthToken();
+		$mAuthToken = \Aurora\System\Api::getAuthenticatedUserAuthToken();
 		
 		if ($mAuthToken !== false)
 		{
-			\CApi::UserSession()->Delete($mAuthToken);
+			\Aurora\System\Api::UserSession()->Delete($mAuthToken);
 		}
 		else
 		{
@@ -1719,7 +1719,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if ($Login !== '')
 		{
@@ -1799,7 +1799,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if ($ChannelId > 0)
 		{
@@ -1879,7 +1879,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function DeleteChannel($ChannelId)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 
 		if ($ChannelId > 0)
 		{
@@ -1947,7 +1947,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetTenantList()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$aTenants = $this->oApiTenantsManager->getTenantList();
 		$aItems = array();
@@ -2014,7 +2014,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetTenantIdByName($TenantName = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$iTenantId = $this->oApiTenantsManager->getTenantIdByName((string) $TenantName);
 
@@ -2066,13 +2066,13 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetTenantName()
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
 		$sTenant = '';
-		$sAuthToken = \CApi::getAuthToken();
+		$sAuthToken = \Aurora\System\Api::getAuthToken();
 		if (!empty($sAuthToken))
 		{
-			$iUserId = \CApi::getAuthenticatedUserId();
+			$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 			if ($iUserId !== false && $iUserId > 0)
 			{
 				$oUser = $this->GetUser($iUserId);
@@ -2095,7 +2095,7 @@ class CoreModule extends \AApiModule
 		{
 			$sTenant = $this->oHttp->GetRequest('tenant', '');
 		}
-		\CApi::setTenantName($sTenant);
+		\Aurora\System\Api::setTenantName($sTenant);
 		return $sTenant;
 	}
 	
@@ -2155,9 +2155,9 @@ class CoreModule extends \AApiModule
 	 */
 	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
 		{
 			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
@@ -2243,7 +2243,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -2327,7 +2327,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function DeleteTenant($TenantId)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -2415,7 +2415,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \ESortOrder::ASC, $Search = '')
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
 		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
 		$aUsers = array();
@@ -2487,9 +2487,9 @@ class CoreModule extends \AApiModule
 	 */
 	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
 		{
 			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
@@ -2581,13 +2581,13 @@ class CoreModule extends \AApiModule
 	 */
 	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1)
 	{
-		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \CApi::getAuthenticatedUserId())
+		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
 		{
-			\CApi::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		}
 		else
 		{
-			\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		}
 		
 		if ($UserId > 0)
@@ -2672,7 +2672,7 @@ class CoreModule extends \AApiModule
 	 */
 	public function DeleteUser($UserId = 0)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
 		$bResult = false;
 		
@@ -2685,7 +2685,7 @@ class CoreModule extends \AApiModule
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
 				$aArgs = array();
 				$this->broadcastEvent(
-					$this->GetName() . \AApiModule::$Delimiter . 'AfterDeleteUser', 
+					$this->GetName() . \Aurora\System\AbstractModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,
 					$UserId
 				);
@@ -2702,10 +2702,10 @@ class CoreModule extends \AApiModule
 	
 	public function GetLogFile($bEventLogType)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
 
 		$mResult = fopen($sFileName, "r");
 
@@ -2729,10 +2729,10 @@ class CoreModule extends \AApiModule
 	
 	public function GetLog($iPartSize = 10240, $bEventLogType)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
 		
 		$logData = '';
 		
@@ -2747,12 +2747,12 @@ class CoreModule extends \AApiModule
 	
 	public function ClearLog($bEventLogType)
 	{
-		\CApi::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \CApi::GetLogFileDir().\CApi::GetLogFileName($logFilePrefix);
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
 		
-		return \CApi::ClearLog($sFileName);
+		return \Aurora\System\Api::ClearLog($sFileName);
 	}
 	/***** public functions might be called with web API *****/
 }

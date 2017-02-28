@@ -62,7 +62,7 @@ class CUser extends CEntity
 	 */
 	public function __construct($sModule)
 	{
-		$oModuleManager = \CApi::GetModuleManager();
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$this->aStaticMap = array(
 			'Name'								=> array('string', ''),
@@ -129,7 +129,7 @@ class CUser extends CEntity
 		return true;
 		// TODO
 
-		if (!CApi::GetConf('capa', false) || '' === $this->Capa ||
+		if (!\Aurora\System\Api::GetConf('capa', false) || '' === $this->Capa ||
 			0 === $this->IdSubscription)
 		{
 			return true;
@@ -176,7 +176,7 @@ class CUser extends CEntity
 	 */
 	public function setCapa($oTenant, $sCapaName, $bValue)
 	{
-		if (!CApi::GetConf('capa', false) || !$oTenant)
+		if (!\Aurora\System\Api::GetConf('capa', false) || !$oTenant)
 		{
 			return true;
 		}
@@ -194,7 +194,7 @@ class CUser extends CEntity
 		switch (true)
 		{
 			case false:
-				throw new CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+				throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
 					'{{ClassName}}' => 'CUser', '{{ClassField}}' => 'Error'));
 		}
 

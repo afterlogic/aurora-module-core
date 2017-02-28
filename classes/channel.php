@@ -44,10 +44,10 @@ class CChannel extends CEntity
 	{
 		switch (true)
 		{
-			case !api_Validate::IsValidLogin($this->Login):
-				throw new CApiValidationException(Errs::Validation_InvalidTenantName);
-			case api_Validate::IsEmpty($this->Login):
-				throw new CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+			case !\Aurora\System\Validate::IsValidLogin($this->Login):
+				throw new \CApiValidationException(Errs::Validation_InvalidTenantName);
+			case \Aurora\System\Validate::IsEmpty($this->Login):
+				throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
 					'{{ClassName}}' => 'CChannel', '{{ClassField}}' => 'Login'));
 		}
 

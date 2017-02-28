@@ -102,7 +102,7 @@ class CTenant extends CEntity
 	 */
 	public function setInheritedSettings()
 	{
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$oMap = $this->getStaticMap();
 		
 		if (isset($oMap['Capa'][2]) && !$oMap['Capa'][2])
@@ -171,7 +171,7 @@ class CTenant extends CEntity
 	 */
 	public function isFilesSupported()
 	{
-		if (!CApi::GetConf('capa', false))
+		if (!\Aurora\System\Api::GetConf('capa', false))
 		{
 			return true;
 		}
@@ -184,7 +184,7 @@ class CTenant extends CEntity
 	 */
 	public function isHelpdeskSupported()
 	{
-		if (!CApi::GetConf('capa', false))
+		if (!\Aurora\System\Api::GetConf('capa', false))
 		{
 			return true;
 		}
@@ -197,7 +197,7 @@ class CTenant extends CEntity
 	 */
 	public function isSipSupported()
 	{
-		if (!CApi::GetConf('capa', false))
+		if (!\Aurora\System\Api::GetConf('capa', false))
 		{
 			return true;
 		}
@@ -210,7 +210,7 @@ class CTenant extends CEntity
 	 */
 	public function isTwilioSupported()
 	{
-		if (!CApi::GetConf('capa', false))
+		if (!\Aurora\System\Api::GetConf('capa', false))
 		{
 			return true;
 		}
@@ -249,7 +249,7 @@ class CTenant extends CEntity
 
 	public function getUserCount()
 	{
-		$oUsersApi =\CApi::GetSystemManager('users');
+		$oUsersApi =\Aurora\System\Api::GetSystemManager('users');
 		return $oUsersApi->getUsersCountForTenant($this->EntityId);
 	}
 
@@ -268,13 +268,13 @@ class CTenant extends CEntity
 		{
 			switch (true)
 			{
-//				case !api_Validate::IsValidLogin($this->Login):
-//					throw new CApiValidationException(Errs::Validation_InvalidTenantName);
-				case api_Validate::IsEmpty($this->Name):
-					throw new CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+//				case !\Aurora\System\Validate::IsValidLogin($this->Login):
+//					throw new \CApiValidationException(Errs::Validation_InvalidTenantName);
+				case \Aurora\System\Validate::IsEmpty($this->Name):
+					throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
 						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Name'));
-//				case !api_Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
-//					throw new CApiValidationException(Errs::Validation_InvalidEmail, null, array(
+//				case !\Aurora\System\Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
+//					throw new \CApiValidationException(Errs::Validation_InvalidEmail, null, array(
 //						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Email'));
 			}
 		}
@@ -290,11 +290,11 @@ class CTenant extends CEntity
 	public function getDefaultSocials()
 	{
 		$aResult = array();
-		$oSettings =&\CApi::GetSettings();
+		$oSettings =&\Aurora\System\Api::GetSettings();
 		$aSocials = $oSettings->GetConf('Socials');
 		if (isset($aSocials) && is_array($aSocials))
 		{
-			$oPlugin = \CApi::Plugin()->GetPluginByName('external-services');
+			$oPlugin = \Aurora\System\Api::Plugin()->GetPluginByName('external-services');
 			if ($oPlugin)
 			{
 				$aConnectors = $oPlugin->GetEnabledConnectors();

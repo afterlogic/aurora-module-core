@@ -23,7 +23,7 @@
  *
  * @package Tenants
  */
-class CApiCoreTenantsManager extends AApiManager
+class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 {
 	/**
 	 * @var array
@@ -45,13 +45,13 @@ class CApiCoreTenantsManager extends AApiManager
 	/**
 	 * Creates a new instance of the object.
 	 *
-	 * @param CApiGlobalManager &$oManager
+	 * @param \Aurora\System\GlobalManager &$oManager
 	 */
-	public function __construct(CApiGlobalManager &$oManager, $sForcedStorage = 'db', AApiModule $oModule = null)
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = 'db', \Aurora\System\AbstractModule $oModule = null)
 	{
 		parent::__construct('tenants', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
+		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
 		
 		$this->oChannelsManager = $this->oModule->GetManager('channels', 'db');
 	}
@@ -306,7 +306,7 @@ class CApiCoreTenantsManager extends AApiManager
 			{
 				if (!$this->isTenantExists($oTenant))
 				{
-					if (0 < $oTenant->IdChannel &&\CApi::GetConf('tenant', false))
+					if (0 < $oTenant->IdChannel &&\Aurora\System\Api::GetConf('tenant', false))
 					{
 						/* @var $oChannelsApi CApiChannelsManager */
 						
@@ -316,7 +316,7 @@ class CApiCoreTenantsManager extends AApiManager
 							$oChannel = $this->oChannelsManager->getChannelById($oTenant->IdChannel);
 							if (!$oChannel)
 							{
-								throw new CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+								throw new \CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
 							}
 						}
 						else
@@ -331,7 +331,7 @@ class CApiCoreTenantsManager extends AApiManager
 					
 					if (!$this->oEavManager->saveEntity($oTenant))
 					{
-						throw new CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
+						throw new \CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
 					}
 					
 					if ($oTenant->EntityId)
@@ -341,7 +341,7 @@ class CApiCoreTenantsManager extends AApiManager
 				}
 				else
 				{
-					throw new CApiManagerException(Errs::TenantsManager_TenantAlreadyExists);
+					throw new \CApiManagerException(Errs::TenantsManager_TenantAlreadyExists);
 				}
 			}
 

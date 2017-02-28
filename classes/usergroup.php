@@ -41,8 +41,8 @@ class CUserGroup extends CEntity
 	{
 		switch (true)
 		{
-			case api_Validate::IsEmpty($this->UrlIdentifier):
-				throw new CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+			case \Aurora\System\Validate::IsEmpty($this->UrlIdentifier):
+				throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
 					'{{ClassName}}' => 'CUserGroup', '{{ClassField}}' => 'UrlIdentifier'));
 		}
 

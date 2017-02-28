@@ -23,7 +23,7 @@
  * 
  * @package Users
  */
-class CApiCoreUsersManager extends AApiManager
+class CApiCoreUsersManager extends \Aurora\System\AbstractManager
 {
 	/**
 	 * @var CApiEavManager
@@ -31,13 +31,13 @@ class CApiCoreUsersManager extends AApiManager
 	public $oEavManager = null;
 	
 	/**
-	 * @param CApiGlobalManager &$oManager
+	 * @param \Aurora\System\GlobalManager &$oManager
 	 */
-	public function __construct(CApiGlobalManager &$oManager, $sForcedStorage = '', AApiModule $oModule = null)
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\AbstractModule $oModule = null)
 	{
 		parent::__construct('users', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
+		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
 	}
 
 	/**
@@ -255,12 +255,12 @@ class CApiCoreUsersManager extends AApiManager
 					
 					if (!$this->oEavManager->saveEntity($oUser))
 					{
-						throw new CApiManagerException(Errs::UsersManager_UserCreateFailed);
+						throw new \CApiManagerException(Errs::UsersManager_UserCreateFailed);
 					}
 //				}
 //				else
 //				{
-//					throw new CApiManagerException(Errs::UsersManager_UserAlreadyExists);
+//					throw new \CApiManagerException(Errs::UsersManager_UserAlreadyExists);
 //				}
 			}
 
@@ -289,7 +289,7 @@ class CApiCoreUsersManager extends AApiManager
 //			{
 				if (!$this->oEavManager->deleteEntity($oUser->EntityId))
 				{
-					throw new CApiManagerException(Errs::UsersManager_UserDeleteFailed);
+					throw new \CApiManagerException(Errs::UsersManager_UserDeleteFailed);
 				}
 //			}
 

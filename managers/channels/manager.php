@@ -23,8 +23,8 @@
  *
  * @package Channels
  */
-//class CApiChannelsManager extends AApiManagerWithStorage
-class CApiCoreChannelsManager extends AApiManager
+
+class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 {
 	/**
 	 * @var CApiEavManager
@@ -32,13 +32,13 @@ class CApiCoreChannelsManager extends AApiManager
 	public $oEavManager = null;
 	
 	/**
-	 * @param CApiGlobalManager &$oManager
+	 * @param \Aurora\System\GlobalManager &$oManager
 	 */
-	public function __construct(CApiGlobalManager &$oManager, $sForcedStorage = '', AApiModule $oModule = null)
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\AbstractModule $oModule = null)
 	{
 		parent::__construct('channels', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
+		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
 	}
 
 	/**
@@ -213,12 +213,12 @@ class CApiCoreChannelsManager extends AApiManager
 					
 					if (!$this->oEavManager->saveEntity($oChannel))
 					{
-						throw new CApiManagerException(Errs::ChannelsManager_ChannelCreateFailed);
+						throw new \CApiManagerException(Errs::ChannelsManager_ChannelCreateFailed);
 					}
 				}
 				else
 				{
-					throw new CApiManagerException(Errs::ChannelsManager_ChannelAlreadyExists);
+					throw new \CApiManagerException(Errs::ChannelsManager_ChannelAlreadyExists);
 				}
 			}
 
@@ -249,12 +249,12 @@ class CApiCoreChannelsManager extends AApiManager
 				{
 					if (!$this->oEavManager->saveEntity($oChannel))
 					{
-						throw new CApiManagerException(Errs::ChannelsManager_ChannelUpdateFailed);
+						throw new \CApiManagerException(Errs::ChannelsManager_ChannelUpdateFailed);
 					}
 				}
 				else
 				{
-					throw new CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+					throw new \CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
 				}
 			}
 
@@ -281,7 +281,7 @@ class CApiCoreChannelsManager extends AApiManager
 		try
 		{
 			/* @var $oTenantsApi CApiTenantsManager */
-//			$oTenantsApi =\CApi::GetCoreManager('tenants');
+//			$oTenantsApi =\Aurora\System\Api::GetCoreManager('tenants');
 			$oTenantsApi = $this->oModule->GetManager('tenants');
 			
 			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oChannel->EntityId, true))

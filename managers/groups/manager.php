@@ -23,8 +23,8 @@
  *
  * @package Channels
  */
-//class CApiChannelsManager extends AApiManagerWithStorage
-class CApiCoreUserGroupsManager extends AApiManager
+
+class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 {
 	/**
 	 * @var CApiEavManager
@@ -32,13 +32,13 @@ class CApiCoreUserGroupsManager extends AApiManager
 	public $oEavManager = null;
 	
 	/**
-	 * @param CApiGlobalManager &$oManager
+	 * @param \Aurora\System\GlobalManager &$oManager
 	 */
-	public function __construct(CApiGlobalManager &$oManager, $sForcedStorage = '', AApiModule $oModule = null)
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\AbstractModule $oModule = null)
 	{
 		parent::__construct('usergroups', $oManager, $oModule);
 		
-		$this->oEavManager = \CApi::GetSystemManager('eav', 'db');
+		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
 	}
 
 	/**
@@ -187,12 +187,12 @@ class CApiCoreUserGroupsManager extends AApiManager
 				{
 					if (!$this->oEavManager->saveObject($oGroup))
 					{
-						throw new CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
 					}
 				}
 				else
 				{
-					throw new CApiManagerException(Errs::UserGroupsManager_UserGroupAlreadyExists);
+					throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupAlreadyExists);
 				}
 			}
 
@@ -223,12 +223,12 @@ class CApiCoreUserGroupsManager extends AApiManager
 				{
 					if (!$this->oEavManager->saveObject($oGroup))
 					{
-						throw new CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
 					}
 				}
 				else
 				{
-					throw new CApiManagerException(Errs::UserGroupsManager_UserGroupDoesNotExist);
+					throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupDoesNotExist);
 				}
 			}
 
