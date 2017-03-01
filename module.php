@@ -1723,7 +1723,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = new CChannel();
+			$oChannel = new \CChannel();
 			
 			$oChannel->Login = $Login;
 			
@@ -2166,7 +2166,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = new CTenant();
+			$oTenant = new \CTenant();
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;
@@ -2504,7 +2504,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 				throw new \System\Exceptions\AuroraApiException(\System\Notifications::UserAlreadyExists);
 			}
 			
-			$oUser = new CUser();
+			$oUser = new \CUser();
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
