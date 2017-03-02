@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016, Afterlogic Corp.
+ * @copyright Copyright (c) 2017, Afterlogic Corp.
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -34,7 +34,7 @@
  * @package Classes
  * @subpackage Tenants
  */
-class CTenantSocials extends api_AContainer
+class CTenantSocials extends \Aurora\System\AbstractContainer
 {
 	public function __construct()
 	{

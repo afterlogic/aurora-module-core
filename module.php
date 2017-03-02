@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016, Afterlogic Corp.
+ * @copyright Copyright (c) 2017, Afterlogic Corp.
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -859,7 +859,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null,
 			$DbPassword = null, $DbName = null, $DbHost = null,
@@ -913,7 +913,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 				}
 				else
 				{
-					throw new \System\Exceptions\AuroraApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
+					throw new \System\Exceptions\ApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
 				}
 			}
 		}
@@ -1242,7 +1242,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Password Account passwors.
 	 * @param bool $SignMe Indicates if it is necessary to remember user between sessions.
 	 * @return array
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function Login($Login, $Password, $SignMe = 0)
 	{
@@ -1271,7 +1271,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 			);
 		}
 
-		throw new \System\Exceptions\AuroraApiException(\System\Notifications::AuthError);
+		throw new \System\Exceptions\ApiException(\System\Notifications::AuthError);
 	}
 	
 	/**
@@ -1316,7 +1316,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * Logs out authenticated user. Clears session.
 	 * 
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function Logout()
 	{	
@@ -1330,7 +1330,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\Auth\Notifications::IncorrentAuthToken);
+			throw new \System\Exceptions\ApiException(\Auth\Notifications::IncorrentAuthToken);
 		}
 
 		return true;
@@ -1715,7 +1715,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Login New channel login.
 	 * @param string $Description New channel description.
 	 * @return int New channel identifier.
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
@@ -1739,7 +1739,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 	}
 	
@@ -1795,7 +1795,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Login New login for channel.
 	 * @param string $Description New description for channel.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
@@ -1821,7 +1821,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1875,7 +1875,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * 
 	 * @param int $ChannelId Identifier of channel to delete.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function DeleteChannel($ChannelId)
 	{
@@ -1892,7 +1892,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -1943,7 +1943,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 *		*int* **Id** Tenant identifier
 	 *		*string* **Name** Tenant name
 	 * }
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function GetTenantList()
 	{
@@ -2151,7 +2151,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '')
 	{
@@ -2179,7 +2179,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -2239,7 +2239,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $Description New tenant description.
 	 * @param int $ChannelId Identifier of the new tenant channel.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
@@ -2269,7 +2269,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -2323,7 +2323,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * 
 	 * @param int $TenantId Identifier of tenant to delete.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function DeleteTenant($TenantId)
 	{
@@ -2347,7 +2347,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -2483,7 +2483,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param string $PublicId New user name.
 	 * @param int $Role New user role.
 	 * @return int|false
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser)
 	{
@@ -2501,7 +2501,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 			$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
 			if ($oUser instanceof \CUser)
 			{
-				throw new \System\Exceptions\AuroraApiException(\System\Notifications::UserAlreadyExists);
+				throw new \System\Exceptions\ApiException(\System\Notifications::UserAlreadyExists);
 			}
 			
 			$oUser = new \CUser();
@@ -2517,7 +2517,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -2577,7 +2577,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * @param int $TenantId Identifier of tenant that will contain the user.
 	 * @param int $Role New user role.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1)
 	{
@@ -2614,7 +2614,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return false;
@@ -2668,7 +2668,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	 * 
 	 * @param int $UserId User identifier.
 	 * @return bool
-	 * @throws \System\Exceptions\AuroraApiException
+	 * @throws \System\Exceptions\ApiException
 	 */
 	public function DeleteUser($UserId = 0)
 	{
@@ -2694,7 +2694,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			throw new \System\Exceptions\AuroraApiException(\System\Notifications::InvalidInputParameter);
+			throw new \System\Exceptions\ApiException(\System\Notifications::InvalidInputParameter);
 		}
 
 		return $bResult;
@@ -2712,7 +2712,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		if (false !== $mResult && is_resource($mResult)) 
 		{
 			$sContentType = \MailSo\Base\Utils::MimeContentType($sFileName);
-			\CApiResponseManager::OutputHeaders(true, $sContentType, $sFileName);
+			\Aurora\System\ResponseManager::OutputHeaders(true, $sContentType, $sFileName);
 
 			if ($sContentType === 'text/plain') 
 			{

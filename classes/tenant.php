@@ -1,6 +1,6 @@
 <?php
 /**
- * @copyright Copyright (c) 2016, Afterlogic Corp.
+ * @copyright Copyright (c) 2017, Afterlogic Corp.
  * @license AGPL-3.0
  *
  * This code is free software: you can redistribute it and/or modify
@@ -58,9 +58,9 @@
  * @package Classes
  * @subpackage Tenants
  */
-//class CTenant extends api_AContainer
+//class CTenant extends \Aurora\System\AbstractContainer
 
-class CTenant extends CEntity
+class CTenant extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
 			'IdTenant'					=> array('int', 0),
