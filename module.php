@@ -83,7 +83,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		}
 		else
 		{
-			$oUser = new \CUser();
+			$oUser = \CUser::createInstance($this->GetName());
 			
 			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
 			if ($TenantId)
@@ -507,7 +507,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = new \CUser('Core', array());
+		$oUser = \CUser::createInstance($this->GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \EUserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -1723,7 +1723,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = new \CChannel();
+			$oChannel = \CCannel::createInstance($this->GetName());
 			
 			$oChannel->Login = $Login;
 			
@@ -2166,7 +2166,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = new \CTenant();
+			$oTenant = \CTenant::createInstance($this->GetName());;
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;
@@ -2504,7 +2504,7 @@ class CoreModule extends \Aurora\System\AbstractModule
 				throw new \System\Exceptions\ApiException(\System\Notifications::UserAlreadyExists);
 			}
 			
-			$oUser = new \CUser();
+			$oUser = \CUser::createInstance($this->GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
