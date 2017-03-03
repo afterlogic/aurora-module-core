@@ -33,7 +33,7 @@ class CApiCoreUsersManager extends \Aurora\System\AbstractManager
 	/**
 	 * @param \Aurora\System\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\AbstractModule $oModule = null)
+	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
 		parent::__construct('users', $oManager, $oModule);
 		

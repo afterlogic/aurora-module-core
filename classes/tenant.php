@@ -249,8 +249,8 @@ class CTenant extends \Aurora\System\EAV\Entity
 
 	public function getUserCount()
 	{
-		$oUsersApi =\Aurora\System\Api::GetSystemManager('users');
-		return $oUsersApi->getUsersCountForTenant($this->EntityId);
+//		$oUsersApi =\Aurora\System\Api::GetSystemManager('users');
+//		return $oUsersApi->getUsersCountForTenant($this->EntityId);
 	}
 
 	/**
