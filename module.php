@@ -83,7 +83,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 		}
 		else
 		{
-			$oUser = \CUser::createInstance($this->GetName());
+			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
 			
 			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
 			if ($TenantId)
@@ -507,7 +507,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = \CUser::createInstance($this->GetName());
+		$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \EUserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -1723,7 +1723,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = \CCannel::createInstance($this->GetName());
+			$oChannel = \Aurora\System\EAV\Entity::createInstance('CCannel', $this->GetName());
 			
 			$oChannel->Login = $Login;
 			
@@ -2166,7 +2166,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = \CTenant::createInstance($this->GetName());;
+			$oTenant = \Aurora\System\EAV\Entity::createInstance('CTenant', $this->GetName());
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;
@@ -2504,7 +2504,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
 			}
 			
-			$oUser = \CUser::createInstance($this->GetName());
+			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
