@@ -75,7 +75,7 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 				);
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -101,7 +101,7 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 			
 			$iResult = count($aResults);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -125,7 +125,7 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 				$oGroup = $oResult;
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -164,7 +164,7 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 //				}
 //			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -187,18 +187,18 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 				{
 					if (!$this->oEavManager->saveObject($oGroup))
 					{
-						throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
 					}
 				}
 				else
 				{
-					throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupAlreadyExists);
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupAlreadyExists);
 				}
 			}
 
 			$bResult = true;
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -223,18 +223,18 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 				{
 					if (!$this->oEavManager->saveObject($oGroup))
 					{
-						throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
 					}
 				}
 				else
 				{
-					throw new \CApiManagerException(Errs::UserGroupsManager_UserGroupDoesNotExist);
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupDoesNotExist);
 				}
 			}
 
 			$bResult = true;
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -268,7 +268,7 @@ class CApiCoreUserGroupsManager extends \Aurora\System\AbstractManager
 
 //			$bResult = $this->oEavManager->deleteObject($oGroup->EntityId);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}

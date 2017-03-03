@@ -89,7 +89,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				$iOrderType
 			);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -115,7 +115,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 			
 			$iResult = count($aResultTenants);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -146,7 +146,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 					self::$oDefaultTenant = $oResult;
 				}
 			}
-			catch (CApiBaseException $oException)
+			catch (\Aurora\System\Exceptions\BaseException $oException)
 			{
 				$this->setLastException($oException);
 			}
@@ -172,7 +172,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				$oTenant = $oResult;
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -219,7 +219,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				}
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -285,7 +285,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				}
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -316,7 +316,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 							$oChannel = $this->oChannelsManager->getChannelById($oTenant->IdChannel);
 							if (!$oChannel)
 							{
-								throw new \CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+								throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
 							}
 						}
 						else
@@ -331,7 +331,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 					
 					if (!$this->oEavManager->saveEntity($oTenant))
 					{
-						throw new \CApiManagerException(Errs::TenantsManager_TenantCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantCreateFailed);
 					}
 					
 					if ($oTenant->EntityId)
@@ -341,13 +341,13 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				}
 				else
 				{
-					throw new \CApiManagerException(Errs::TenantsManager_TenantAlreadyExists);
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantAlreadyExists);
 				}
 			}
 
 			$bResult = true;
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -359,8 +359,8 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 	/**
 	 * @param CTenant $oTenant
 	 *
-	 * @throws CApiManagerException(Errs::TenantsManager_QuotaLimitExided) 1707
-	 * @throws CApiManagerException(Errs::TenantsManager_TenantUpdateFailed) 1703
+	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_QuotaLimitExided) 1707
+	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantUpdateFailed) 1703
 	 * @throws $oException
 	 *
 	 * @return bool
@@ -375,7 +375,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				$bResult = $this->oEavManager->saveEntity($oTenant);
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -412,7 +412,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				array('IdChannel' => $iChannelId)
 			);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -462,7 +462,7 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId);
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}

@@ -69,7 +69,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 				$iOrderType
 			);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -95,7 +95,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 			
 			$iResult = count($aResults);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -119,7 +119,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 				$oChannel = $oResult;
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -151,7 +151,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 				$iChannelId = $aResultChannels[0]->EntityId;
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -188,7 +188,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 				}
 			}
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}
@@ -213,18 +213,18 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 					
 					if (!$this->oEavManager->saveEntity($oChannel))
 					{
-						throw new \CApiManagerException(Errs::ChannelsManager_ChannelCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelCreateFailed);
 					}
 				}
 				else
 				{
-					throw new \CApiManagerException(Errs::ChannelsManager_ChannelAlreadyExists);
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelAlreadyExists);
 				}
 			}
 
 			$bResult = true;
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -249,18 +249,18 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 				{
 					if (!$this->oEavManager->saveEntity($oChannel))
 					{
-						throw new \CApiManagerException(Errs::ChannelsManager_ChannelUpdateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelUpdateFailed);
 					}
 				}
 				else
 				{
-					throw new \CApiManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
 				}
 			}
 
 			$bResult = true;
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$bResult = false;
 			$this->setLastException($oException);
@@ -295,7 +295,7 @@ class CApiCoreChannelsManager extends \Aurora\System\AbstractManager
 
 			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId);
 		}
-		catch (CApiBaseException $oException)
+		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
 			$this->setLastException($oException);
 		}

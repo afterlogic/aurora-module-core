@@ -36,7 +36,7 @@ class CChannel extends \Aurora\System\EAV\Entity
 	);	
 
 	/**
-	 * @throws CApiValidationException
+	 * @throws \Aurora\System\Exceptions\ValidationException
 	 *
 	 * @return bool
 	 */
@@ -45,9 +45,9 @@ class CChannel extends \Aurora\System\EAV\Entity
 		switch (true)
 		{
 			case !\Aurora\System\Validate::IsValidLogin($this->Login):
-				throw new \CApiValidationException(Errs::Validation_InvalidTenantName);
+				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName);
 			case \Aurora\System\Validate::IsEmpty($this->Login):
-				throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
 					'{{ClassName}}' => 'CChannel', '{{ClassField}}' => 'Login'));
 		}
 

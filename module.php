@@ -364,7 +364,7 @@ class CoreModule extends \Aurora\System\Module\AbstractModule
 				catch (\Exception $oException)
 				{
 					$iErrorCode = \Aurora\System\Notifications::UnknownError;
-					if ($oException instanceof \CApiManagerException)
+					if ($oException instanceof \Aurora\System\Exceptions\ManagerException)
 					{
 						switch ($oException->getCode())
 						{

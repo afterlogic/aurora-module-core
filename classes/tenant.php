@@ -256,9 +256,9 @@ class CTenant extends \Aurora\System\EAV\Entity
 	/**
 	 * @return bool
 	 *
-	 * @throws CApiValidationException(Errs::Validation_InvalidTenantName) 1109
-	 * @throws CApiValidationException(Errs::Validation_FieldIsEmpty) 1102
-	 * @throws CApiValidationException(Errs::Validation_InvalidEmail) 1107
+	 * @throws \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName) 1109
+	 * @throws \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty) 1102
+	 * @throws \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidEmail) 1107
 	 *
 	 * @return true
 	 */
@@ -269,12 +269,12 @@ class CTenant extends \Aurora\System\EAV\Entity
 			switch (true)
 			{
 //				case !\Aurora\System\Validate::IsValidLogin($this->Login):
-//					throw new \CApiValidationException(Errs::Validation_InvalidTenantName);
+//					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName);
 				case \Aurora\System\Validate::IsEmpty($this->Name):
-					throw new \CApiValidationException(Errs::Validation_FieldIsEmpty, null, array(
+					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
 						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Name'));
 //				case !\Aurora\System\Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
-//					throw new \CApiValidationException(Errs::Validation_InvalidEmail, null, array(
+//					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidEmail, null, array(
 //						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Email'));
 			}
 		}
