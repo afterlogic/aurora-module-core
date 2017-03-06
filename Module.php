@@ -638,7 +638,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if ($bDoGC)
 		{
 			\Aurora\System\Api::Log('GC: FileCache / Start');
-			$oApiFileCache = \Aurora\System\Api::GetSystemManager('filecache');
+			$oApiFileCache = \Aurora\System\Api::GetSystemManager('Filecache');
 			$oApiFileCache->gc();
 			$oCacher->gc();
 			\Aurora\System\Api::Log('GC: FileCache / End');
@@ -1146,7 +1146,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function GetAuthenticatedAccount($AuthToken)
 	{
 		$oAccount = null;
-		$oEavManager = \Aurora\System\Api::GetSystemManager('eav');
+		$oEavManager = \Aurora\System\Api::GetSystemManager('Eav');
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
