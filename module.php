@@ -19,9 +19,9 @@
  */
 
 
-namespace Aurora\Modules;
+namespace Aurora\Modules\Core;
 
-class CoreModule extends \Aurora\System\Module\AbstractModule
+class Module extends \Aurora\System\Module\AbstractModule
 {
 	public $oApiTenantsManager = null;
 	
