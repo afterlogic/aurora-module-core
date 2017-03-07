@@ -2712,7 +2712,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if (false !== $mResult && is_resource($mResult)) 
 		{
 			$sContentType = \MailSo\Base\Utils::MimeContentType($sFileName);
-			\Aurora\System\ResponseManager::OutputHeaders(true, $sContentType, $sFileName);
+			\Aurora\System\Managers\Response::OutputHeaders(true, $sContentType, $sFileName);
 
 			if ($sContentType === 'text/plain') 
 			{

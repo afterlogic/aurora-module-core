@@ -23,7 +23,7 @@
  *
  * @package Tenants
  */
-class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
+class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var array
@@ -45,9 +45,9 @@ class CApiCoreTenantsManager extends \Aurora\System\AbstractManager
 	/**
 	 * Creates a new instance of the object.
 	 *
-	 * @param \Aurora\System\GlobalManager &$oManager
+	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = 'db', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = 'db', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
 		parent::__construct('tenants', $oManager, $oModule);
 		

@@ -23,7 +23,7 @@
  * 
  * @package Users
  */
-class CApiCoreUsersManager extends \Aurora\System\AbstractManager
+class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var CApiEavManager
@@ -31,9 +31,9 @@ class CApiCoreUsersManager extends \Aurora\System\AbstractManager
 	public $oEavManager = null;
 	
 	/**
-	 * @param \Aurora\System\GlobalManager &$oManager
+	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
 		parent::__construct('users', $oManager, $oModule);
 		
