@@ -27,7 +27,7 @@
 class CApiCoreUserGroupsManager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
-	 * @var CApiEavManager
+	 * @var \Aurora\System\Managers\Eav\Manager
 	 */
 	public $oEavManager = null;
 	

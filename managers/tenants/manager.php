@@ -31,7 +31,7 @@ class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
 	static $aTenantNameCache = array();
 	
 	/**
-	 * @var CApiEavManager
+	 * @var \Aurora\System\Managers\Eav\Manager
 	 */
 	public $oEavManager = null;
 	
