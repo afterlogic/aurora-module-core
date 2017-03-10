@@ -18,6 +18,9 @@
  * @package Modules
  */
 
+use Aurora\System\Exceptions\Errs;
+use Aurora\System\Exceptions\ErrorCodes;
+
 /**
  * CApiTenantsManager class summary
  *
