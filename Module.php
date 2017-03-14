@@ -35,31 +35,67 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * 
 	 * @ignore
 	 */
-	public function init() {
-		
-		$this->incClass('channel');
-		$this->incClass('usergroup');		
-		$this->incClass('tenant');
-		$this->incClass('socials');
-		$this->incClass('user');
+	public function init() 
+	{
+		$this->incClasses(array(
+			'channel',
+			'usergroup',
+			'tenant',
+			'socials',
+			'user'
+		));
 		
 		$this->oApiTenantsManager = $this->GetManager('tenants');
 		$this->oApiChannelsManager = $this->GetManager('channels');
 		$this->oApiUsersManager = $this->GetManager('users');
 		
 		$this->AddEntries(array(
-				'ping' => 'EntryPing',
-				'pull' => 'EntryPull',
-				'plugins' => 'EntryPlugins',
-				'mobile' => 'EntryMobile',
-				'speclogon' => 'EntrySpeclogon',
-				'speclogoff' => 'EntrySpeclogoff',
-				'sso' => 'EntrySso',
-				'postlogin' => 'EntryPostlogin'
-			)
-		);
+			'api' => 'EntryApi',
+			'ping' => 'EntryPing',
+			'pull' => 'EntryPull',
+			'plugins' => 'EntryPlugins',
+			'mobile' => 'EntryMobile',
+			'speclogon' => 'EntrySpeclogon',
+			'speclogoff' => 'EntrySpeclogoff',
+			'sso' => 'EntrySso',
+			'postlogin' => 'EntryPostlogin'
+		));
 		
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
+	}
+	
+	/**
+	 * 
+	 * @return mixed
+	 */
+	private function getUploadData()
+	{
+		$mResult = false;
+		$sError = '';
+		$sInputName = 'jua-uploader';
+
+		$iError = UPLOAD_ERR_OK;
+		$_FILES = isset($_FILES) ? $_FILES : null;
+		if (isset($_FILES, 
+			$_FILES[$sInputName], 
+			$_FILES[$sInputName]['name'], 
+			$_FILES[$sInputName]['tmp_name'], 
+			$_FILES[$sInputName]['size'], 
+			$_FILES[$sInputName]['type']))
+		{
+			$iError = (isset($_FILES[$sInputName]['error'])) ? 
+					(int) $_FILES[$sInputName]['error'] : UPLOAD_ERR_OK;
+			if (UPLOAD_ERR_OK === $iError)
+			{
+				$mResult = $_FILES[$sInputName];
+			}
+			else
+			{
+				$sError = 'unknown';
+			}
+		}
+		
+		return $mResult;
 	}
 	
 	/**
@@ -207,8 +243,107 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return rmdir($dir);
 	}
 	/***** static functions *****/
-	
+
 	/***** public functions *****/
+	/**
+	 * 
+	 * @return string
+	 * @throws \Aurora\System\Exceptions\ApiException
+	 */
+	public function EntryApi()
+	{
+		@ob_start();
+
+		$aResponseItem = null;
+		$sModule = $this->oHttp->GetPost('Module', null);
+		$sMethod = $this->oHttp->GetPost('Method', null);
+		$sParameters = $this->oHttp->GetPost('Parameters', null);
+		$sFormat = $this->oHttp->GetPost('Format', null);
+
+		if (isset($sModule, $sMethod))
+		{
+			$oModule = \Aurora\System\Api::GetModule($sModule);
+			if ($oModule instanceof \Aurora\System\Module\AbstractModule) 
+			{
+				try
+				{
+					\Aurora\System\Api::Log('API: ' . $sModule . '::' . $sMethod);
+
+					if (\strtolower($sModule) !== 'core' && 
+						\Aurora\System\Api::GetConf('labs.webmail.csrftoken-protection', true) && !\Aurora\System\Api::validateAuthToken()) 
+					{
+						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidToken);
+					} 
+					else if (!empty($sModule) && !empty($sMethod)) 
+					{
+						$aParameters = isset($sParameters) &&  \is_string($sParameters) ? 
+							@\json_decode($sParameters, true) : array();
+						
+						$sTenantName = $this->oHttp->GetPost('TenantName', '');
+						\Aurora\System\Api::setTenantName($sTenantName);
+
+						if (!\is_array($aParameters))
+						{
+							$aParameters = array($aParameters);
+						}
+						$mUploadData = $this->getUploadData();
+						if (\is_array($mUploadData))
+						{
+							$aParameters['UploadData'] = $mUploadData;
+						}
+
+						$oModule->CallMethod(
+							$sMethod, 
+							$aParameters, 
+							true
+						);
+						$aResponseItem = $oModule->DefaultResponse(
+							$sMethod,
+							\Aurora\System\Api::GetModuleManager()->GetResults()
+						);
+					}
+
+					if (!\is_array($aResponseItem)) 
+					{
+						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UnknownError);
+					}
+
+					if ($sFormat !== 'Raw')
+					{
+						@header('Content-Type: application/json; charset=utf-8');
+					}
+				}
+				catch (\Exception $oException)
+				{
+					\Aurora\System\Api::LogException($oException);
+
+					$aAdditionalParams = null;
+					if ($oException instanceof \Aurora\System\Exceptions\ApiException) 
+					{
+						$aAdditionalParams = $oException->GetObjectParams();
+					}
+
+					$aResponseItem = $oModule->ExceptionResponse(
+						$sMethod,
+						$oException,
+						$aAdditionalParams
+					);
+				}
+
+			}
+		}
+		else
+		{
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+		}
+
+		if (isset($aResponseItem['Parameters']))
+		{
+			unset($aResponseItem['Parameters']);
+		}
+		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::MailSoLogger());		
+	}
+	
 	/**
 	 * @ignore
 	 */
@@ -1263,8 +1398,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if (is_array($mResult))
 		{
-			$mResult['time'] = $SignMe ? time() + 60 * 60 * 24 * 30 : 0;
-			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult);
+			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
+			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
 			
 			return array(
 				'AuthToken' => $sAuthToken
