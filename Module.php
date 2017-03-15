@@ -2880,6 +2880,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $logData;
 	}
 	
+	/**
+	 * 
+	 * @param bool $bEventLogType
+	 * @return bool
+	 */
 	public function ClearLog($bEventLogType)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
