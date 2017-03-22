@@ -1858,7 +1858,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = \Aurora\System\EAV\Entity::createInstance('CCannel', $this->GetName());
+			$oChannel = \Aurora\System\EAV\Entity::createInstance('CChannel', $this->GetName());
 			
 			$oChannel->Login = $Login;
 			
