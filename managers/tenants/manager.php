@@ -309,7 +309,7 @@ class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$this->isTenantExists($oTenant))
 				{
-					if (0 < $oTenant->IdChannel &&\Aurora\System\Api::GetConf('tenant', false))
+					if (0 < $oTenant->IdChannel)
 					{
 						/* @var $oChannelsApi CApiChannelsManager */
 						

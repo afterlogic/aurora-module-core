@@ -171,7 +171,8 @@ class CTenant extends \Aurora\System\EAV\Entity
 	 */
 	public function isFilesSupported()
 	{
-		if (!\Aurora\System\Api::GetConf('capa', false))
+		$oCoreModule = \Aurora\System\Api::GetModule('Core'); 
+		if (!$oCoreModule || !$oCoreModule->getConfig('AllowCapa', false))
 		{
 			return true;
 		}
@@ -184,7 +185,8 @@ class CTenant extends \Aurora\System\EAV\Entity
 	 */
 	public function isHelpdeskSupported()
 	{
-		if (!\Aurora\System\Api::GetConf('capa', false))
+		$oCoreModule = \Aurora\System\Api::GetModule('Core'); 
+		if (!$oCoreModule || !$oCoreModule->getConfig('AllowCapa', false))
 		{
 			return true;
 		}
@@ -195,22 +197,10 @@ class CTenant extends \Aurora\System\EAV\Entity
 	/**
 	 * @return bool
 	 */
-	public function isSipSupported()
-	{
-		if (!\Aurora\System\Api::GetConf('capa', false))
-		{
-			return true;
-		}
-
-		return '' === $this->Capa || false !== strpos($this->Capa, ETenantCapa::SIP);
-	}
-
-	/**
-	 * @return bool
-	 */
 	public function isTwilioSupported()
 	{
-		if (!\Aurora\System\Api::GetConf('capa', false))
+		$oCoreModule = \Aurora\System\Api::GetModule('Core'); 
+		if (!$oCoreModule || !$oCoreModule->getConfig('AllowCapa', false))
 		{
 			return true;
 		}

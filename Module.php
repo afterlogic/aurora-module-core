@@ -270,7 +270,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 					\Aurora\System\Api::Log('API: ' . $sModule . '::' . $sMethod);
 
 					if (\strtolower($sModule) !== 'core' && 
-						\Aurora\System\Api::GetConf('labs.webmail.csrftoken-protection', true) && !\Aurora\System\Api::validateAuthToken()) 
+						$this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateAuthToken()) 
 					{
 						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidToken);
 					} 
@@ -475,7 +475,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryPostlogin()
 	{
-		if (\Aurora\System\Api::GetConf('labs.allow-post-login', false))
+		if ($this->getConfig('AllowPostLogin', false))
 		{
 			$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
 					
@@ -531,7 +531,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 								break;
 						}
 					}
-					$sReditectUrl = \Aurora\System\Api::GetConf('labs.post-login-error-redirect-url', './');
+					$sReditectUrl = $this->getConfig('PostLoginErrorRedirectUrl', './');
 					\Aurora\System\Api::Location($sReditectUrl . '?error=' . $iErrorCode);
 					exit;
 				}
@@ -570,9 +570,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			$iNow = time();
 
-			$iTime2Run =\Aurora\System\Api::GetConf('temp.cron-time-to-run', 10800);
-			$iTime2Kill =\Aurora\System\Api::GetConf('temp.cron-time-to-kill', 10800);
-			$sDataFile =\Aurora\System\Api::GetConf('temp.cron-time-file', '.clear.dat');
+			$iTime2Run = $this->getConfig('CronTimeToRunSeconds', 10800);
+			$iTime2Kill = $this->getConfig('CronTimeToKillSeconds', 10800);
+			$sDataFile = $this->getConfig('CronTimeFile', '.clear.dat');
 
 			$iFiletTime = -1;
 			if (@file_exists(\Aurora\System\Api::DataPath().'/'.$sDataFile))

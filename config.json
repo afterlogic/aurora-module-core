@@ -1,4 +1,28 @@
 {
+	"AllowCapa": [
+		false,
+		"bool"
+	],
+	"AllowPostLogin": [
+		false,
+		"bool"
+	],
+	"CsrfTokenProtection": [
+		true,
+		"bool"
+	],
+	"CronTimeToRunSeconds": [
+		10800,
+		"int"
+	],
+	"CronTimeToKillSeconds": [
+		10800,
+		"int"
+	],
+	"CronTimeFile": [
+		".clear.dat",
+		"string"
+	],
     "DateFormat": [
         "DD\/MM\/YYYY",
         "spec",
@@ -18,6 +42,10 @@
 	],
     "Language": [
         "English",
+        "string"
+    ],
+    "PostLoginErrorRedirectUrl": [
+        "./",
         "string"
     ],
     "TimeFormat": [

@@ -19,7 +19,6 @@
 /**
  * @property int $IdUser
  * @property int $IdSubscription
- * @property int $ContactsPerPage
  * @property int $CreatedTime
  * @property int $LastLogin
  * @property int $LastLoginNow
@@ -65,48 +64,46 @@ class CUser extends \Aurora\System\EAV\Entity
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$this->aStaticMap = array(
-			'Name'								=> array('string', ''),
-			'PublicId'							=> array('string', ''),
-			'IdTenant'							=> array('int', 0),
-			'IsDisabled'						=> array('bool', false),
-			'IdSubscription'					=> array('int', 0), //'id_subscription'),
-			'Role'								=> array('int', \EUserRole::NormalUser),
+			'Name'						=> array('string', ''),
+			'PublicId'					=> array('string', ''),
+			'IdTenant'					=> array('int', 0),
+			'IsDisabled'				=> array('bool', false),
+			'IdSubscription'			=> array('int', 0),
+			'Role'						=> array('int', \EUserRole::NormalUser),
 
-			'ContactsPerPage'					=> array('int', 0), //'contacts_per_page'),
+			'CreatedTime'				=> array('string', ''),
+			'LastLogin'					=> array('string', ''),
+			'LastLoginNow'				=> array('string', ''),
+			'LoginsCount'				=> array('int', 0),
 
-			'CreatedTime'						=> array('string', ''), //'created_time'), //must be datetime
-			'LastLogin'							=> array('string', ''), //'last_login', true, false), //must be datetime
-			'LastLoginNow'						=> array('string', ''), //'last_login_now', true, false), //must be datetime
-			'LoginsCount'						=> array('int', 0), //'logins_count', true, false),
+			'Language'					=> array('string', $oModuleManager->getModuleConfigValue('Core', 'Language')),
 
-			'Language'							=> array('string', $oModuleManager->getModuleConfigValue('Core', 'Language')),
+			'DefaultTimeZone'			=> array('int', 0),
+			'TimeFormat'				=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
+			'DateFormat'				=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
 
-			'DefaultTimeZone'					=> array('int', 0), //'def_timezone'),
-			'TimeFormat'						=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
-			'DateFormat'						=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
+			'Question1'					=> array('string', ''),
+			'Question2'					=> array('string', ''),
+			'Answer1'					=> array('string', ''),
+			'Answer2'					=> array('string', ''),
 
-			'Question1'							=> array('string', ''), //'question_1'),
-			'Question2'							=> array('string', ''), //'question_2'),
-			'Answer1'							=> array('string', ''), //'answer_1'),
-			'Answer2'							=> array('string', ''), //'answer_2'),
-
-			'SipEnable'							=> array('bool', true), //'sip_enable'),
-			'SipImpi'							=> array('string', ''), //'sip_impi'),
-			'SipPassword'						=> array('string', ''), //'sip_password'), //must be password
+			'SipEnable'					=> array('bool', true),
+			'SipImpi'					=> array('string', ''),
+			'SipPassword'				=> array('string', ''),
 			
-			'DesktopNotifications'				=> array('bool', false), //'desktop_notifications'),
+			'DesktopNotifications'		=> array('bool', false),
 
-			'EnableOpenPgp'						=> array('bool', true), //'enable_open_pgp'),
-			'AutosignOutgoingEmails'			=> array('bool', true), //'autosign_outgoing_emails'),
+			'EnableOpenPgp'				=> array('bool', true),
+			'AutosignOutgoingEmails'	=> array('bool', true),
 
-			'Capa'								=> array('string', ''), //'capa'),
-			'CustomFields'						=> array('string', ''), //'custom_fields'), //must be serialize type
+			'Capa'						=> array('string', ''),
+			'CustomFields'				=> array('string', ''),
 
-			'FilesEnable'						=> array('bool', true), //'files_enable'),
+			'FilesEnable'				=> array('bool', true),
 			
-			'EmailNotification'					=> array('string', ''), //'email_notification'),
+			'EmailNotification'			=> array('string', ''),
 			
-			'PasswordResetHash'					=> array('string', ''), //'password_reset_hash')
+			'PasswordResetHash'			=> array('string', ''),
 		);
 
 		$this->oSubCache = null;
@@ -129,7 +126,8 @@ class CUser extends \Aurora\System\EAV\Entity
 		return true;
 		// TODO
 
-		if (!\Aurora\System\Api::GetConf('capa', false) || '' === $this->Capa ||
+		$oCoreModule = \Aurora\System\Api::GetModule('Core'); 
+		if (!$oCoreModule || !$oCoreModule->getConfig('AllowCapa', false) || '' === $this->Capa ||
 			0 === $this->IdSubscription)
 		{
 			return true;
@@ -176,7 +174,8 @@ class CUser extends \Aurora\System\EAV\Entity
 	 */
 	public function setCapa($oTenant, $sCapaName, $bValue)
 	{
-		if (!\Aurora\System\Api::GetConf('capa', false) || !$oTenant)
+		$oCoreModule = \Aurora\System\Api::GetModule('Core'); 
+		if (!$oCoreModule || !$oCoreModule->getConfig('AllowCapa', false) || !$oTenant)
 		{
 			return true;
 		}
