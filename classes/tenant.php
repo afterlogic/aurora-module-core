@@ -34,7 +34,6 @@
  * @property bool $AllowChangeAdminEmail
  * @property bool $AllowChangeAdminPassword
  *
- * @property string $LoginStyleImage
  * @property string $LogoUrl
  * 
  * @property bool $SipAllow
@@ -82,7 +81,6 @@ class CTenant extends \Aurora\System\EAV\Entity
 			'PayUrl'					=> array('string', ''),
 			'IsTrial'					=> array('bool', false),
 
-			'LoginStyleImage'			=> array('string', ''),
 			'LogoUrl'					=> array('string', ''),
 
 //			'SipAllow'					=> array('bool', false, false), //!!$oSettings->GetConf('Sip/AllowSip')

@@ -24,7 +24,6 @@
  * @property int $LastLoginNow
  * @property int $LoginsCount
  * @property string $Language
- * @property int $DefaultTimeZone
  * @property int $TimeFormat
  * @property string $DateFormat
  * @property string $Question1
@@ -78,7 +77,6 @@ class CUser extends \Aurora\System\EAV\Entity
 
 			'Language'					=> array('string', $oModuleManager->getModuleConfigValue('Core', 'Language')),
 
-			'DefaultTimeZone'			=> array('int', 0),
 			'TimeFormat'				=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
 			'DateFormat'				=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
 
