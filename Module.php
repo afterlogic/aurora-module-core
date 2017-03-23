@@ -61,7 +61,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'postlogin' => 'EntryPostlogin'
 		));
 		
-		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
+		$this->subscribeEvent('CreateAccount::before', array($this, 'onCreateAccount'));
 	}
 	
 	/**
@@ -109,7 +109,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * }
 	 * @param \CUser $oResult
 	 */
-	public function onCreateAccount($Args, &$Result)
+	public function onCreateAccount(&$Args, &$Result)
 	{
 		$oUser = null;
 		
@@ -136,6 +136,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if (!$this->oApiUsersManager->createUser($oUser))
 			{
 				$oUser = null;
+			}
+			if (isset($oUser))
+			{
+				$Args['UserId'] = $oUser->EntityId;
 			}
 		}
 		
