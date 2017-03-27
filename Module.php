@@ -127,10 +127,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$oUser->IdTenant = $TenantId;
 			}
 
+			$Email = (isset($Args['Email'])) ? $Args['Email'] : '';
 			$PublicId = (isset($Args['PublicId'])) ? $Args['PublicId'] : '';
-			if ($PublicId)
+			if (!empty($PublicId))
 			{
 				$oUser->PublicId = $PublicId;
+			}
+			else if (!empty($Email))
+			{
+				$oUser->PublicId = $Email;
 			}
 				
 			if (!$this->oApiUsersManager->createUser($oUser))
