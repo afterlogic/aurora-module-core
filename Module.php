@@ -932,7 +932,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($oSettings->GetConf('AdminPassword')),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
+				'LogSizeBytes' => $oSettings->GetConf('EnableLogging') ? $this->getLogFileSize(false) : 0,
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
+				'EventLogSizeBytes' => $oSettings->GetConf('EnableEventLogging') ? $this->getLogFileSize(true) : 0,
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
 				'ELogLevel' => (new \ELogLevel)->getMap()
 			));
@@ -1002,20 +1004,27 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param string $AdminLogin Login for super administrator.
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
+	 * @param string $Language
+	 * @param int $TimeFormat
+	 * @param bool $EnableLogging
+	 * @param boll $EnableEventLogging
+	 * @param int $LoggingLevel
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null,
 			$DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null,
-			$Language = null, $TimeFormat = null)
+			$Language = null, $TimeFormat = null, $EnableLogging = null,
+			$EnableEventLogging = null, $LoggingLevel = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
-		$oSettings =&\Aurora\System\Api::GetSettings();
+		
 		if ($oUser->Role === \EUserRole::SuperAdmin)
 		{
+			$oSettings =&\Aurora\System\Api::GetSettings();
 			if ($LicenseKey !== null)
 			{
 				$oSettings->SetConf('LicenseKey', $LicenseKey);
@@ -1060,6 +1069,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 					throw new \Aurora\System\Exceptions\ApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
 				}
 			}
+			if ($EnableLogging !== null)
+			{
+				$oSettings->SetConf('EnableLogging', $EnableLogging);
+			}
+			if ($EnableEventLogging !== null)
+			{
+				$oSettings->SetConf('EnableEventLogging', $EnableEventLogging);
+			}
+			if ($LoggingLevel !== null)
+			{
+				$oSettings->SetConf('LoggingLevel', $LoggingLevel);
+			}
+			return $oSettings->Save();
 		}
 		
 		if ($oUser->Role === \EUserRole::NormalUser)
@@ -1075,7 +1097,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$this->UpdateUserObject($oUser);
 		}
 		
-		return $oSettings->Save();
+		return false;
 	}
 	
 	public function UpdateLoggingSettings($EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
@@ -1410,11 +1432,13 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
 			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
 			
+			\Aurora\System\Api::LogEvent('login-success: ' . $Login, $this->GetName());
 			return array(
 				'AuthToken' => $sAuthToken
 			);
 		}
 
+		\Aurora\System\Api::LogEvent('login-failed: ' . $Login, $this->GetName());
 		throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 	}
 	
@@ -1466,6 +1490,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{	
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
 		
+		\Aurora\System\Api::LogEvent('logout', $this->GetName());
+		
 		$mAuthToken = \Aurora\System\Api::getAuthenticatedUserAuthToken();
 		
 		if ($mAuthToken !== false)
@@ -1476,7 +1502,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			throw new \Aurora\System\Exceptions\ApiException(\Auth\Notifications::IncorrentAuthToken);
 		}
-
+		
 		return true;
 	}
 	
@@ -2844,12 +2870,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $bResult;
 	}
 	
-	public function GetLogFile($bEventLogType)
+	private function getLogFileSize($bEventsLog)
+	{
+		$sLogFilePrefix = $bEventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
+		
+		return file_exists($sFileName) ? filesize($sFileName) : 0;
+	}
+	
+	public function GetLogFile($EventsLog)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 
 		$mResult = fopen($sFileName, "r");
 
@@ -2871,19 +2905,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 	}
 	
-	public function GetLog($iPartSize = 10240, $bEventLogType)
+	public function GetLog($EventsLog, $PartSize = 10240)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 		
 		$logData = '';
 		
 		if (file_exists($sFileName))
 		{
-			$iOffset = filesize($sFileName) - $iPartSize;
-			$logData = file_get_contents($sFileName, false, null, $iOffset, $iPartSize);
+			$iOffset = filesize($sFileName) - $PartSize;
+			$logData = file_get_contents($sFileName, false, null, $iOffset, $PartSize);
 		}
 		
 		return $logData;
@@ -2891,15 +2925,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	/**
 	 * 
-	 * @param bool $bEventLogType
+	 * @param bool $EventsLog
 	 * @return bool
 	 */
-	public function ClearLog($bEventLogType)
+	public function ClearLog($EventsLog)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
-		$logFilePrefix = $bEventLogType ? 'event-' : '';
-		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($logFilePrefix);
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 		
 		return \Aurora\System\Api::ClearLog($sFileName);
 	}
