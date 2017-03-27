@@ -2873,6 +2873,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return file_exists($sFileName) ? filesize($sFileName) : 0;
 	}
 	
+	public function GetLogFilesSize()
+	{
+		return [
+			'LogSizeBytes' => $this->getLogFileSize(false),
+			'EventLogSizeBytes' => $this->getLogFileSize(true),
+		];
+	}
+	
 	public function GetLogFile($EventsLog)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
