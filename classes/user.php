@@ -42,6 +42,8 @@
  * @property bool $FilesEnable
  * @property string $EmailNotification
  * @property string $PasswordResetHash
+ * 
+ * @property bool $WriteSeparateLog
  *
  * @package Classes
  * @subpackage Users
@@ -102,6 +104,8 @@ class CUser extends \Aurora\System\EAV\Entity
 			'EmailNotification'			=> array('string', ''),
 			
 			'PasswordResetHash'			=> array('string', ''),
+			
+			'WriteSeparateLog'			=> array('bool', false),
 		);
 
 		$this->oSubCache = null;
@@ -203,7 +207,8 @@ class CUser extends \Aurora\System\EAV\Entity
 		return array(
 			'Name' => $this->Name,
 			'PublicId' => $this->PublicId,
-			'Role' => $this->Role
+			'Role' => $this->Role,
+			'WriteSeparateLog' => $this->WriteSeparateLog,
 		);
 	}
 }

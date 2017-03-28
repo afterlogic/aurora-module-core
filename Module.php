@@ -55,8 +55,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'pull' => 'EntryPull',
 			'plugins' => 'EntryPlugins',
 			'mobile' => 'EntryMobile',
-			'speclogon' => 'EntrySpeclogon',
-			'speclogoff' => 'EntrySpeclogoff',
 			'sso' => 'EntrySso',
 			'postlogin' => 'EntryPostlogin'
 		));
@@ -422,26 +420,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 		\Aurora\System\Api::Location('./');
 	}
 	
-	/**
-	 * @ignore
-	 * Creates entry point ?Speclogon that turns on user level of logging.
-	 */
-	public function EntrySpeclogon()
-	{
-		\Aurora\System\Api::SpecifiedUserLogging(true);
-		\Aurora\System\Api::Location('./');
-	}
-	
-	/**
-	 * @ignore
-	 * Creates entry point ?Speclogoff that turns off user level of logging.
-	 */
-	public function EntrySpeclogoff()
-	{
-		\Aurora\System\Api::SpecifiedUserLogging(false);
-		\Aurora\System\Api::Location('./');
-	}
-
 	/**
 	 * @ignore
 	 */
@@ -1767,7 +1745,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			case 'Tenant':
 				return $this->UpdateTenant($Data['Id'], $Data['PublicId'], $Data['Description']);
 			case 'User':
-				return $this->UpdateUser($Data['Id'], $Data['PublicId'], 0, $Data['Role']);
+				return $this->UpdateUser($Data['Id'], $Data['PublicId'], 0, $Data['Role'], $Data['WriteSeparateLog']);
 		}
 		return false;
 	}
@@ -2601,6 +2579,47 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $aUsers;
 	}
 
+	public function TurnOffSeparateLogs()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
+		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		foreach($aResults as $oUser)
+		{
+			$oUser->WriteSeparateLog = false;
+			$this->UpdateUserObject($oUser);
+		}
+		
+		return true;
+	}
+
+	public function ClearSeparateLogs()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
+//		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+//		foreach($aResults as $oUser)
+//		{
+//			$oUser->WriteSeparateLog = false;
+//			$this->UpdateUserObject($oUser);
+//		}
+		
+		return true;
+	}
+
+	public function GetUsersWithSeparateLog()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		
+		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aUsers = array();
+		foreach($aResults as $oUser)
+		{
+			$aUsers[] = $oUser->PublicId;
+		}
+		return $aUsers;
+	}
+	
 	/**
 	 * @api {post} ?/Api/ CreateUser
 	 * @apiName CreateUser
@@ -2746,10 +2765,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param string $PublicId New user name.
 	 * @param int $TenantId Identifier of tenant that will contain the user.
 	 * @param int $Role New user role.
+	 * @param bool $WriteSeparateLog New value of indicator if user's logs should be in a separate file.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1)
+	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null)
 	{
 		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
 		{
@@ -2777,6 +2797,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 				if ($Role !== -1)
 				{
 					$oUser->Role = $Role;
+				}
+				if ($WriteSeparateLog !== null)
+				{
+					$oUser->WriteSeparateLog = $WriteSeparateLog;
 				}
 				
 				return $this->oApiUsersManager->updateUser($oUser);

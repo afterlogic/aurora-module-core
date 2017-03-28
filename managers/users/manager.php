@@ -79,18 +79,21 @@ class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
 	 * @param string $sOrderBy = 'Email'. Field by which to sort.
 	 * @param int $iOrderType = 0
 	 * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
+	 * @param array $aFilters = []
 	 * @return array | false
 	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '', $aFilters = [])
 	{
 		$aResult = false;
 		try
 		{
-			$aFilters =  array();
-			
 			if ($sSearchDesc !== '')
 			{
-				$aFilters['Name'] = '%'.$sSearchDesc.'%';
+				$aFilters['Name'] = ['%'.$sSearchDesc.'%', 'LIKE'];
+				if (count($aFilters) > 1)
+				{
+					$aFilters = ['$AND' => $aFilters];
+				}
 			}
 				
 			$aResult = $this->oEavManager->getEntities(
