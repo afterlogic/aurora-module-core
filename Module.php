@@ -2597,12 +2597,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
-//		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
-//		foreach($aResults as $oUser)
-//		{
-//			$oUser->WriteSeparateLog = false;
-//			$this->UpdateUserObject($oUser);
-//		}
+		\Aurora\System\Api::RemoveSeparateLogs();
 		
 		return true;
 	}
