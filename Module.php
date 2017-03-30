@@ -910,10 +910,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($oSettings->GetConf('AdminPassword')),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
-				'LogSizeBytes' => $oSettings->GetConf('EnableLogging') ? $this->getLogFileSize(false) : 0,
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
-				'EventLogSizeBytes' => $oSettings->GetConf('EnableEventLogging') ? $this->getLogFileSize(true) : 0,
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
+				'LogFilesData' => $this->GetLogFilesData(),
 				'ELogLevel' => (new \ELogLevel)->getMap()
 			));
 		}
@@ -2889,46 +2888,61 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $bResult;
 	}
 	
-	private function getLogFileSize($bEventsLog)
+	public function GetLogFilesData()
 	{
-		$sLogFilePrefix = $bEventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
-		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
+		$oSettings =& \Aurora\System\Api::GetSettings();
+		$aData = [];
 		
-		return file_exists($sFileName) ? filesize($sFileName) : 0;
+		if ($oSettings->GetConf('EnableLogging'))
+		{
+			$sFileName = \Aurora\System\Api::GetLogFileName();
+			$sFilePath = \Aurora\System\Api::GetLogFileDir() . $sFileName;
+			$aData['LogFileName'] = $sFileName;
+			$aData['LogSizeBytes'] = file_exists($sFilePath) ? filesize($sFilePath) : 0;
+		}
+		
+		if ($oSettings->GetConf('EnableEventLogging'))
+		{
+			$sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Api::$sEventLogPrefix);
+			$sEventFilePath = \Aurora\System\Api::GetLogFileDir() . $sEventFileName;
+			$aData['EventLogFileName'] = $sEventFileName;
+			$aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
+		}
+		
+		return $aData;
 	}
 	
-	public function GetLogFilesSize()
-	{
-		return [
-			'LogSizeBytes' => $this->getLogFileSize(false),
-			'EventLogSizeBytes' => $this->getLogFileSize(true),
-		];
-	}
-	
-	public function GetLogFile($EventsLog)
+	public function GetLogFile($EventsLog = false, $PublicId = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
 		
 		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		if ($PublicId !== '')
+		{
+			$sLogFilePrefix = $PublicId . '-';
+		}
 		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 
-		$mResult = fopen($sFileName, "r");
-
-		if (false !== $mResult && is_resource($mResult)) 
+		if (file_exists($sFileName))
 		{
-			$sContentType = \MailSo\Base\Utils::MimeContentType($sFileName);
-			\Aurora\System\Managers\Response::OutputHeaders(true, $sContentType, $sFileName);
+			$mResult = fopen($sFileName, "r");
 
-			if ($sContentType === 'text/plain') 
+			if (false !== $mResult && is_resource($mResult)) 
 			{
-				echo(stream_get_contents($mResult));
-			} 
-			else 
-			{
-				\MailSo\Base\Utils::FpassthruWithTimeLimitReset($mResult);
+				$sContentType = \MailSo\Base\Utils::MimeContentType($sFileName);
+				\Aurora\System\Managers\Response::OutputHeaders(true, $sContentType, $sFileName);
+
+				if ($sContentType === 'text/plain') 
+				{
+					echo(stream_get_contents($mResult));
+				} 
+				else 
+				{
+					\MailSo\Base\Utils::FpassthruWithTimeLimitReset($mResult);
+				}
+
+				@fclose($mResult);
 			}
-
-			@fclose($mResult);
 		}
 	}
 	
