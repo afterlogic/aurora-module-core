@@ -1071,7 +1071,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			{
 				$oUser->TimeFormat = $TimeFormat;
 			}
-			$this->UpdateUserObject($oUser);
+			return $this->UpdateUserObject($oUser);
 		}
 		
 		return false;
