@@ -1043,7 +1043,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ApiException(Errs::UserManager_AccountOldPasswordNotCorrect);
+					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
 				}
 			}
 			if ($EnableLogging !== null)
@@ -1477,7 +1477,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 		else
 		{
-			throw new \Aurora\System\Exceptions\ApiException(\Auth\Notifications::IncorrentAuthToken);
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 		}
 		
 		return true;
