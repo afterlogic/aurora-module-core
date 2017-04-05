@@ -56,7 +56,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'plugins' => 'EntryPlugins',
 			'mobile' => 'EntryMobile',
 			'sso' => 'EntrySso',
-			'postlogin' => 'EntryPostlogin'
+			'postlogin' => 'EntryPostlogin',
+			'file-cache' => 'EntryFileCache'
 		));
 		
 		$this->subscribeEvent('CreateAccount::before', array($this, 'onCreateAccount'));
@@ -530,6 +531,54 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 
 			\Aurora\System\Api::Location('./');
+		}
+	}
+	
+	public function EntryFileCache()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+
+		$sRawKey = \Aurora\System\Application::GetPathItemByIndex(1, '');
+		$sAction = \Aurora\System\Application::GetPathItemByIndex(2, '');
+		$aValues = \Aurora\System\Api::DecodeKeyValues($sRawKey);
+		
+		$bDownload = true;
+		$bThumbnail = false;
+		
+		switch ($sAction)
+		{
+			case 'view':
+				$bDownload = false;
+				$bThumbnail = false;
+			break;
+			case 'thumb':
+				$bDownload = false;
+				$bThumbnail = true;
+			break;
+			default:
+				$bDownload = true;
+				$bThumbnail = false;
+			break;
+		}		
+		
+		$iUserId = (isset($aValues['UserId'])) ? $aValues['UserId'] : 0;
+		
+		if (isset($aValues['TempFile'], $aValues['TempName'], $aValues['Name']))
+		{
+			$bResult = false;
+			$sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
+			$oApiFileCache = \Aurora\System\Api::GetSystemManager('filecache');
+			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName']);
+
+			if (is_resource($mResult))
+			{
+				$bResult = true;
+				$sFileName = $aValues['Name'];
+				$sContentType = (empty($sFileName)) ? 'text/plain' : \MailSo\Base\Utils::MimeContentType($sFileName);
+				$sFileName = \Aurora\System\Utils::clearFileName($sFileName, $sContentType);
+
+				\Aurora\System\Utils::OutputFileResource($sUUID, $sContentType, $sFileName, $mResult, $bThumbnail, $bDownload);
+			}
 		}
 	}
 	
