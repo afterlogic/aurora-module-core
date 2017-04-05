@@ -1608,77 +1608,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	}
 	
 	/**
-	 * @api {post} ?/Api/ CreateEntity
-	 * @apiName CreateEntity
-	 * @apiGroup Core
-	 * @apiDescription Creates entity.
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=CreateEntity} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **Type** *string* Entity type.<br>
-	 * &emsp; **Data** *array* Entity data which fields depend on entity type.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "Tenant", Data: { PublicId: "PublicId_value", Description: "description_value" } }'
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	AuthToken: 'token_value',
-	 *	Parameters: '{ Type: "User", Data: { PublicId: "PublicId_value", Role: 2 } }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if entity was created successfully.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	Result: true
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
-	 * Creates entity.
-	 * 
-	 * @param string $Type Entity type.
-	 * @param array $Data Entity data which fields depend on entity type.
-	 * @return bool
-	 */
-	public function CreateEntity($Type, $Data)
-	{
-		switch ($Type)
-		{
-			case 'Tenant':
-				return $this->CreateTenant(0, $Data['Name'], $Data['Description']);
-			case 'User':
-				return $this->CreateUser(0, $Data['PublicId'], $Data['Role']);
-		}
-		return false;
-	}
-	
-	/**
 	 * @api {post} ?/Api/ UpdateEntity
 	 * @apiName UpdateEntity
 	 * @apiGroup Core
@@ -2665,10 +2594,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param int $TenantId Identifier of tenant that will contain new user.
 	 * @param string $PublicId New user name.
 	 * @param int $Role New user role.
+	 * @param bool $WriteSeparateLog Indicates if log file should be written separate for this user.
 	 * @return int|false
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser)
+	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser, $WriteSeparateLog = false)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
 		
@@ -2692,6 +2622,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
 			$oUser->Role = $Role;
+			$oUser->WriteSeparateLog = $WriteSeparateLog;
 
 			if ($this->oApiUsersManager->createUser($oUser))
 			{
