@@ -2821,25 +2821,18 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function GetLogFilesData()
 	{
-		$oSettings =& \Aurora\System\Api::GetSettings();
 		$aData = [];
 		
-		if ($oSettings->GetConf('EnableLogging'))
-		{
-			$sFileName = \Aurora\System\Api::GetLogFileName();
-			$sFilePath = \Aurora\System\Api::GetLogFileDir() . $sFileName;
-			$aData['LogFileName'] = $sFileName;
-			$aData['LogSizeBytes'] = file_exists($sFilePath) ? filesize($sFilePath) : 0;
-		}
-		
-		if ($oSettings->GetConf('EnableEventLogging'))
-		{
-			$sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Api::$sEventLogPrefix);
-			$sEventFilePath = \Aurora\System\Api::GetLogFileDir() . $sEventFileName;
-			$aData['EventLogFileName'] = $sEventFileName;
-			$aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
-		}
-		
+		$sFileName = \Aurora\System\Api::GetLogFileName();
+		$sFilePath = \Aurora\System\Api::GetLogFileDir() . $sFileName;
+		$aData['LogFileName'] = $sFileName;
+		$aData['LogSizeBytes'] = file_exists($sFilePath) ? filesize($sFilePath) : 0;
+
+		$sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Api::$sEventLogPrefix);
+		$sEventFilePath = \Aurora\System\Api::GetLogFileDir() . $sEventFileName;
+		$aData['EventLogFileName'] = $sEventFileName;
+		$aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
+	
 		return $aData;
 	}
 	
