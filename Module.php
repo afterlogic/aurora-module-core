@@ -2951,5 +2951,41 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		return \Aurora\System\Api::ClearLog($sFileName);
 	}
+	
+	/**
+	 * 
+	 * @param type $UserId
+	 * @param type $Content
+	 * @param type $FileName
+	 * @return type
+	 * @throws \Aurora\System\Exceptions\ApiException
+	 */
+	public function SaveContentAsTempFile($UserId, $Content, $FileName)
+	{
+		$mResult = false;
+		
+		$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
+		try
+		{
+			$sTempName = md5($sUUID.$Content.$FileName);
+			$oApiFileCache = \Aurora\System\Api::GetSystemManager('Filecache');
+
+			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
+			{
+				$oApiFileCache->put($sUUID, $sTempName, $Content);
+			}
+
+			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
+			{
+				$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
+			}
+		}
+		catch (\Exception $oException)
+		{
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
+		}
+		
+		return $mResult;
+	}
 	/***** public functions might be called with web API *****/
 }
