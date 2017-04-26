@@ -32,8 +32,6 @@
  * @property string $Answer2
  * @property string $Capa
  * @property bool $DesktopNotifications
- * @property bool $EnableOpenPgp
- * @property bool $AutosignOutgoingEmails
  * @property mixed $CustomFields
  * @property bool $SipEnable
  * @property string $SipImpi
@@ -92,9 +90,6 @@ class CUser extends \Aurora\System\EAV\Entity
 			'SipPassword'				=> array('string', ''),
 			
 			'DesktopNotifications'		=> array('bool', false),
-
-			'EnableOpenPgp'				=> array('bool', true),
-			'AutosignOutgoingEmails'	=> array('bool', true),
 
 			'Capa'						=> array('string', ''),
 			'CustomFields'				=> array('string', ''),
