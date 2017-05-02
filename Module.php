@@ -728,15 +728,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Does some pending actions to be executed when you log in.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=DoServerInitializations} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'DoServerInitializations',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'DoServerInitializations'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -870,9 +874,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Obtains list of module settings for authenticated user.
 	 * 
+	 * @apiHeader {string} [Authorization] "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetSettings} Method Method name.
-	 * @apiParam {string} [AuthToken] Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
@@ -975,9 +984,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Updates specified settings if super administrator is authenticated.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=UpdateSettings} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **LicenseKey** *string* Value of license key.<br>
@@ -994,7 +1008,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateSettings',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
 	 * }
 	 * 
@@ -1168,15 +1181,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=CreateTables} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'CreateTables',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'CreateTables'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -1265,9 +1282,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Tests connection to database with specified credentials.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=TestDbConnection} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **DbLogin** *string* Database login.<br>
@@ -1280,7 +1302,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'TestDbConnection',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value" }'
 	 * }
 	 * 
@@ -1409,14 +1430,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
 	 * @apiSuccess {mixed} Result.Result Object in case of success, otherwise **false**.
-	 * @apiSuccess {string} Result.Result.AuthToken Auth token.
+	 * @apiSuccess {string} Result.Result.AuthToken Authentication token.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'Login',
-	 *	Result: {AuthToken: 'token_value'}
+	 *	Result: { AuthToken: 'token_value' }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1474,15 +1495,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Logs out authenticated user. Clears session.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=Logout} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'Logout',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'Logout'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -1538,9 +1563,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Returns entity list.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetEntityList} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entities type.<br>
@@ -1550,7 +1580,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Type: "Tenant" }'
 	 * }
 	 * 
@@ -1599,9 +1628,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Returns entity.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetEntity} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entity type.<br>
@@ -1612,7 +1646,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntity',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Type: "User", Id: 123 }'
 	 * }
 	 * 
@@ -1662,9 +1695,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Updates entity.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=UpdateEntity} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entity type.<br>
@@ -1675,7 +1713,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, PublicId: "PublicId_value", Description: "description_value" } }'
 	 * }
 	 * 
@@ -1683,7 +1720,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Type: "User", Data: { Id: 123, PublicId: "PublicId_value", Role: 2 } }'
 	 * }
 	 * 
@@ -1733,9 +1769,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Deletes entity.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=DeleteEntity} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entity type.<br>
@@ -1746,7 +1787,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'DeleteEntity',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Type: "Tenant", Id: 123 }'
 	 * }
 	 * 
@@ -1796,9 +1836,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Creates channel with specified login and description.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=CreateChannel} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Login** *string* New channel login.<br>
@@ -1809,7 +1854,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'CreateChannel',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
@@ -1874,9 +1918,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Updates channel.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=UpdateChannel} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **ChannelId** *int* Channel identifier.<br>
@@ -1888,7 +1937,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateChannel',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ ChannelId: 123, Login: "login_value", Description: "description_value" }'
 	 * }
 	 * 
@@ -1958,9 +2006,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Deletes channel.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=DeleteChannel} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **ChannelId** *int* Identifier of channel to delete.<br>
@@ -1970,7 +2023,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'DeleteChannel',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ ChannelId: 123 }'
 	 * }
 	 * 
@@ -2029,15 +2081,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Obtains tenant list if super administrator is authenticated.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetTenantList} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantList',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'GetTenantList'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -2094,9 +2150,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Returns tenant identifier by tenant name.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetTenantIdByName} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantName** *string* Tenant name.<br>
@@ -2106,7 +2167,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetTenantIdByName',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ TenantName: "name_value" }'
 	 * }
 	 * 
@@ -2152,15 +2212,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Returns current tenant name.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetTenantName} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantName',
-	 *	AuthToken: 'token_value'
+	 *	Method: 'GetTenantName'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -2230,9 +2294,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Creates tenant.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=CreateTenant} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **ChannelId** *int* Identifier of channel new tenant belongs to.<br>
@@ -2244,7 +2313,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'CreateTenant',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ ChannelId: 123, Name: "name_value", Description: "description_value" }'
 	 * }
 	 * 
@@ -2316,9 +2384,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Updates tenant.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=UpdateTenant} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identifier of tenant to update.<br>
@@ -2331,7 +2404,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateTenant',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ TenantId: 123, Name: "name_value", Description: "description_value", ChannelId: 123 }'
 	 * }
 	 * 
@@ -2406,9 +2478,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Deletes tenant.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=DeleteTenant} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identifier of tenant to delete.<br>
@@ -2418,7 +2495,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'DeleteTenant',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ TenantId: 123 }'
 	 * }
 	 * 
@@ -2484,9 +2560,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Returns user list.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetUserList} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Offset** *int* Offset of user list.<br>
@@ -2500,7 +2581,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetUserList',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ Offset: 0, Limit: 0, OrderBy: "", OrderType: 0, Search: 0 }'
 	 * }
 	 * 
@@ -2598,9 +2678,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Creates user.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=CreateUser} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identifier of tenant that will contain new user.<br>
@@ -2612,7 +2697,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'CreateUser',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ TenantId: 123, PublicId: "PublicId_value", Role: 2 }'
 	 * }
 	 * 
@@ -2692,9 +2776,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Updates user.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=UpdateUser} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **UserId** *int* Identifier of user to update.<br>
@@ -2707,7 +2796,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateUser',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ UserId: 123, UserName: "name_value", TenantId: 123, Role: 2 }'
 	 * }
 	 * 
@@ -2794,9 +2882,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiGroup Core
 	 * @apiDescription Deletes user.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=DeleteUser} Method Method name.
-	 * @apiParam {string} AuthToken Auth token.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **UserId** *int* User identifier.<br>
@@ -2806,7 +2899,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'DeleteUser',
-	 *	AuthToken: 'token_value',
 	 *	Parameters: '{ UserId: 123 }'
 	 * }
 	 * 
