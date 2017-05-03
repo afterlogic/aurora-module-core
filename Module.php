@@ -913,7 +913,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetSettings',
-	 *	Result: { SiteName: "Aurora Cloud", Language: "English", TimeFormat: 1, DateFormat: "MM/DD/YYYY", EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
+	 *	Result: { SiteName: "Aurora Cloud", Language: "English", TimeFormat: 1, DateFormat: "MM/DD/YYYY",
+	 *		EUserRole: { SuperAdmin: 0, TenantAdmin: 1, NormalUser: 2, Customer: 3, Anonymous: 4 } }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1008,7 +1009,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateSettings',
-	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value", DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value", Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
+	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value",
+	 * DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value",
+	 * Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -1302,7 +1305,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'TestDbConnection',
-	 *	Parameters: '{ DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value", DbPassword: "db_pass_value" }'
+	 *	Parameters: '{ DbLogin: "db_login_value", DbName: "db_name_value", DbHost: "db_host_value",
+	 *		DbPassword: "db_pass_value" }'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -1593,7 +1597,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
-	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" }, { Id: 124, UUID: "", PublicId: "PublicId_value124" }]
+	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" },
+	 *		{ Id: 124, UUID: "", PublicId: "PublicId_value124" }]
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1713,7 +1718,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateEntity',
-	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, PublicId: "PublicId_value", Description: "description_value" } }'
+	 *	Parameters: '{ Type: "Tenant", Data: { Id: 123, PublicId: "PublicId_value",
+	 *		Description: "description_value" } }'
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
