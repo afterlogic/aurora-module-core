@@ -93,6 +93,8 @@ class CUser extends \Aurora\System\EAV\Entity
 			'PasswordResetHash'			=> array('string', ''),
 			
 			'WriteSeparateLog'			=> array('bool', false),
+
+			'DefaultTimeZone'			=> array('string', 'UTC'),
 		);
 
 		$this->oSubCache = null;

@@ -761,9 +761,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * 
 	 * @return bool
 	 */
-	public function DoServerInitializations()
+	public function DoServerInitializations($Timezone = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Customer);
+		$result = true;
 		
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
@@ -772,6 +773,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if ($iUserId && $oApiIntegrator)
 		{
 			$oApiIntegrator->resetCookies();
+		}
+
+		if ($iUserId && $Timezone)
+		{
+			$oUser = $this->GetUser($iUserId);
+			if ($oUser && $oUser->DefaultTimeZone !== $Timezone)
+			{
+				$result = array(
+					'Timezone' => $oUser->DefaultTimeZone
+				);
+			}
 		}
 
 		$oCacher = \Aurora\System\Api::Cacher();
@@ -817,7 +829,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearAllOnline');
 		}
 
-		return true;
+		return $result;
 	}
 	
 	/**
@@ -3076,6 +3088,33 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 		
 		return $mResult;
+	}
+
+	/**
+	 * Updates user Timezone.
+	 *
+	 * @param string $Timezone New Timezone.
+	 *
+	 */
+	public function UpdateUserTimezone($Timezone)
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Customer);
+
+		$oUser = \Aurora\System\Api::getAuthenticatedUser();
+
+		if ($oUser && $Timezone)
+		{
+			if ($oUser && $oUser->DefaultTimeZone !== $Timezone)
+			{
+				$oUser->DefaultTimeZone = $Timezone;
+				$this->UpdateUserObject($oUser);
+			}
+		}
+		else
+		{
+			return false;
+		}
+		return true;
 	}
 	/***** public functions might be called with web API *****/
 }
