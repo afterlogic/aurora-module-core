@@ -908,6 +908,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} [Result.Result.DBLogin] Database login is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.DataExistAndWritable] Indicates if 'data' folder exist and writable. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.SaltNotEmpty] Indicates if salt was generated. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableEventLogging] Indicates if event logging is enabled. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.LoggingLevel] Value of logging level. It is returned only if super administrator is authenticated.
@@ -972,6 +974,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($oSettings->GetConf('AdminPassword')),
+				'DataExistAndWritable' => is_writable(\Aurora\System\Api::DataPath()),
+				'SaltNotEmpty' => \Aurora\System\Api::$sSalt !== '',
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
@@ -1494,6 +1498,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 
 		\Aurora\System\Api::LogEvent('login-failed: ' . $Login, $this->GetName());
+		if (!is_writable(\Aurora\System\Api::DataPath()))
+		{
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::SystemNotConfigured);
+		}
 		throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 	}
 	
