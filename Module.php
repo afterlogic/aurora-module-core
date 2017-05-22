@@ -269,7 +269,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				{
 					\Aurora\System\Api::Log('API: ' . $sModule . '::' . $sMethod);
 
-					if (\strtolower($sModule) !== 'core' && 
+					if (/*\strtolower($sModule) !== 'core' &&*/ 
 						$this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateAuthToken()) 
 					{
 						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidToken);
@@ -341,7 +341,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			unset($aResponseItem['Parameters']);
 		}
-		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::MailSoLogger());		
+		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
 	}
 	
 	/**
@@ -528,7 +528,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function EntryFileCache()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
 		$sRawKey = \Aurora\System\Application::GetPathItemByIndex(1, '');
 		$sAction = \Aurora\System\Application::GetPathItemByIndex(2, '');
@@ -626,7 +626,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function UpdateUserObject($oUser)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		
 		return $this->oApiUsersManager->updateUser($oUser);
 	}
@@ -672,7 +672,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
 		$oUser->EntityId = -1;
-		$oUser->Role = \EUserRole::SuperAdmin;
+		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
 		
 		return $oUser;
@@ -686,7 +686,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetTenantById($iIdTenant)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
 
@@ -700,7 +700,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetDefaultGlobalTenant()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
 		
@@ -763,7 +763,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function DoServerInitializations()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Customer);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Customer);
 		
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
@@ -855,7 +855,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function Ping()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		return 'Pong';
 	}	
@@ -924,7 +924,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetSettings()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
@@ -940,7 +940,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aSettings = array(
 			'DateFormat' => $this->getConfig('DateFormat'),
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
-			'EUserRole' => (new \EUserRole)->getMap(),
+			'EUserRole' => (new \Aurora\System\Enums\UserRole)->getMap(),
 			'Language' => $oUser ? $oUser->Language : $this->getConfig('Language'),
 			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
@@ -951,7 +951,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 		);
 		
-		if (!empty($oUser) && $oUser->Role === \EUserRole::SuperAdmin)
+		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			$aSettings = array_merge($aSettings, array(
 				'LicenseKey' => $oSettings->GetConf('LicenseKey'),
@@ -1052,11 +1052,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$Language = null, $TimeFormat = null, $EnableLogging = null,
 			$EnableEventLogging = null, $LoggingLevel = null)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		if ($oUser->Role === \EUserRole::SuperAdmin)
+		if ($oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			$oSettings =&\Aurora\System\Api::GetSettings();
 			if ($LicenseKey !== null)
@@ -1118,7 +1118,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			return $oSettings->Save();
 		}
 		
-		if ($oUser->Role === \EUserRole::NormalUser)
+		if ($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
 		{
 			if ($Language !== null)
 			{
@@ -1136,7 +1136,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function UpdateLoggingSettings($EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
 
@@ -1164,7 +1164,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function SetMobile($Mobile)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$oApiIntegratorManager = \Aurora\System\Api::GetSystemManager('integrator');
 		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
@@ -1219,7 +1219,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function CreateTables()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$bResult = false;
 		$oSettings =&\Aurora\System\Api::GetSettings();
@@ -1333,7 +1333,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		$oSettings->SetConf('DBLogin', $DbLogin);
@@ -1455,7 +1455,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function Login($Login, $Password, $SignMe = 0)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$mResult = false;
 		
@@ -1535,7 +1535,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function Logout()
 	{	
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		\Aurora\System\Api::LogEvent('logout', $this->GetName());
 		
@@ -1886,7 +1886,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		if ($Login !== '')
 		{
@@ -1970,7 +1970,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function UpdateChannel($ChannelId, $Login = '', $Description = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		if ($ChannelId > 0)
 		{
@@ -2054,7 +2054,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function DeleteChannel($ChannelId)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		if ($ChannelId > 0)
 		{
@@ -2126,7 +2126,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetTenantList()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$aTenants = $this->oApiTenantsManager->getTenantList();
 		$aItems = array();
@@ -2197,7 +2197,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetTenantIdByName($TenantName = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$iTenantId = $this->oApiTenantsManager->getTenantIdByName((string) $TenantName);
 
@@ -2253,7 +2253,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetTenantName()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$sTenant = '';
 		$sAuthToken = \Aurora\System\Api::getAuthToken();
@@ -2346,7 +2346,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
@@ -2438,7 +2438,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -2526,7 +2526,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function DeleteTenant($TenantId)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
@@ -2618,7 +2618,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \ESortOrder::ASC, $Search = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
 		$aUsers = array();
@@ -2636,7 +2636,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 	public function TurnOffSeparateLogs()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		foreach($aResults as $oUser)
@@ -2650,7 +2650,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 	public function ClearSeparateLogs()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		\Aurora\System\Api::RemoveSeparateLogs();
 		
@@ -2659,7 +2659,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 	public function GetUsersWithSeparateLog()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		$aUsers = array();
@@ -2729,9 +2729,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @return int|false
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \EUserRole::NormalUser, $WriteSeparateLog = false)
+	public function CreateUser($TenantId = 0, $PublicId = '', $Role = \Aurora\System\Enums\UserRole::NormalUser, $WriteSeparateLog = false)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
@@ -2833,11 +2833,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
 		{
-			\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::NormalUser);
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		}
 		else
 		{
-			\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		}
 		
 		if ($UserId > 0)
@@ -2930,7 +2930,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function DeleteUser($UserId = 0)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::TenantAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$bResult = false;
 		
@@ -2977,7 +2977,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function GetLogFile($EventsLog = false, $PublicId = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
 		if ($PublicId !== '')
@@ -3011,7 +3011,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	
 	public function GetLog($EventsLog, $PartSize = 10240)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
 		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
@@ -3034,7 +3034,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function ClearLog($EventsLog)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
 		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);

@@ -60,7 +60,7 @@ class CUser extends \Aurora\System\EAV\Entity
 			'IdTenant'					=> array('int', 0),
 			'IsDisabled'				=> array('bool', false),
 			'IdSubscription'			=> array('int', 0),
-			'Role'						=> array('int', \EUserRole::NormalUser),
+			'Role'						=> array('int', \Aurora\System\Enums\UserRole::NormalUser),
 
 			'CreatedTime'				=> array('string', ''),
 			'LastLogin'					=> array('string', ''),
