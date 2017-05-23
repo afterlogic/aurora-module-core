@@ -94,7 +94,7 @@ class CUser extends \Aurora\System\EAV\Entity
 			
 			'WriteSeparateLog'			=> array('bool', false),
 
-			'DefaultTimeZone'			=> array('string', 'UTC'),
+			'DefaultTimeZone'			=> array('string', ''),
 		);
 
 		$this->oSubCache = null;

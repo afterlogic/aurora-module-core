@@ -3106,7 +3106,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function UpdateUserTimezone($Timezone)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\EUserRole::Customer);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Customer);
 
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 
