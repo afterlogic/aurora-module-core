@@ -11,12 +11,14 @@
 use Aurora\System\Exceptions\Errs;
 use Aurora\System\Exceptions\ErrorCodes;
 
+namespace Aurora\Modules\Core\Managers\Tenants;
+
 /**
  * CApiTenantsManager class summary
  *
  * @package Tenants
  */
-class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
+class Manager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var array
@@ -38,15 +40,14 @@ class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * Creates a new instance of the object.
 	 *
-	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = 'db', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct($sForcedStorage = 'db', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('tenants', $oManager, $oModule);
+		parent::__construct('tenants', $oModule);
 		
-		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
+		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 		
-		$this->oChannelsManager = $this->oModule->GetManager('channels', 'db');
+		$this->oChannelsManager = new \Aurora\Modules\Core\Managers\Channels\Manager();
 	}
 
 	/**
@@ -58,7 +59,7 @@ class CApiCoreTenantsManager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return array|false [Id => [Name, Description]]
 	 */
-	public function getTenantList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getTenantList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try

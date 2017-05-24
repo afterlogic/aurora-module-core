@@ -17,6 +17,10 @@
  * @package Classes
  * @subpackage Channels
  */
+
+
+
+
 class CChannel extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(

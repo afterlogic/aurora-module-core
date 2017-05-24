@@ -150,7 +150,7 @@ class CUser extends \Aurora\System\EAV\Entity
 	 */
 	public function removeAllCapas()
 	{
-		$this->Capa = ECapa::NO;
+		$this->Capa = \Aurora\System\Enums\Capa::NO;
 	}
 
 	/**

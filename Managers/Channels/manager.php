@@ -14,7 +14,9 @@
  * @package Channels
  */
 
-class CApiCoreChannelsManager extends \Aurora\System\Managers\AbstractManager
+namespace Aurora\Modules\Core\Managers\Channels;
+
+class Manager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var \Aurora\System\Managers\Eav\Manager
@@ -24,23 +26,23 @@ class CApiCoreChannelsManager extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('channels', $oManager, $oModule);
+		parent::__construct('channels', $oModule);
 		
-		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
+		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 	}
 
 	/**
 	 * @param int $iOffset
 	 * @param int $iLimit
 	 * @param string $sOrderBy Default value is **Login**
-	 * @param bool $iOrderType Default value is **\ESortOrder::ASC**
+	 * @param bool $iOrderType Default value is **\Aurora\System\Enums\SortOrder::ASC**
 	 * @param string $sSearchDesc Default value is empty string
 	 *
 	 * @return array|false [Id => [Login, Description]]
 	 */
-	public function getChannelList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Login', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getChannelList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Login', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		$aSearch = empty($sSearchDesc) ? array() : array(
@@ -270,13 +272,12 @@ class CApiCoreChannelsManager extends \Aurora\System\Managers\AbstractManager
 		$bResult = false;
 		try
 		{
-			/* @var $oTenantsApi CApiTenantsManager */
-//			$oTenantsApi =\Aurora\System\Api::GetCoreManager('tenants');
-			$oTenantsApi = $this->oModule->GetManager('tenants');
+			/* @var $oTenantsManager CApiTenantsManager */
+			$oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants\Manager();
 			
-			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oChannel->EntityId, true))
+			if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oChannel->EntityId, true))
 			{
-				$oException = $oTenantsApi->GetLastException();
+				$oException = $oTenantsManager->GetLastException();
 				if ($oException)
 				{
 					throw $oException;

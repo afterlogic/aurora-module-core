@@ -14,7 +14,9 @@
  * @package Channels
  */
 
-class CApiCoreUserGroupsManager extends \Aurora\System\Managers\AbstractManager
+namespace Aurora\Modules\Core\Managers\Groups;
+
+class Manager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var \Aurora\System\Managers\Eav\Manager
@@ -24,23 +26,23 @@ class CApiCoreUserGroupsManager extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('usergroups', $oManager, $oModule);
+		parent::__construct('usergroups', $oModule);
 		
-		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
+		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 	}
 
 	/**
 	 * @param int $iPage
 	 * @param int $iItemsPerPage
 	 * @param string $sOrderBy Default value is **Login**
-	 * @param bool $iOrderType Default value is **\ESortOrder::ASC**
+	 * @param bool $iOrderType Default value is **\Aurora\System\Enums\SortOrder::ASC**
 	 * @param string $sSearchDesc Default value is empty string
 	 *
 	 * @return array|false [Id => [Login, Description]]
 	 */
-	public function getUserGroupsList($iPage, $iItemsPerPage, $sOrderBy = 'Login', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '')
+	public function getUserGroupsList($iPage, $iItemsPerPage, $sOrderBy = 'Login', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '')
 	{
 		$aResult = false;
 		try
@@ -245,11 +247,11 @@ class CApiCoreUserGroupsManager extends \Aurora\System\Managers\AbstractManager
 		$bResult = false;
 		try
 		{
-//			$oTenantsApi = $this->oModule->GetManager('tenants');
+//			$oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants\Manager();
 //			
-//			if ($oTenantsApi && !$oTenantsApi->deleteTenantsByChannelId($oGroup->EntityId, true))
+//			if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oGroup->EntityId, true))
 //			{
-//				$oException = $oTenantsApi->GetLastException();
+//				$oException = $oTenantsManager->GetLastException();
 //				if ($oException)
 //				{
 //					throw $oException;

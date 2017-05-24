@@ -166,8 +166,6 @@ class CTenant extends \Aurora\System\EAV\Entity
 		{
 			return true;
 		}
-
-		return '' === $this->Capa || false !== strpos($this->Capa, ETenantCapa::FILES);
 	}
 
 	/**
@@ -180,8 +178,6 @@ class CTenant extends \Aurora\System\EAV\Entity
 		{
 			return true;
 		}
-
-		return '' === $this->Capa || false !== strpos($this->Capa, ETenantCapa::HELPDESK);
 	}
 
 	/**
@@ -194,8 +190,6 @@ class CTenant extends \Aurora\System\EAV\Entity
 		{
 			return true;
 		}
-
-		return '' === $this->Capa || false !== strpos($this->Capa, ETenantCapa::TWILIO);
 	}
 	
 	

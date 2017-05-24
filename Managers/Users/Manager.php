@@ -13,7 +13,10 @@
  * 
  * @package Users
  */
-class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
+
+namespace Aurora\Modules\Core\Managers\Users;
+
+class Manager extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var \Aurora\System\Managers\Eav\Manager
@@ -23,11 +26,11 @@ class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param \Aurora\System\Managers\GlobalManager &$oManager
 	 */
-	public function __construct(\Aurora\System\Managers\GlobalManager &$oManager, $sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('users', $oManager, $oModule);
+		parent::__construct('users', $oModule);
 		
-		$this->oEavManager = \Aurora\System\Api::GetSystemManager('eav', 'db');
+		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 	}
 
 	/**
@@ -54,7 +57,7 @@ class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
 
 	public function getUserByPublicId($iUserPublicId)
 	{
-		$aUsers = $this->oEavManager->getEntities('CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \ESortOrder::ASC);
+		$aUsers = $this->oEavManager->getEntities('CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
 		if (count($aUsers) > 0)
 		{
 			return $aUsers[0];
@@ -72,7 +75,7 @@ class CApiCoreUsersManager extends \Aurora\System\Managers\AbstractManager
 	 * @param array $aFilters = []
 	 * @return array | false
 	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \ESortOrder::ASC, $sSearchDesc = '', $aFilters = [])
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '', $aFilters = [])
 	{
 		$aResult = false;
 		try

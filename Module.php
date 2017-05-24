@@ -37,9 +37,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'user'
 		));
 		
-		$this->oApiTenantsManager = $this->GetManager('tenants');
-		$this->oApiChannelsManager = $this->GetManager('channels');
-		$this->oApiUsersManager = $this->GetManager('users');
+		$this->oApiTenantsManager = new Managers\Tenants\Manager();
+		$this->oApiChannelsManager = new Managers\Channels\Manager();
+		$this->oApiUsersManager = new Managers\Users\Manager();
 		
 		$this->AddEntries(array(
 			'api' => 'EntryApi',
@@ -464,7 +464,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
 			$sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetConf('WebMail/LoginAtDomainValue'));
-			if (\ELoginFormType::Login === (int) \Aurora\System\Api::GetSettings()->GetConf('WebMail/LoginFormType') && 0 < strlen($sAtDomain))
+			if (0 < strlen($sAtDomain))
 			{
 				$sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
 				$sLogin = $sEmail;
@@ -980,7 +980,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
 				'LogFilesData' => $this->GetLogFilesData(),
-				'ELogLevel' => (new \ELogLevel)->getMap()
+				'\Aurora\System\Enums\LogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
 			));
 		}
 		
@@ -1238,9 +1238,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$bResult = false;
-		$oSettings =&\Aurora\System\Api::GetSettings();
-		$oApiEavManager =\Aurora\System\Api::GetSystemManager('eav', 'db');
-		if ($oApiEavManager->createTablesFromFile())
+		$oSettings =& \Aurora\System\Api::GetSettings();
+		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		if ($oEavManager->createTablesFromFile())
 		{
 			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
 			{
@@ -1360,8 +1360,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$oApiEavManager =\Aurora\System\Api::GetSystemManager('eav', 'db');
-		return $oApiEavManager->testStorageConnection();
+		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		return $oEavManager->testStorageConnection();
 	}
 	
 	/**
@@ -1371,7 +1371,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function GetAuthenticatedAccount($AuthToken)
 	{
 		$oAccount = null;
-		$oEavManager = \Aurora\System\Api::GetSystemManager('Eav');
+		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
@@ -2636,7 +2636,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *		*string* **PublicId** User name.
 	 * }
 	 */
-	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \ESortOrder::ASC, $Search = '')
+	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
@@ -2658,7 +2658,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		foreach($aResults as $oUser)
 		{
 			$oUser->WriteSeparateLog = false;
@@ -2681,7 +2681,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \ESortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		$aUsers = array();
 		foreach($aResults as $oUser)
 		{
