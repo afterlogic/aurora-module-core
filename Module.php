@@ -980,7 +980,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
 				'LogFilesData' => $this->GetLogFilesData(),
-				'\Aurora\System\Enums\LogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
+				'ELogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
 			));
 		}
 		
