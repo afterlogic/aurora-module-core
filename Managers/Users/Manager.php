@@ -28,7 +28,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('users', $oModule);
+		parent::__construct($oModule);
 		
 		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 	}
@@ -155,7 +155,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(CUser $oUser)
+	public function isExists(\CUser $oUser)
 	{
 		$bResult = false;
 		
@@ -200,7 +200,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function createUser (CUser &$oUser)
+	public function createUser (\CUser &$oUser)
 	{
 		$bResult = false;
 		try
@@ -238,7 +238,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateUser (CUser &$oUser)
+	public function updateUser (\CUser &$oUser)
 	{
 		$bResult = false;
 		try
@@ -276,7 +276,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteUser (CUser &$oUser)
+	public function deleteUser (\CUser &$oUser)
 	{
 		$bResult = false;
 		try

@@ -28,7 +28,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
 	{
-		parent::__construct('channels', $oModule);
+		parent::__construct($oModule);
 		
 		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 	}
