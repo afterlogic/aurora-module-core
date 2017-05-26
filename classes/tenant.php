@@ -242,12 +242,12 @@ class CTenant extends \Aurora\System\EAV\Entity
 		{
 			switch (true)
 			{
-//				case !\Aurora\System\Validate::IsValidLogin($this->Login):
+//				case !\Aurora\System\Utils\Validate::IsValidLogin($this->Login):
 //					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName);
-				case \Aurora\System\Validate::IsEmpty($this->Name):
+				case \Aurora\System\Utils\Validate::IsEmpty($this->Name):
 					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
 						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Name'));
-//				case !\Aurora\System\Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
+//				case !\Aurora\System\Utils\Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
 //					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidEmail, null, array(
 //						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Email'));
 			}

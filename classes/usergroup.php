@@ -31,7 +31,7 @@ class CUserGroup extends \Aurora\System\EAV\Entity
 	{
 		switch (true)
 		{
-			case \Aurora\System\Validate::IsEmpty($this->UrlIdentifier):
+			case \Aurora\System\Utils\Validate::IsEmpty($this->UrlIdentifier):
 				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
 					'{{ClassName}}' => 'CUserGroup', '{{ClassField}}' => 'UrlIdentifier'));
 		}
