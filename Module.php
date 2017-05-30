@@ -404,11 +404,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryMobile()
 	{
-		if ($this->oApiCapabilityManager->isNotLite())
-		{
-			$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
-			$oApiIntegrator->setMobile(true);
-		}
+		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator->setMobile(true);
 
 		\Aurora\System\Api::Location('./');
 	}
