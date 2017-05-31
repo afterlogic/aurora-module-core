@@ -14,9 +14,9 @@
  * @package Channels
  */
 
-namespace Aurora\Modules\Core\Managers\Channels;
+namespace Aurora\Modules\Core\Managers;
 
-class Manager extends \Aurora\System\Managers\AbstractManager
+class Channels extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var \Aurora\System\Managers\Eav\Manager

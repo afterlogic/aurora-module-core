@@ -37,9 +37,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'user'
 		));
 		
-		$this->oApiTenantsManager = new Managers\Tenants\Manager();
-		$this->oApiChannelsManager = new Managers\Channels\Manager();
-		$this->oApiUsersManager = new Managers\Users\Manager();
+		$this->oApiTenantsManager = new Managers\Tenants();
+		$this->oApiChannelsManager = new Managers\Channels();
+		$this->oApiUsersManager = new Managers\Users();
 		
 		$this->AddEntries(array(
 			'api' => 'EntryApi',
@@ -404,7 +404,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntryMobile()
 	{
-		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator = new Managers\Integrator();
 		$oApiIntegrator->setMobile(true);
 
 		\Aurora\System\Api::Location('./');
@@ -415,7 +415,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntrySso()
 	{
-		$oApiIntegratorManager = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegratorManager = new Managers\Integrator();
 
 		try
 		{
@@ -454,7 +454,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		if ($this->getConfig('AllowPostLogin', false))
 		{
-			$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+			$oApiIntegrator = new Managers\Integrator();
 					
 			$sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
 			$sLogin = (string) $this->oHttp->GetRequest('Login', '');
@@ -556,7 +556,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			$bResult = false;
 			$sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
-			$oApiFileCache = \Aurora\System\Api::GetSystemManager('filecache');
+			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
 			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName']);
 
 			if (is_resource($mResult))
@@ -765,7 +765,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
-		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator = new Managers\Integrator();
 
 		if ($iUserId && $oApiIntegrator)
 		{
@@ -814,7 +814,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if ($bDoGC)
 		{
 			\Aurora\System\Api::Log('GC: FileCache / Start');
-			$oApiFileCache = \Aurora\System\Api::GetSystemManager('Filecache');
+			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
 			$oApiFileCache->gc();
 			$oCacher->gc();
 			\Aurora\System\Api::Log('GC: FileCache / End');
@@ -939,7 +939,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		$oApiIntegrator = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegrator = new Managers\Integrator();
 		$iLastErrorCode = $oApiIntegrator->getLastErrorCode();
 		if (0 < $iLastErrorCode)
 		{
@@ -1179,7 +1179,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
-		$oApiIntegratorManager = \Aurora\System\Api::GetSystemManager('integrator');
+		$oApiIntegratorManager = new Managers\Integrator();
 		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
 	}	
 	
@@ -3075,7 +3075,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		try
 		{
 			$sTempName = md5($sUUID.$Content.$FileName);
-			$oApiFileCache = \Aurora\System\Api::GetSystemManager('Filecache');
+			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
 
 			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
 			{

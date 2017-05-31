@@ -14,9 +14,9 @@
  * @package Users
  */
 
-namespace Aurora\Modules\Core\Managers\Users;
+namespace Aurora\Modules\Core\Managers;
 
-class Manager extends \Aurora\System\Managers\AbstractManager
+class Users extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var \Aurora\System\Managers\Eav\Manager

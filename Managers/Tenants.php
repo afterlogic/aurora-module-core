@@ -11,14 +11,14 @@
 use Aurora\System\Exceptions\Errs;
 use Aurora\System\Exceptions\ErrorCodes;
 
-namespace Aurora\Modules\Core\Managers\Tenants;
+namespace Aurora\Modules\Core\Managers;
 
 /**
  * CApiTenantsManager class summary
  *
  * @package Tenants
  */
-class Manager extends \Aurora\System\Managers\AbstractManager
+class Tenants extends \Aurora\System\Managers\AbstractManager
 {
 	/**
 	 * @var array
@@ -47,7 +47,7 @@ class Manager extends \Aurora\System\Managers\AbstractManager
 		
 		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
 		
-		$this->oChannelsManager = new \Aurora\Modules\Core\Managers\Channels\Manager();
+		$this->oChannelsManager = new Channels();
 	}
 
 	/**
