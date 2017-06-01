@@ -251,7 +251,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isTenantExists(CTenant $oTenant)
+	public function isTenantExists(\CTenant $oTenant)
 	{
 		//TODO
 //		$bResult = $oTenant->IsDefault;
@@ -291,7 +291,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function createTenant(CTenant &$oTenant)
+	public function createTenant(\CTenant &$oTenant)
 	{
 		$bResult = false;
 		try
@@ -359,7 +359,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateTenant(CTenant $oTenant)
+	public function updateTenant(\CTenant $oTenant)
 	{
 		$bResult = false;
 		try
@@ -446,7 +446,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteTenant(CTenant $oTenant)
+	public function deleteTenant(\CTenant $oTenant)
 	{
 		$bResult = false;
 		try

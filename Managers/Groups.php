@@ -131,7 +131,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(CUserGroup $oGroup)
+	public function isExists(\CUserGroup $oGroup)
 	{
 		$bResult = false;
 		try
@@ -168,7 +168,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function saveUserGroup(CUserGroup &$oGroup)
+	public function saveUserGroup(\CUserGroup &$oGroup)
 	{
 		$bResult = false;
 		try
@@ -204,7 +204,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateUserGroup(CUserGroup $oGroup)
+	public function updateUserGroup(\CUserGroup $oGroup)
 	{
 		$bResult = false;
 		try
@@ -242,7 +242,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteUserGroup(CUserGroup $oGroup)
+	public function deleteUserGroup(\CUserGroup $oGroup)
 	{
 		$bResult = false;
 		try

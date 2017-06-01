@@ -156,7 +156,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(CChannel $oChannel)
+	public function isExists(\CChannel $oChannel)
 	{
 		$bResult = false;
 		try
@@ -192,7 +192,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function createChannel(CChannel &$oChannel)
+	public function createChannel(\CChannel &$oChannel)
 	{
 		$bResult = false;
 		try
@@ -230,7 +230,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateChannel(CChannel $oChannel)
+	public function updateChannel(\CChannel $oChannel)
 	{
 		$bResult = false;
 		try
@@ -267,7 +267,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteChannel(CChannel $oChannel)
+	public function deleteChannel(\CChannel $oChannel)
 	{
 		$bResult = false;
 		try
