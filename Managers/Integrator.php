@@ -619,7 +619,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return string
 	 */
-	public function setAccountAsLoggedIn(CAccount $oAccount, $bSignMe = false)
+	public function setAccountAsLoggedIn(\CAccount $oAccount, $bSignMe = false)
 	{
 		$aAccountHashTable = array(
 			'token' => 'auth',
