@@ -26,7 +26,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	static $aTenantNameCache = array();
 	
 	/**
-	 * @var \Aurora\System\Managers\Eav\Manager
+	 * @var \Aurora\System\Managers\Eav
 	 */
 	public $oEavManager = null;
 	
@@ -45,7 +45,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	{
 		parent::__construct($oModule);
 		
-		$this->oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		$this->oEavManager = new \Aurora\System\Managers\Eav();
 		
 		$this->oChannelsManager = new Channels();
 	}

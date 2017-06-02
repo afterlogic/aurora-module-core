@@ -556,7 +556,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			$bResult = false;
 			$sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
-			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
+			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName']);
 
 			if (is_resource($mResult))
@@ -814,7 +814,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if ($bDoGC)
 		{
 			\Aurora\System\Api::Log('GC: FileCache / Start');
-			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
+			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 			$oApiFileCache->gc();
 			$oCacher->gc();
 			\Aurora\System\Api::Log('GC: FileCache / End');
@@ -1236,7 +1236,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$bResult = false;
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		$oEavManager = new \Aurora\System\Managers\Eav();
 		if ($oEavManager->createTablesFromFile())
 		{
 			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
@@ -1357,7 +1357,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		$oEavManager = new \Aurora\System\Managers\Eav();
 		return $oEavManager->testStorageConnection();
 	}
 	
@@ -1368,7 +1368,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function GetAuthenticatedAccount($AuthToken)
 	{
 		$oAccount = null;
-		$oEavManager = new \Aurora\System\Managers\Eav\Manager();
+		$oEavManager = new \Aurora\System\Managers\Eav();
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
@@ -3075,7 +3075,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		try
 		{
 			$sTempName = md5($sUUID.$Content.$FileName);
-			$oApiFileCache = new \Aurora\System\Managers\Filecache\Manager();
+			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
 			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
 			{
