@@ -268,24 +268,39 @@ class Module extends \Aurora\System\Module\AbstractModule
 				try
 				{
 					\Aurora\System\Api::Log('API: ' . $sModule . '::' . $sMethod);
+					
+					$bIsEmptyAuthToken = !\Aurora\System\Api::getAuthTokenFromHeaders();
 
-					if (/*\strtolower($sModule) !== 'core' &&*/ 
-						$this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateAuthToken()) 
+					if ($this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateCsrfToken() && !$bIsEmptyAuthToken) 
 					{
-						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidToken);
+						throw new \Aurora\System\Exceptions\ApiException(
+							\Aurora\System\Notifications::InvalidToken
+						);
 					} 
-					else if (!empty($sModule) && !empty($sMethod)) 
+					
+					if (!empty($sModule) && !empty($sMethod)) 
 					{
-						$aParameters = isset($sParameters) &&  \is_string($sParameters) ? 
-							@\json_decode($sParameters, true) : array();
-						
-						$sTenantName = $this->oHttp->GetPost('TenantName', '');
-						\Aurora\System\Api::setTenantName($sTenantName);
-
-						if (!\is_array($aParameters))
+						if (!\Aurora\System\Api::validateAuthToken() && !$bIsEmptyAuthToken)
 						{
-							$aParameters = array($aParameters);
+							throw new \Aurora\System\Exceptions\ApiException(
+								\Aurora\System\Notifications::AuthError
+							);
 						}
+						
+						\Aurora\System\Api::setTenantName(
+							$this->oHttp->GetPost('TenantName', '')
+						);
+
+						$aParameters = array();
+						if (isset($sParameters) && \is_string($sParameters))
+						{
+							$aParameters = @\json_decode($sParameters, true);
+							if (!\is_array($aParameters))
+							{
+								$aParameters = array($aParameters);
+							}
+						}
+						
 						$mUploadData = $this->getUploadData();
 						if (\is_array($mUploadData))
 						{
@@ -305,12 +320,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 					if (!\is_array($aResponseItem)) 
 					{
-						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UnknownError);
-					}
-
-					if ($sFormat !== 'Raw')
-					{
-						@header('Content-Type: application/json; charset=utf-8');
+						throw new \Aurora\System\Exceptions\ApiException(
+							\Aurora\System\Notifications::UnknownError
+						);
 					}
 				}
 				catch (\Exception $oException)
@@ -329,17 +341,26 @@ class Module extends \Aurora\System\Module\AbstractModule
 						$aAdditionalParams
 					);
 				}
-
 			}
 		}
 		else
 		{
-			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+			$oException = new \Aurora\System\Exceptions\ApiException(
+				\Aurora\System\Notifications::InvalidInputParameter
+			);
+			$aResponseItem = $this->ExceptionResponse(
+				$sMethod,
+				$oException
+			);
 		}
 
 		if (isset($aResponseItem['Parameters']))
 		{
 			unset($aResponseItem['Parameters']);
+		}
+		if ($sFormat !== 'Raw')
+		{
+			@header('Content-Type: application/json; charset=utf-8');
 		}
 		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
 	}

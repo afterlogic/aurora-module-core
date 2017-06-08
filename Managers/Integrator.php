@@ -383,6 +383,12 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		return $oUser;
 	}
 
+	
+	public function validateAuthToken($sAuthToken)
+	{
+		return (\Aurora\System\Api::UserSession()->Get($sAuthToken) !== false);
+	}
+	
 	/**
 	 * @param string $sAuthToken Default value is empty string.
 	 *
