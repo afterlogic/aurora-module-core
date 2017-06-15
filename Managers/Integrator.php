@@ -1289,24 +1289,17 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * Returns css links for building in html.
-	 * 
-	 * @param string $sModuleHash
+	 * Returns JS links for building in HTML.
+	 * @param array $aConfig
 	 * @return string
 	 */
-//	public function getJsLinks($sModuleHash)
 	public function getJsLinks($aConfig = array())
 	{
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		$sPostfix = '';
-//		if ($sModuleHash !== '')
-//		{
-//			$sPostfix = $sModuleHash;
-//		}
 		
 		if ($oSettings->GetConf('UseAppMinJs', false))
 		{
-//			$sPostfix = $sPostfix.'.min';
 			$sPostfix .= '.min';
 		}
 		
@@ -1320,14 +1313,13 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		}
 		else
 		{
+			$aClientModuleNames = [];
 			$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
 			$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
+			$bIsMobileApplication = \Aurora\System\Api::IsMobileApplication();
 			foreach ($aModuleNames as $sModuleName)
 			{
-				if (\file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
-				{
-					$aClientModuleNames[] = $sModuleName;
-				}
+				$this->populateClientModuleNames($sModulesPath, $sModuleName, $bIsMobileApplication, $aClientModuleNames, false);
 			}
 		}
 		
@@ -1336,6 +1328,78 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		
 		return '<script>window.isPublic = '.($bIsPublic ? 'true' : 'false').'; window.isNewTab = '.($bIsNewTab ? 'true' : 'false').'; window.aAvaliableModules = ["'.implode('","', $aClientModuleNames).'"];</script>
 		<script src="'.$sJsScriptPath."static/js/app".$sPostfix.".js?".\Aurora\System\Api::VersionJs().'"></script>';
+	}
+	
+	/**
+	 * Populates array with names of modules that should be loaded on client side.
+	 * @param string $sModulesPath Path to folder with modules.
+	 * @param string $sModuleName Name of module to add.
+	 * @param boolean $bIsMobileApplication Indicates if there is mobile version of application.
+	 * @param array $aClientModuleNames Array with names of modules that should be loaded on client side. Array is passed by reference and populated with this method.
+	 * @param boolean $bAddAnyway Indicates if module should be added anyway.
+	 */
+	protected function populateClientModuleNames($sModulesPath, $sModuleName, $bIsMobileApplication, &$aClientModuleNames, $bAddAnyway)
+	{
+		if (!in_array($sModuleName, $aClientModuleNames))
+		{
+			$bAddModuleName = $bAddAnyway;
+			
+			if (!$bAddModuleName && $bIsMobileApplication)
+			{
+				$bAddModuleName = (bool) $this->getModuleProperty($sModulesPath, $sModuleName, 'include-in-mobile');
+			}
+			elseif (!$bAddModuleName)
+			{
+				$bAddModuleName = (bool) $this->getModuleProperty($sModulesPath, $sModuleName, 'include-in-desktop');
+			}
+			
+			if ($bAddModuleName && \file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
+			{
+				$aClientModuleNames[] = $sModuleName;
+				$aRequire = $this->getModuleProperty($sModulesPath, $sModuleName, 'require');
+				if (is_array($aRequire))
+				{
+					foreach ($aRequire as $sRequireModuleName)
+					{
+						$this->populateClientModuleNames($sModulesPath, $sRequireModuleName, $bIsMobileApplication, $aClientModuleNames, true);
+					}
+				}
+			}
+		}
+	}
+	
+	/**
+	 * Reads module properties from composer.json file and returns the one with specified key.
+	 * @staticvar array $aProperties Array of properties from composer.json file.
+	 * @param string $sModulesPath Path to folder with modules.
+	 * @param string $sModuleName Name of module to add.
+	 * @param string $sName Key of property that should be returned.
+	 * @return mixed
+	 */
+	protected function getModuleProperty($sModulesPath, $sModuleName, $sName)
+	{
+		static $aProperties = [];
+		
+		if (!array_key_exists($sModuleName, $aProperties))
+		{
+			$sPropertiesFilePath = $sModulesPath . $sModuleName . '/composer.json';
+			if (file_exists($sPropertiesFilePath))
+			{
+				$sJsonData = file_get_contents($sPropertiesFilePath);
+				$aProperties[$sModuleName] = json_decode($sJsonData, true);
+			}
+		}
+		
+		$sSection = 'extra';
+		if (array_key_exists($sModuleName, $aProperties) && is_array($aProperties[$sModuleName]) 
+				&& array_key_exists($sSection, $aProperties[$sModuleName])
+				&& is_array($aProperties[$sModuleName][$sSection]) 
+				&& array_key_exists($sName, $aProperties[$sModuleName][$sSection]))
+		{
+			return $aProperties[$sModuleName][$sSection][$sName];
+		}
+		
+		return false;
 	}
 	
 	/**
