@@ -342,6 +342,16 @@ class Module extends \Aurora\System\Module\AbstractModule
 					);
 				}
 			}
+			else
+			{
+				$oException = new \Aurora\System\Exceptions\ApiException(
+					\Aurora\System\Notifications::ModuleNotFound
+				);
+				$aResponseItem = $this->ExceptionResponse(
+					$sMethod,
+					$oException
+				);
+			}
 		}
 		else
 		{
@@ -591,6 +601,12 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 		}
 	}
+	
+	
+	public function IsModuleExists($Module)
+	{
+		return \Aurora\System\Api::GetModuleManager()->ModuleExists($Module);
+	}	
 	
 	/**
 	 * 
