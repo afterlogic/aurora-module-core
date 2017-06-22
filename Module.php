@@ -1215,9 +1215,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function SetMobile($Mobile)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
-		$oApiIntegratorManager = new Managers\Integrator();
-		return $oApiIntegratorManager ? $oApiIntegratorManager->setMobile($Mobile) : false;
+		$oApiIntegrator = new \Aurora\Modules\Core\Managers\Integrator();
+		return $oApiIntegrator ? $oApiIntegrator->setMobile($Mobile) : false;
 	}	
 	
 	/**
