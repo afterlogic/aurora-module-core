@@ -696,6 +696,21 @@ class Module extends \Aurora\System\Module\AbstractModule
 	}	
 	
 	/**
+	 * Returns user object.
+	 * 
+	 * @param string $PublicId User public identifier.
+	 * @return \CUser
+	 */
+	public function GetUserByPublicId($PublicId)
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		
+		$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
+		
+		return $oUser ? $oUser : null;
+	}	
+	
+	/**
 	 * Creates and returns user with super administrator role.
 	 * 
 	 * @return \CUser
