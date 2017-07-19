@@ -1016,13 +1016,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
+			$sAdminPassword = $oSettings->GetConf('AdminPassword');
+			
 			$aSettings = array_merge($aSettings, array(
 				'LicenseKey' => $oSettings->GetConf('LicenseKey'),
 				'DBHost' => $oSettings->GetConf('DBHost'),
 				'DBName' => $oSettings->GetConf('DBName'),
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
-				'AdminHasPassword' => !empty($oSettings->GetConf('AdminPassword')),
+				'AdminHasPassword' => !empty($sAdminPassword),
 				'DataExistAndWritable' => is_writable(\Aurora\System\Api::DataPath()),
 				'SaltNotEmpty' => \Aurora\System\Api::$sSalt !== '',
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
@@ -1156,10 +1158,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 				$oSettings->SetConf('AdminLogin', $AdminLogin);
 			}
-			if ((empty($oSettings->GetConf('AdminPassword')) && empty($Password) || !empty($Password)) && !empty($NewPassword))
+			
+			$sAdminPassword = $oSettings->GetConf('AdminPassword');
+			if ((empty($sAdminPassword) && empty($Password) || !empty($Password)) && !empty($NewPassword))
 			{
-				if (empty($oSettings->GetConf('AdminPassword')) || 
-						crypt(trim($Password), \Aurora\System\Api::$sSalt) === $oSettings->GetConf('AdminPassword'))
+				if (empty($sAdminPassword) || crypt(trim($Password), \Aurora\System\Api::$sSalt) === $sAdminPassword)
 				{
 					$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \Aurora\System\Api::$sSalt));
 				}
