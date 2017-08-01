@@ -67,7 +67,7 @@ class CUser extends \Aurora\System\EAV\Entity
 			'LastLoginNow'				=> array('string', ''),
 			'LoginsCount'				=> array('int', 0),
 
-			'Language'					=> array('string', $oModuleManager->getModuleConfigValue('Core', 'Language')),
+			'Language'					=> array('string', \Aurora\System\Api::GetLanguage(true)),
 
 			'TimeFormat'				=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
 			'DateFormat'				=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),

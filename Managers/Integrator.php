@@ -49,11 +49,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @type string
 	 */
-	const TOKEN_LANGUAGE = 'aurora-lang';
-
-	/**
-	 * @type string
-	 */
 	const TOKEN_HD_THREAD_ID = 'aurora-hd-thread';
 
 	/**
@@ -324,24 +319,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getLoginLanguage()
-	{
-		$sLanguage = empty($_COOKIE[self::TOKEN_LANGUAGE]) ? '' : $_COOKIE[self::TOKEN_LANGUAGE];
-		return '' === $sLanguage ? '' : $this->validatedLanguageValue($sLanguage);
-	}
-
-	/**
-	 * @param string $sLanguage
-	 */
-	public function setLoginLanguage($sLanguage)
-	{
-		$sLanguage = $this->validatedLanguageValue($sLanguage);
-		@setcookie(self::TOKEN_LANGUAGE, $sLanguage, 0, $this->getCookiePath(), null, null, true);
-	}
-
-	/**
 	 * @param string $sAuthToken Default value is empty string.
 	 *
 	 * @return \CUser
@@ -508,7 +485,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		}
 		
 		@setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
-		@setcookie(self::TOKEN_LANGUAGE, '', 0, $this->getCookiePath());
 		return true;
 	}
 
@@ -1178,7 +1154,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			
 			$sSiteName = $oSettings->GetConf('SiteName');
-			$sLanguage = $oUser ? $oUser->Language : $oModuleManager->getModuleConfigValue('Core', 'Language');
+			$sLanguage = $oUser ? $oUser->Language : \Aurora\System\Api::GetLanguage();
 			$sTheme = $oUser ? $oUser->{'CoreWebclient::Theme'} : $oModuleManager->getModuleConfigValue('CoreWebclient', 'Theme');
 
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
@@ -1192,7 +1168,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			}
 
 			$sLanguage = $this->validatedLanguageValue($sLanguage);
-            $this->setLoginLanguage($sLanguage); // todo: sash
 			$sTheme = $this->validatedThemeValue($sTheme);
 		}
 		

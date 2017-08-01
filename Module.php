@@ -1004,7 +1004,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'DateFormat' => $this->getConfig('DateFormat'),
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \Aurora\System\Enums\UserRole)->getMap(),
-			'Language' => $oUser ? $oUser->Language : $this->getConfig('Language'),
+			'Language' => \Aurora\System\Api::GetLanguage(),
 			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
 			'SiteName' => $oSettings->GetConf('SiteName'),
@@ -1478,7 +1478,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Login** *string* Account login.<br>
-	 * &emsp; **Password** *string* Account passwors.<br>
+	 * &emsp; **Password** *string* Account password.<br>
+	 * &emsp; **Language** *string* New value of language for user.<br>
 	 * &emsp; **SignMe** *bool* Indicates if it is necessary to remember user between sessions. *optional*<br>
 	 * }
 	 * 
@@ -1515,12 +1516,13 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Broadcasts event Login to other modules, gets responses from them and returns AuthToken.
 	 * 
 	 * @param string $Login Account login.
-	 * @param string $Password Account passwors.
+	 * @param string $Password Account password.
+	 * @param string $Language New value of language for user.
 	 * @param bool $SignMe Indicates if it is necessary to remember user between sessions.
 	 * @return array
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function Login($Login, $Password, $SignMe = false)
+	public function Login($Login, $Password, $Language = '', $SignMe = false)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
@@ -1541,6 +1543,16 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
 			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
+			
+			if ($Language !== '')
+			{
+				$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+				if ($oUser && $oUser->Language !== $Language)
+				{
+					$oUser->Language = $Language;
+					$this->oApiUsersManager->updateUser($oUser);
+				}
+			}
 			
 			\Aurora\System\Api::LogEvent('login-success: ' . $Login, $this->GetName());
 			return array(
