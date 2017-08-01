@@ -165,7 +165,12 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$bResult = true;
 		}
-		
+
+		$oUserByPublicId = $this->getUserByPublicId($oUser->PublicId);
+		if ($oUserByPublicId && isset($oUserByPublicId->IdTenant) && $oUserByPublicId->IdTenant === $oUser->IdTenant)
+		{
+			$bResult = true;
+		}
 //		try
 //		{
 //			$aResults = $this->oEavManager->getObjects(
@@ -218,7 +223,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserAlreadyExists);
+					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
 				}
 			}
 
