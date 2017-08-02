@@ -111,11 +111,19 @@ class Module extends \Aurora\System\Module\AbstractModule
 		else
 		{
 			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
-			
-			$TenantId = (isset($Args['TenantId'])) ? (int) $Args['TenantId'] : 0;
-			if ($TenantId)
+
+			if (isset($Args['TenantId']) && $Args['TenantId'])
 			{
-				$oUser->IdTenant = $TenantId;
+				$oUser->IdTenant = (int) $Args['TenantId'];
+			}
+			else
+			{
+				$oSettings =&\Aurora\System\Api::GetSettings();
+				if (!$oSettings->GetConf('EnableMultiTenant') && $oUser->IdTenant === 0)
+				{
+					$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
+					$oUser->IdTenant = count($aTenants) === 1 ? $aTenants[0]->EntityId : $oUser->IdTenant;
+				}
 			}
 
 			$Email = (isset($Args['Email'])) ? $Args['Email'] : '';
