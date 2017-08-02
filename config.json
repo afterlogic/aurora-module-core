@@ -44,6 +44,10 @@
         "English",
         "string"
     ],
+    "AutodetectLanguage": [
+        true,
+        "bool"
+    ],
     "PostLoginErrorRedirectUrl": [
         "./",
         "string"
