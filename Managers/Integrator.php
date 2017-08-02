@@ -1154,10 +1154,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			
 			$sSiteName = $oSettings->GetConf('SiteName');
-			$sLanguage = $oUser ? $oUser->Language : \Aurora\System\Api::GetLanguage();
+			$sLanguage = \Aurora\System\Api::GetLanguage();
 			$sTheme = $oUser ? $oUser->{'CoreWebclient::Theme'} : $oModuleManager->getModuleConfigValue('CoreWebclient', 'Theme');
-
-			$oUser = \Aurora\System\Api::getAuthenticatedUser();
 
 			if ($oUser)
 			{
