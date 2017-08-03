@@ -110,38 +110,26 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 		else
 		{
-			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
-
-			if (isset($Args['TenantId']) && $Args['TenantId'])
-			{
-				$oUser->IdTenant = (int) $Args['TenantId'];
-			}
-			else
-			{
-				$oSettings =&\Aurora\System\Api::GetSettings();
-				if (!$oSettings->GetConf('EnableMultiTenant') && $oUser->IdTenant === 0)
-				{
-					$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
-					$oUser->IdTenant = count($aTenants) === 1 ? $aTenants[0]->EntityId : $oUser->IdTenant;
-				}
-			}
-
 			$Email = (isset($Args['Email'])) ? $Args['Email'] : '';
 			$PublicId = (isset($Args['PublicId'])) ? $Args['PublicId'] : '';
 			if (!empty($PublicId))
 			{
-				$oUser->PublicId = $PublicId;
+				$sPublicId = $PublicId;
 			}
 			else if (!empty($Email))
 			{
-				$oUser->PublicId = $Email;
+				$sPublicId = $Email;
 			}
-				
-			if (!$this->oApiUsersManager->createUser($oUser))
+			$oUser = $this->oApiUsersManager->getUserByPublicId($sPublicId);
+			if (!isset($oUser))
 			{
-				$oUser = null;
+				\Aurora\System\Api::skipCheckUserRole(true);
+				$iUserId = self::Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
+				\Aurora\System\Api::skipCheckUserRole(false);
+				$oUser = $this->oApiUsersManager->getUser($iUserId);
 			}
-			if (isset($oUser))
+			
+			if (isset($oUser) && isset($oUser->EntityId))
 			{
 				$Args['UserId'] = $oUser->EntityId;
 			}
