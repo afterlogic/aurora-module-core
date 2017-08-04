@@ -240,8 +240,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		if ($oSettings->GetConf('CacheLangs', $this->bCache))
 		{
-			$sCacheFileName = 'langs-'.md5(\Aurora\System\Api::Version().$sHash).'.cache';
-			$sCacheFullFileName = \Aurora\System\Api::DataPath().'/cache/'.$sCacheFileName;
+			$sCacheFileName = 'langs-' . $sLanguage . '-' . md5(\Aurora\System\Api::Version().$sHash) . '.cache';
+			$sCacheFullFileName = \Aurora\System\Api::DataPath() . '/cache/' . $sCacheFileName;
 			if (file_exists($sCacheFullFileName))
 			{
 				$sResult = file_get_contents($sCacheFullFileName);
