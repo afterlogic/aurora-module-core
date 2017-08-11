@@ -2745,6 +2745,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 		return $aUsers;
 	}
+	
+	public function GetTotalUsersCount()
+	{
+		return $this->oApiUsersManager->getTotalUsersCount();
+	}
 
 	public function TurnOffSeparateLogs()
 	{
@@ -2858,6 +2863,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if ($oUser instanceof \CUser)
 			{
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
+			}
+			else
+			{
+				$oLicense = \Aurora\System\Api::GetModuleDecorator('License');
+				if ($oLicense instanceof \Aurora\System\Module\Decorator)
+				{
+					if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()))
+					{
+						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::LicenseLimit);
+					}
+				}
 			}
 			
 			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());

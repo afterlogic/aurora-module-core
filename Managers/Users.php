@@ -141,7 +141,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$iResult = $this->oStorage->getTotalUsersCount();
+			$iResult = $this->oEavManager->getEntitiesCount('CUser');
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{

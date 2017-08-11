@@ -1220,12 +1220,41 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		return $sS;
 	}
 	
+	public function GetClientModuleNames()
+	{
+		$aClientModuleNames = [];
+		$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
+		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
+		$bIsMobileApplication = \Aurora\System\Api::IsMobileApplication();
+		foreach ($aModuleNames as $sModuleName)
+		{
+			$this->populateClientModuleNames($sModulesPath, $sModuleName, $bIsMobileApplication, $aClientModuleNames, false);
+		}		
+		
+		return $aClientModuleNames;
+	}
+	
+	public function GetBackendModules()
+	{
+		$aBackendModuleNames = [];
+		$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
+		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
+		foreach ($aModuleNames as $sModuleName)
+		{
+			if (!\file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
+			{
+				$aBackendModuleNames[] = $sModuleName;
+			}
+		}
+		return $aBackendModuleNames;
+	}
+	
 	/**
 	 * Returns JS links for building in HTML.
 	 * @param array $aConfig
 	 * @return string
 	 */
-	public function getJsLinks($aConfig = array())
+	public function compileJS($aConfig = array())
 	{
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		$sPostfix = '';
@@ -1239,26 +1268,23 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		
 		$sJsScriptPath = $oSettings->GetConf('EnableMultiTenant') && $sTenantName ? "./tenants/".$sTenantName."/" : "./";
 		
+		$aClientModuleNames = [];
 		if (isset($aConfig['modules_list']))
 		{
 			$aClientModuleNames = $aConfig['modules_list'];
 		}
 		else
 		{
-			$aClientModuleNames = [];
-			$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
-			$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
-			$bIsMobileApplication = \Aurora\System\Api::IsMobileApplication();
-			foreach ($aModuleNames as $sModuleName)
-			{
-				$this->populateClientModuleNames($sModulesPath, $sModuleName, $bIsMobileApplication, $aClientModuleNames, false);
-			}
+			$aClientModuleNames = $this->GetClientModuleNames();
 		}
 		
 		$bIsPublic = isset($aConfig['public_app']) ? (bool)$aConfig['public_app'] : false;
 		$bIsNewTab = isset($aConfig['new_tab']) ? (bool)$aConfig['new_tab'] : false;
 		
-		return '<script>window.isPublic = '.($bIsPublic ? 'true' : 'false').'; window.isNewTab = '.($bIsNewTab ? 'true' : 'false').'; window.aAvaliableModules = ["'.implode('","', $aClientModuleNames).'"];</script>
+		return '<script>window.isPublic = '.($bIsPublic ? 'true' : 'false').
+				'; window.isNewTab = '.($bIsNewTab ? 'true' : 'false').
+				'; window.aAvaliableModules = ["'.implode('","', $aClientModuleNames).'"]'.
+				'; window.aAvaliableBackendModules = ["'.implode('","', $this->GetBackendModules()).'"];</script>
 		<script src="'.$sJsScriptPath."static/js/app".$sPostfix.".js?".\Aurora\System\Api::VersionJs().'"></script>';
 	}
 	
@@ -1337,10 +1363,9 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * Returns application html.
 	 * 
-	 * @param string $sModuleHash
+	 * @param array $aConfig
 	 * @return string
 	 */
-//	public function buildBody($sModuleHash = '')
 	public function buildBody($aConfig)
 	{
 		list($sLanguage, $sTheme, $sSiteName) = $this->getThemeAndLanguage();
@@ -1348,8 +1373,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			$this->compileTemplates()."\r\n".
 			$this->compileLanguage($sLanguage)."\r\n".
 			$this->compileAppData()."\r\n".
-			//$this->getJsLinks($sModuleHash).
-			$this->getJsLinks($aConfig).
+			$this->compileJS($aConfig).
 			"\r\n".'<!-- '.\Aurora\System\Api::Version().' -->'
 		;
 	}
