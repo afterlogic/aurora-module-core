@@ -946,6 +946,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} Result.Result.Language Language of interface.
 	 * @apiSuccess {int} Result.Result.TimeFormat Time format.
 	 * @apiSuccess {string} Result.Result.DateFormat Date format.
+	 * @apiSuccess {bool} Result.Result.AutodetectLanguage Indicates if language should be taken from browser.
 	 * @apiSuccess {object} Result.Result.EUserRole Enumeration with user roles.
 	 * @apiSuccess {string} [Result.Result.LicenseKey] License key is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBHost] Database host is returned only if super administrator is authenticated.
@@ -953,6 +954,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} [Result.Result.DBLogin] Database login is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {string} [Result.Result.AdminLanguage] Super administrator language is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.DataExistAndWritable] Indicates if 'data' folder exist and writable. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.SaltNotEmpty] Indicates if salt was generated. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
@@ -997,6 +999,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		
 		$aSettings = array(
+			'AutodetectLanguage' => $this->getConfig('AutodetectLanguage'),
 			'DateFormat' => $this->getConfig('DateFormat'),
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \Aurora\System\Enums\UserRole)->getMap(),
@@ -1021,6 +1024,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
+				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
 				'DataExistAndWritable' => is_writable(\Aurora\System\Api::DataPath()),
 				'SaltNotEmpty' => \Aurora\System\Api::$sSalt !== '',
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
@@ -1058,6 +1062,13 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * &emsp; **AdminLogin** *string* Login for super administrator.<br>
 	 * &emsp; **Password** *string* Current password for super administrator.<br>
 	 * &emsp; **NewPassword** *string* New password for super administrator.<br>
+	 * &emsp; **AdminLanguage** *string* Language for super administrator.<br>
+	 * &emsp; **Language** *string* Language that is used on login and for new users.<br>
+	 * &emsp; **AutodetectLanguage** *bool* Indicates if browser language should be used on login and for new users.<br>
+	 * &emsp; **TimeFormat** *int* Time format that is used for new users.<br>
+	 * &emsp; **EnableLogging** *bool* Indicates if logs are enabled.<br>
+	 * &emsp; **EnableEventLogging** *bool* Indicates if events logs are enabled.<br>
+	 * &emsp; **LoggingLevel** *int* Specify logging level.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1101,18 +1112,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @param string $AdminLogin Login for super administrator.
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
-	 * @param string $Language
-	 * @param int $TimeFormat
-	 * @param bool $EnableLogging
-	 * @param boll $EnableEventLogging
-	 * @param int $LoggingLevel
+	 * @param string $AdminLanguage Language for super administrator.
+	 * @param string $Language Language that is used on login and for new users.
+	 * @param bool $AutodetectLanguage Indicates if browser language should be used on login and for new users.
+	 * @param int $TimeFormat Time format that is used for new users.
+	 * @param bool $EnableLogging Indicates if logs are enabled.
+	 * @param bool $EnableEventLogging Indicates if events logs are enabled.
+	 * @param int $LoggingLevel Specify logging level.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
 	public function UpdateSettings($LicenseKey = null, $DbLogin = null,
 			$DbPassword = null, $DbName = null, $DbHost = null,
-			$AdminLogin = null, $Password = null, $NewPassword = null,
-			$Language = null, $TimeFormat = null, $EnableLogging = null,
+			$AdminLogin = null, $Password = null, $NewPassword = null, $AdminLanguage = null,
+			$Language = null, $AutodetectLanguage = null, $TimeFormat = null, $EnableLogging = null,
 			$EnableEventLogging = null, $LoggingLevel = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
@@ -1121,6 +1134,22 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
+			if ($Language !== null || $TimeFormat !== null || $AutodetectLanguage !== null)
+			{
+				if ($AutodetectLanguage !== null)
+				{
+					$this->setConfig('AutodetectLanguage', $AutodetectLanguage);
+				}
+				if ($Language !== null)
+				{
+					$this->setConfig('Language', $Language);
+				}
+				if ($TimeFormat !== null)
+				{
+					$this->setConfig('TimeFormat', $TimeFormat);
+				}
+				$this->saveModuleConfig();
+			}
 			$oSettings =&\Aurora\System\Api::GetSettings();
 			if ($LicenseKey !== null)
 			{
@@ -1166,6 +1195,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 				{
 					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
 				}
+			}
+			if ($AdminLanguage !== null)
+			{
+				$oSettings->SetConf('AdminLanguage', $AdminLanguage);
 			}
 			if ($EnableLogging !== null)
 			{

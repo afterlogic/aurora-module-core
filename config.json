@@ -55,6 +55,6 @@
     "TimeFormat": [
         "F24",
         "spec",
-        "ETimeFormat"
+        "\\Aurora\\System\\Enums\\TimeFormat"
     ]
 }
