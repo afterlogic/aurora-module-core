@@ -948,7 +948,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} Result.Result.DateFormat Date format.
 	 * @apiSuccess {bool} Result.Result.AutodetectLanguage Indicates if language should be taken from browser.
 	 * @apiSuccess {object} Result.Result.EUserRole Enumeration with user roles.
-	 * @apiSuccess {string} [Result.Result.LicenseKey] License key is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBHost] Database host is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBName] Database name is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.DBLogin] Database login is returned only if super administrator is authenticated.
@@ -1018,7 +1017,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 			$sAdminPassword = $oSettings->GetConf('AdminPassword');
 			
 			$aSettings = array_merge($aSettings, array(
-				'LicenseKey' => $oSettings->GetConf('LicenseKey'),
 				'DBHost' => $oSettings->GetConf('DBHost'),
 				'DBName' => $oSettings->GetConf('DBName'),
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
@@ -1054,7 +1052,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiParam {string=UpdateSettings} Method Method name.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **LicenseKey** *string* Value of license key.<br>
 	 * &emsp; **DbLogin** *string* Database login.<br>
 	 * &emsp; **DbPassword** *string* Database password.<br>
 	 * &emsp; **DbName** *string* Database name.<br>
@@ -1075,7 +1072,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateSettings',
-	 *	Parameters: '{ LicenseKey: "license_key_value", DbLogin: "login_value", DbPassword: "password_value",
+	 *	Parameters: '{ DbLogin: "login_value", DbPassword: "password_value",
 	 * DbName: "db_name_value", DbHost: "host_value", AdminLogin: "admin_login_value",
 	 * Password: "admin_pass_value", NewPassword: "admin_pass_value" }'
 	 * }
@@ -1104,7 +1101,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	/**
 	 * Updates specified settings if super administrator is authenticated.
 	 * 
-	 * @param string $LicenseKey Value of license key.
 	 * @param string $DbLogin Database login.
 	 * @param string $DbPassword Database password.
 	 * @param string $DbName Database name.
@@ -1122,8 +1118,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateSettings($LicenseKey = null, $DbLogin = null,
-			$DbPassword = null, $DbName = null, $DbHost = null,
+	public function UpdateSettings(
+			$DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null, $AdminLanguage = null,
 			$Language = null, $AutodetectLanguage = null, $TimeFormat = null, $EnableLogging = null,
 			$EnableEventLogging = null, $LoggingLevel = null)
@@ -1151,10 +1147,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$this->saveModuleConfig();
 			}
 			$oSettings =&\Aurora\System\Api::GetSettings();
-			if ($LicenseKey !== null)
-			{
-				$oSettings->SetConf('LicenseKey', $LicenseKey);
-			}
 			if ($DbLogin !== null)
 			{
 				$oSettings->SetConf('DBLogin', $DbLogin);
