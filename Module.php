@@ -2858,7 +2858,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 			else
 			{
-				$oLicense = \Aurora\System\Api::GetModuleDecorator('License');
+				$oLicense = \Aurora\System\Api::GetModuleDecorator('Licensing');
 				if ($oLicense instanceof \Aurora\System\Module\Decorator)
 				{
 					if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()))
