@@ -954,7 +954,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.AdminLanguage] Super administrator language is returned only if super administrator is authenticated.
-	 * @apiSuccess {bool} [Result.Result.DataExistAndWritable] Indicates if 'data' folder exist and writable. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.IsSystemConfigured] Indicates if 'data' folder exist and writable and salt was generated.
 	 * @apiSuccess {bool} [Result.Result.SaltNotEmpty] Indicates if salt was generated. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableEventLogging] Indicates if event logging is enabled. It is returned only if super administrator is authenticated.
@@ -1010,6 +1010,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'TenantName' => \Aurora\System\Api::getTenantName(),
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
+			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
+				(file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php'))),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
@@ -1023,8 +1025,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
 				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
-				'DataExistAndWritable' => is_writable(\Aurora\System\Api::DataPath()),
-				'SaltNotEmpty' => \Aurora\System\Api::$sSalt !== '',
+				'SaltNotEmpty' => file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php')),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
