@@ -3062,7 +3062,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if ($oUser)
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
-				$aArgs = array();
+				$aArgs = array('UUID' => $oUser->UUID);
 				$this->broadcastEvent(
 					$this->GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,
