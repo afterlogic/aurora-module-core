@@ -662,6 +662,58 @@ class Module extends \Aurora\System\Module\AbstractModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ GetUser
+	 * @apiName GetUser
+	 * @apiGroup Core
+	 * @apiDescription Returns user data.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetUser} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *string* User identifer.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Parameters: '{ "AuthToken": "32b2ecd4a4016fedc4abee880425b6b8" }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: "Core",
+	 *	Method: "GetUser",
+	 *	Result: {
+	 *		"@Object": "Object/CUser",
+     *		"Name": "",
+     *		"PublicId": "mail@domain.com",
+     *		"Role": 2,
+     *		"WriteSeparateLog": false
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Returns user object.
 	 * 
 	 * @param int|string $UserId User identifier or UUID.
@@ -1437,6 +1489,60 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $oEavManager->testStorageConnection();
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetAuthenticatedAccount
+	 * @apiName GetAuthenticatedAccount
+	 * @apiGroup Core
+	 * @apiDescription Returns account which user authenticated with.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetAuthenticatedAccount} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **AuthToken** *string* Current Authentication token.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAuthenticatedAccount',
+	 *	Parameters: '{ "AuthToken": "32b2ecd4a4016fedc4abee880425b6b8" }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: "Core",
+	 *	Method: "GetAuthenticatedAccount",
+	 *	Result: {
+	 *		"@Object": "Object/CMailAccount",
+     *		"EntityId": 55,
+     *		"UUID": "2cef5179-84ff-4f3d-a160-59254b6eee9c",
+     *		"IsDisabled": false,
+     *		"IdUser": 53,
+     *		"UseToAuthorize": true,
+	 *		...
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAuthenticatedAccount',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * 
 	 * @param string $AuthToken
