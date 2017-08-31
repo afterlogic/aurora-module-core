@@ -703,6 +703,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      *		"PublicId": "mail@domain.com",
      *		"Role": 2,
      *		"WriteSeparateLog": false
+	 *	}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1533,6 +1534,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      *		"IdUser": 53,
      *		"UseToAuthorize": true,
 	 *		...
+	 *	}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
