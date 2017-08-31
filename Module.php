@@ -684,7 +684,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetUser',
-	 *	Parameters: '{ "AuthToken": "32b2ecd4a4016fedc4abee880425b6b8" }'
+	 *	Parameters: '{ "UserId": "17" }'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
