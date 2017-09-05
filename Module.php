@@ -662,6 +662,59 @@ class Module extends \Aurora\System\Module\AbstractModule
 	}
 	
 	/**
+	 * @api {post} ?/Api/ GetUser
+	 * @apiName GetUser
+	 * @apiGroup Core
+	 * @apiDescription Returns user data.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetUser} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *string* User identifer.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Parameters: '{ "UserId": "17" }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: "Core",
+	 *	Method: "GetUser",
+	 *	Result: {
+	 *		"@Object": "Object/CUser",
+     *		"Name": "",
+     *		"PublicId": "mail@domain.com",
+     *		"Role": 2,
+     *		"WriteSeparateLog": false
+	 *	}
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
 	 * Returns user object.
 	 * 
 	 * @param int|string $UserId User identifier or UUID.
@@ -954,7 +1007,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {string} [Result.Result.AdminLanguage] Super administrator language is returned only if super administrator is authenticated.
-	 * @apiSuccess {bool} [Result.Result.DataExistAndWritable] Indicates if 'data' folder exist and writable. It is returned only if super administrator is authenticated.
+	 * @apiSuccess {bool} [Result.Result.IsSystemConfigured] Indicates if 'data' folder exist and writable and salt was generated.
 	 * @apiSuccess {bool} [Result.Result.SaltNotEmpty] Indicates if salt was generated. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
 	 * @apiSuccess {bool} [Result.Result.EnableEventLogging] Indicates if event logging is enabled. It is returned only if super administrator is authenticated.
@@ -1010,6 +1063,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'TenantName' => \Aurora\System\Api::getTenantName(),
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
+			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
+				(file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php'))),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
@@ -1023,8 +1078,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
 				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
-				'DataExistAndWritable' => is_writable(\Aurora\System\Api::DataPath()),
-				'SaltNotEmpty' => \Aurora\System\Api::$sSalt !== '',
+				'SaltNotEmpty' => file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php')),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
@@ -1436,6 +1490,61 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $oEavManager->testStorageConnection();
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetAuthenticatedAccount
+	 * @apiName GetAuthenticatedAccount
+	 * @apiGroup Core
+	 * @apiDescription Returns account which user authenticated with.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetAuthenticatedAccount} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **AuthToken** *string* Current Authentication token.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAuthenticatedAccount',
+	 *	Parameters: '{ "AuthToken": "32b2ecd4a4016fedc4abee880425b6b8" }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: "Core",
+	 *	Method: "GetAuthenticatedAccount",
+	 *	Result: {
+	 *		"@Object": "Object/CMailAccount",
+     *		"EntityId": 55,
+     *		"UUID": "2cef5179-84ff-4f3d-a160-59254b6eee9c",
+     *		"IsDisabled": false,
+     *		"IdUser": 53,
+     *		"UseToAuthorize": true,
+	 *		...
+	 *	}
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAuthenticatedAccount',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * 
 	 * @param string $AuthToken
@@ -2638,7 +2747,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			if ($oTenant)
 			{
-				$sTenantSpacePath = AURORA_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
+				$sTenantSpacePath = AU_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
 				
 				if (@is_dir($sTenantSpacePath))
 				{
@@ -3061,7 +3170,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if ($oUser)
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
-				$aArgs = array();
+				$aArgs = array('UUID' => $oUser->UUID);
 				$this->broadcastEvent(
 					$this->GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,

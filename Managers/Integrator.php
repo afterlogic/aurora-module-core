@@ -1283,8 +1283,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		
 		return '<script>window.isPublic = '.($bIsPublic ? 'true' : 'false').
 				'; window.isNewTab = '.($bIsNewTab ? 'true' : 'false').
-				'; window.aAvaliableModules = ["'.implode('","', $aClientModuleNames).'"]'.
-				'; window.aAvaliableBackendModules = ["'.implode('","', $this->GetBackendModules()).'"];</script>
+				'; window.aAvailableModules = ["'.implode('","', $aClientModuleNames).'"]'.
+				'; window.aAvailableBackendModules = ["'.implode('","', $this->GetBackendModules()).'"];</script>
 		<script src="'.$sJsScriptPath."static/js/app".$sPostfix.".js?".\Aurora\System\Api::VersionJs().'"></script>';
 	}
 	
