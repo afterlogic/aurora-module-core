@@ -38,6 +38,9 @@
  * @package Classes
  * @subpackage Users
  */
+
+namespace Aurora\Modules\Core\Clases;
+
 class CUser extends \Aurora\System\EAV\Entity
 {
 	/**
@@ -185,7 +188,7 @@ class CUser extends \Aurora\System\EAV\Entity
 		{
 			case false:
 				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
-					'{{ClassName}}' => 'CUser', '{{ClassField}}' => 'Error'));
+					'{{ClassName}}' => '\Aurora\Modules\Core\Clases\CUser', '{{ClassField}}' => 'Error'));
 		}
 
 		return true;

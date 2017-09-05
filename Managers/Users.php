@@ -57,7 +57,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 	public function getUserByPublicId($iUserPublicId)
 	{
-		$aUsers = $this->oEavManager->getEntities('CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
+		$aUsers = $this->oEavManager->getEntities('\Aurora\Modules\Core\Clases\CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
 		if (count($aUsers) > 0)
 		{
 			return $aUsers[0];
@@ -90,7 +90,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			}
 				
 			$aResult = $this->oEavManager->getEntities(
-				'CUser', 
+				'\Aurora\Modules\Core\Clases\CUser', 
 				array(
 					'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
@@ -141,7 +141,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$iResult = $this->oEavManager->getEntitiesCount('CUser');
+			$iResult = $this->oEavManager->getEntitiesCount('\Aurora\Modules\Core\Clases\CUser');
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -155,7 +155,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(\CUser $oUser)
+	public function isExists(\Aurora\Modules\Core\Clases\CUser $oUser)
 	{
 		$bResult = false;
 		
@@ -174,7 +174,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 //		try
 //		{
 //			$aResults = $this->oEavManager->getObjects(
-//				'CUser',
+//				'\Aurora\Modules\Core\Clases\CUser',
 //				array('Name'),
 //				0,
 //				0,
@@ -205,7 +205,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function createUser (\CUser &$oUser)
+	public function createUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
 	{
 		$bResult = false;
 		try
@@ -243,7 +243,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateUser (\CUser &$oUser)
+	public function updateUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
 	{
 		$bResult = false;
 		try
@@ -281,7 +281,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteUser (\CUser &$oUser)
+	public function deleteUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
 	{
 		$bResult = false;
 		try

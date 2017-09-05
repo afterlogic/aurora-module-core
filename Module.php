@@ -98,7 +98,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
-	 * @param \CUser $oResult
+	 * @param \Aurora\Modules\Core\Clases\CUser $oResult
 	 */
 	public function onCreateAccount(&$Args, &$Result)
 	{
@@ -651,7 +651,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	/**
 	 * Updates user by object.
 	 * 
-	 * @param \CUser $oUser
+	 * @param \Aurora\Modules\Core\Clases\CUser $oUser
 	 * returns bool
 	 */
 	public function UpdateUserObject($oUser)
@@ -768,7 +768,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
+		$oUser = \Aurora\System\EAV\Entity::createInstance('\Aurora\Modules\Core\Clases\CUser', $this->GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -2977,7 +2977,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 			}
 			
-			$oUser = \Aurora\System\EAV\Entity::createInstance('CUser', $this->GetName());
+			$oUser = \Aurora\System\EAV\Entity::createInstance('\Aurora\Modules\Core\Clases\CUser', $this->GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
