@@ -2747,7 +2747,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			
 			if ($oTenant)
 			{
-				$sTenantSpacePath = AURORA_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
+				$sTenantSpacePath = AU_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
 				
 				if (@is_dir($sTenantSpacePath))
 				{
