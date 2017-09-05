@@ -540,7 +540,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 					exit;
 				}
 
-				if ($oAccount instanceof \CAccount)
+				if ($oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account)
 				{
 					$oApiIntegrator->setAccountAsLoggedIn($oAccount);
 				}

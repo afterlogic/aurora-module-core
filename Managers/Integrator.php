@@ -419,7 +419,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return CAccount|null
+	 * @return \Aurora\Modules\StandardAuth\Classes\Account|null
 	 */
 	public function getAuthenticatedDefaultAccount($sAuthToken = '')
 	{
@@ -434,7 +434,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				if (0 < $iAccountId)
 				{
 					$oAccount = $oApiUsers->getAccountById($iAccountId);
-					$oResult = $oAccount instanceof \CAccount ? $oAccount : null;
+					$oResult = $oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account ? $oAccount : null;
 				}
 			}
 		}
@@ -596,12 +596,12 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CAccount $oAccount
+	 * @param \Aurora\Modules\StandardAuth\Classes\Account $oAccount
 	 * @param bool $bSignMe Default value is **false**.
 	 *
 	 * @return string
 	 */
-	public function setAccountAsLoggedIn(\CAccount $oAccount, $bSignMe = false)
+	public function setAccountAsLoggedIn(\Aurora\Modules\StandardAuth\Classes\Account $oAccount, $bSignMe = false)
 	{
 		$aAccountHashTable = array(
 			'token' => 'auth',
@@ -681,7 +681,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::Mail_AccountAuthentication) 4002
 	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::WebMailManager_AccountCreateOnLogin) 1503
 	 *
-	 * @return CAccount|null|bool
+	 * @return \Aurora\Modules\StandardAuth\Classes\Account|null|bool
 	 */
 	public function loginToAccount($sEmail, $sIncPassword, $sIncLogin = '', $sLanguage = '')
 	{
@@ -694,7 +694,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 
 		$bAuthResult = false;
 		$oAccount = $oApiUsersManager->getAccountByEmail($sEmail);
-		if ($oAccount instanceof CAccount)
+		if ($oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account)
 		{
 			if ($oAccount->IsDisabled)
 			{
@@ -768,7 +768,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				'Language' => $sLanguage, 
 				'ExtValues' => $aExtValues
 			));
-			if ($oAccount instanceof CAccount)
+			if ($oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account)
 			{
 				$oApiUsersManager->updateAccountLastLoginAndCount($oAccount->IdUser);
 				$oResult = $oAccount;
