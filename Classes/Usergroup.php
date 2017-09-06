@@ -15,6 +15,9 @@
  * @package Classes
  * @subpackage UserGroups
  */
+
+namespace Aurora\Modules\Core\Classes;
+
 class UserGroup extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
