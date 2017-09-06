@@ -38,7 +38,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 * 
 	 * @param int|string $mUserId User identifier or UUID.
 	 * 
-	 * @return CUser | false
+	 * @return User | false
 	 */
 	public function getUser($mUserId)
 	{
@@ -57,7 +57,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 	public function getUserByPublicId($iUserPublicId)
 	{
-		$aUsers = $this->oEavManager->getEntities('\Aurora\Modules\Core\Clases\CUser', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
+		$aUsers = $this->oEavManager->getEntities('Aurora\Modules\Core\Classes\User', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
 		if (count($aUsers) > 0)
 		{
 			return $aUsers[0];
@@ -90,7 +90,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			}
 				
 			$aResult = $this->oEavManager->getEntities(
-				'\Aurora\Modules\Core\Clases\CUser', 
+				'Aurora\Modules\Core\Classes\User', 
 				array(
 					'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
@@ -141,7 +141,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$iResult = $this->oEavManager->getEntitiesCount('\Aurora\Modules\Core\Clases\CUser');
+			$iResult = $this->oEavManager->getEntitiesCount('Aurora\Modules\Core\Classes\User');
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -155,13 +155,13 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(\Aurora\Modules\Core\Clases\CUser $oUser)
+	public function isExists(\Aurora\Modules\Core\Classes\User $oUser)
 	{
 		$bResult = false;
 		
 		$oResult = $this->oEavManager->getEntity($oUser->EntityId);
 				
-		if ($oResult instanceof \CUser)
+		if ($oResult instanceof \Aurora\Modules\Core\Classes\User)
 		{
 			$bResult = true;
 		}
@@ -174,7 +174,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 //		try
 //		{
 //			$aResults = $this->oEavManager->getObjects(
-//				'\Aurora\Modules\Core\Clases\CUser',
+//				'Aurora\Modules\Core\Classes\User',
 //				array('Name'),
 //				0,
 //				0,
@@ -205,7 +205,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function createUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
+	public function createUser (\Aurora\Modules\Core\Classes\User &$oUser)
 	{
 		$bResult = false;
 		try
@@ -243,7 +243,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
+	public function updateUser (\Aurora\Modules\Core\Classes\User &$oUser)
 	{
 		$bResult = false;
 		try
@@ -277,11 +277,11 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * @param CUser $oUser
+	 * @param User $oUser
 	 *
 	 * @return bool
 	 */
-	public function deleteUser (\Aurora\Modules\Core\Clases\CUser &$oUser)
+	public function deleteUser (\Aurora\Modules\Core\Classes\User &$oUser)
 	{
 		$bResult = false;
 		try

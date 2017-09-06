@@ -98,7 +98,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
-	 * @param \Aurora\Modules\Core\Clases\CUser $oResult
+	 * @param \Aurora\Modules\Core\Classes\User $oResult
 	 */
 	public function onCreateAccount(&$Args, &$Result)
 	{
@@ -651,7 +651,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	/**
 	 * Updates user by object.
 	 * 
-	 * @param \Aurora\Modules\Core\Clases\CUser $oUser
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
 	 * returns bool
 	 */
 	public function UpdateUserObject($oUser)
@@ -698,7 +698,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *	Module: "Core",
 	 *	Method: "GetUser",
 	 *	Result: {
-	 *		"@Object": "Object/CUser",
+	 *		"@Object": "Object/User",
      *		"Name": "",
      *		"PublicId": "mail@domain.com",
      *		"Role": 2,
@@ -718,7 +718,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns user object.
 	 * 
 	 * @param int|string $UserId User identifier or UUID.
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function GetUser($UserId = '')
 	{
@@ -733,7 +733,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns user object.
 	 * 
 	 * @param int $UUID User uuid identifier.
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function GetUserByUUID($UUID)
 	{
@@ -748,7 +748,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns user object.
 	 * 
 	 * @param string $PublicId User public identifier.
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
@@ -762,13 +762,13 @@ class Module extends \Aurora\System\Module\AbstractModule
 	/**
 	 * Creates and returns user with super administrator role.
 	 * 
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function GetAdminUser()
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = \Aurora\System\EAV\Entity::createInstance('\Aurora\Modules\Core\Clases\CUser', $this->GetName());
+		$oUser = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\User', $this->GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -1527,7 +1527,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *	Module: "Core",
 	 *	Method: "GetAuthenticatedAccount",
 	 *	Result: {
-	 *		"@Object": "Object/CMailAccount",
+	 *		"@Object": "Object/Aurora\Modules\Mail\Classes\Account",
      *		"EntityId": 55,
      *		"UUID": "2cef5179-84ff-4f3d-a160-59254b6eee9c",
      *		"IsDisabled": false,
@@ -2961,7 +2961,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
-			if ($oUser instanceof \CUser)
+			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 			{
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
 			}
@@ -2977,7 +2977,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 			}
 			
-			$oUser = \Aurora\System\EAV\Entity::createInstance('\Aurora\Modules\Core\Clases\CUser', $this->GetName());
+			$oUser = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\User', $this->GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;

@@ -321,7 +321,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param string $sAuthToken Default value is empty string.
 	 *
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function getAuthenticatedUserHelper($sAuthToken = '')
 	{
@@ -343,7 +343,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iUserId Default value is empty string.
 	 *
-	 * @return \CUser
+	 * @return \Aurora\Modules\Core\Classes\User
 	 */
 	public function getAuthenticatedUserByIdHelper($iUserId)
 	{
@@ -1107,7 +1107,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @throws \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter) 103
 	 *
-	 * @return CUser|bool
+	 * @return User|bool
 	 */
 	public function getAhdSocialUser($sHelpdeskTenantHash = '', $sUserId = '')
 	{
