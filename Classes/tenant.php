@@ -51,7 +51,9 @@
  */
 //class CTenant extends \Aurora\System\AbstractContainer
 
-class CTenant extends \Aurora\System\EAV\Entity
+namespace Aurora\Modules\Core\Classes;
+
+class Tenant extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
 			'IdTenant'					=> array('int', 0),
@@ -246,10 +248,10 @@ class CTenant extends \Aurora\System\EAV\Entity
 //					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName);
 				case \Aurora\System\Utils\Validate::IsEmpty($this->Name):
 					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
-						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Name'));
+						'{{ClassName}}' => 'Tenant', '{{ClassField}}' => 'Name'));
 //				case !\Aurora\System\Utils\Validate::IsEmpty($this->Email) && !preg_match('/^[^@]+@[^@]+$/', $this->Email):
 //					throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidEmail, null, array(
-//						'{{ClassName}}' => 'CTenant', '{{ClassField}}' => 'Email'));
+//						'{{ClassName}}' => 'Tenant', '{{ClassField}}' => 'Email'));
 			}
 		}
 
@@ -276,7 +278,7 @@ class CTenant extends \Aurora\System\EAV\Entity
 				{
 					if (in_array(strtolower($sKey), $aConnectors))
 					{
-						$oTenantSocial = CTenantSocials::initFromSettings($aSocial);
+						$oTenantSocial = \Aurora\Modules\Core\Classes\TenantSocials::initFromSettings($aSocial);
 						if ($oTenantSocial !== null)
 						{
 							$aResult[strtolower($sKey)] = $oTenantSocial;
@@ -301,7 +303,7 @@ class CTenant extends \Aurora\System\EAV\Entity
 			{
 				$aSettingsSocials[ucfirst($sKey)] = $oSocial;
 			}
-			else if ($oSocial instanceof CTenantSocials)
+			else if ($oSocial instanceof \Aurora\Modules\Core\Classes\TenantSocials)
 			{
 				$aSettingsSocials[ucfirst($sKey)] = $oSocial->initForSettings();
 			}

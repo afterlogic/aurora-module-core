@@ -151,7 +151,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
@@ -201,7 +201,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
@@ -239,7 +239,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */

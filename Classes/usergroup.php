@@ -15,7 +15,7 @@
  * @package Classes
  * @subpackage UserGroups
  */
-class CUserGroup extends \Aurora\System\EAV\Entity
+class UserGroup extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
 		'UrlIdentifier'	=> array('string', ''),
@@ -33,7 +33,7 @@ class CUserGroup extends \Aurora\System\EAV\Entity
 		{
 			case \Aurora\System\Utils\Validate::IsEmpty($this->UrlIdentifier):
 				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
-					'{{ClassName}}' => 'CUserGroup', '{{ClassField}}' => 'UrlIdentifier'));
+					'{{ClassName}}' => 'UserGroup', '{{ClassField}}' => 'UrlIdentifier'));
 		}
 
 		return true;

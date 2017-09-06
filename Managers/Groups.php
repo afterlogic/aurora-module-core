@@ -48,7 +48,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResultGroups = $this->oEavManager->getObjects(
-				'CUserGroup', 
+				'Aurora\Modules\Core\Classes\UserGroup', 
 				array('UrlIdentifier', 'IdTenant'),
 				$iPage,
 				$iItemsPerPage,
@@ -85,7 +85,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResults = $this->oEavManager->getObjectsCount(
-				'CUserGroups', 
+				'Aurora\Modules\Core\Classes\UserGroup', 
 				array(
 					'UrlIdentifier' => '%'.$sSearchDesc.'%'
 				)
@@ -103,7 +103,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iGroupId
 	 *
-	 * @return CChannel
+	 * @return Aurora\Modules\Core\Classes\Channel
 	 */
 	public function getUserGroupById($iGroupId)
 	{
@@ -112,7 +112,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		{
 			$oResult = $this->oEavManager->getObjectById($iGroupId);
 			
-			if ($oResult instanceOf \CChannel)
+			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Channel)
 			{
 				$oGroup = $oResult;
 			}
@@ -127,17 +127,17 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 
 
 	/**
-	 * @param CUserGroup $oGroup
+	 * @param Aurora\Modules\Core\Classes\UserGroup $oGroup
 	 *
 	 * @return bool
 	 */
-	public function isExists(\CUserGroup $oGroup)
+	public function isExists(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
 	{
 		$bResult = false;
 		try
 		{
 //			$aResultChannels = $this->oEavManager->getObjects(
-//				'CUserGroup',
+//				'Aurora\Modules\Core\Classes\UserGroup',
 //				array('Login'),
 //				0,
 //				0,
@@ -164,11 +164,11 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CUserGroup $oGroup
+	 * @param Aurora\Modules\Core\Classes\UserGroup $oGroup
 	 *
 	 * @return bool
 	 */
-	public function saveUserGroup(\CUserGroup &$oGroup)
+	public function saveUserGroup(\Aurora\Modules\Core\Classes\UserGroup &$oGroup)
 	{
 		$bResult = false;
 		try
@@ -200,11 +200,11 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CUserGroup $oGroup
+	 * @param Aurora\Modules\Core\Classes\UserGroup $oGroup
 	 *
 	 * @return bool
 	 */
-	public function updateUserGroup(\CUserGroup $oGroup)
+	public function updateUserGroup(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
 	{
 		$bResult = false;
 		try
@@ -236,13 +236,13 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * @todo
-	 * @param CUserGroup $oGroup
+	 * @param Aurora\Modules\Core\Classes\UserGroup $oGroup
 	 *
 	 * @throws $oException
 	 *
 	 * @return bool
 	 */
-	public function deleteUserGroup(\CUserGroup $oGroup)
+	public function deleteUserGroup(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
 	{
 		$bResult = false;
 		try

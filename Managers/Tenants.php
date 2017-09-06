@@ -33,7 +33,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	public $oChannelsManager = null;
 	
 	/**
-	 * @var CTenant
+	 * @var Aurora\Modules\Core\Classes\Tenant
 	 */
 	static $oDefaultTenant = null;
 
@@ -65,7 +65,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				'CTenant', 
+				'Aurora\Modules\Core\Classes\Tenant', 
 				array(
 					'Name', 
 					'Description',
@@ -101,7 +101,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResultTenants = $this->oEavManager->getEntitiesCount(
-				'CTenant', 
+				'Aurora\Modules\Core\Classes\Tenant', 
 				array(
 					'Description' => $sSearchDesc
 				)
@@ -117,7 +117,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return CTenant
+	 * @return Aurora\Modules\Core\Classes\Tenant
 	 */
 	public function getDefaultGlobalTenant()
 	{
@@ -126,7 +126,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			try
 			{
 				$oResult = $this->oEavManager->getEntities(
-					'CTenant', 
+					'Aurora\Modules\Core\Classes\Tenant', 
 					array(
 						'IsDefault'
 					),
@@ -135,7 +135,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 					array('IsDefault' => true)
 				);
 
-				if ($oResult instanceOf \CTenant)
+				if ($oResult instanceOf \Aurora\Modules\Core\Classes\Tenant)
 				{
 					self::$oDefaultTenant = $oResult;
 				}
@@ -152,7 +152,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param mixed $mTenantId
 	 *
-	 * @return CTenant|null
+	 * @return Aurora\Modules\Core\Classes\Tenant|null
 	 */
 	public function getTenantById($mTenantId)
 	{
@@ -161,7 +161,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			$oResult = $this->oEavManager->getEntity($mTenantId);
 				
-			if ($oResult instanceOf \CTenant)
+			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Tenant)
 			{
 				$oTenant = $oResult;
 			}
@@ -190,7 +190,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$oFilterBy = array('Name' => $sTenantName);
 //				if (null !== $sTenantPassword)
 //				{
-//					$oFilterBy['PasswordHash'] = CTenant::hashPassword($sTenantPassword);
+//					$oFilterBy['PasswordHash'] = Aurora\Modules\Core\Classes\Tenant::hashPassword($sTenantPassword);
 					
 					//TODO why we shoud filter by these fields?
 					$oFilterBy['IsDisabled'] = false;
@@ -198,7 +198,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 //				}
 				
 				$aResultTenants = $this->oEavManager->getEntities(
-					'CTenant', 
+					'Aurora\Modules\Core\Classes\Tenant', 
 					array(
 						'Name'
 					),
@@ -207,7 +207,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 					$oFilterBy
 				);
 				
-				if (($aResultTenants[0]) && $aResultTenants[0] instanceOf \CTenant)
+				if (($aResultTenants[0]) && $aResultTenants[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
 				{
 					$oTenant = $aResultTenants[0];
 				}
@@ -247,11 +247,11 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CTenant $oTenant
+	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 *
 	 * @return bool
 	 */
-	public function isTenantExists(\CTenant $oTenant)
+	public function isTenantExists(\Aurora\Modules\Core\Classes\Tenant $oTenant)
 	{
 		//TODO
 //		$bResult = $oTenant->IsDefault;
@@ -260,7 +260,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 
 		try
 		{
-			$aResultTenants = $this->oEavManager->getEntities('CTenant',
+			$aResultTenants = $this->oEavManager->getEntities('Aurora\Modules\Core\Classes\Tenant',
 				array('Name'),
 				0,
 				0,
@@ -287,11 +287,11 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CTenant $oTenant
+	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 *
 	 * @return bool
 	 */
-	public function createTenant(\CTenant &$oTenant)
+	public function createTenant(\Aurora\Modules\Core\Classes\Tenant &$oTenant)
 	{
 		$bResult = false;
 		try
@@ -306,7 +306,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 						
 						if ($this->oChannelsManager)
 						{
-							/* @var $oChannel CChannel */
+							/* @var $oChannel Aurora\Modules\Core\Classes\Channel */
 							$oChannel = $this->oChannelsManager->getChannelById($oTenant->IdChannel);
 							if (!$oChannel)
 							{
@@ -351,7 +351,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CTenant $oTenant
+	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 *
 	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_QuotaLimitExided) 1707
 	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantUpdateFailed) 1703
@@ -359,7 +359,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateTenant(\CTenant $oTenant)
+	public function updateTenant(\Aurora\Modules\Core\Classes\Tenant $oTenant)
 	{
 		$bResult = false;
 		try
@@ -399,7 +399,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				'CTenant',
+				'Aurora\Modules\Core\Classes\Tenant',
 				array('IsDefault', 'IdChannel'),
 				0,
 				0,
@@ -440,13 +440,13 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @TODO rewrite other menagers usage
 	 * 
-	 * @param CTenant $oTenant
+	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 *
 	 * @throws $oException
 	 *
 	 * @return bool
 	 */
-	public function deleteTenant(\CTenant $oTenant)
+	public function deleteTenant(\Aurora\Modules\Core\Classes\Tenant $oTenant)
 	{
 		$bResult = false;
 		try

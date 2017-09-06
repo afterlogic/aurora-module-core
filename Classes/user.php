@@ -160,7 +160,7 @@ class User extends \Aurora\System\EAV\Entity
 	 * @ignore
 	 * @todo not used
 	 * 
-	 * @param CTenant $oTenant
+	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 * @param string $sCapaName
 	 * @param bool $bValue
 	 *

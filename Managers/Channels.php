@@ -52,7 +52,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				'CChannel', 
+				'Aurora\Modules\Core\Classes\Channel', 
 				array('Login', 'Description', 'Password'),
 				$iOffset,
 				$iLimit,
@@ -78,7 +78,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$aResults = $this->oEavManager->getEntitiesCount('CChannel', 
+			$aResults = $this->oEavManager->getEntitiesCount('Aurora\Modules\Core\Classes\Channel', 
 				array(
 					'Login' => '%'.$sSearchDesc.'%',
 					'Description' => '%'.$sSearchDesc.'%'
@@ -97,7 +97,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iChannelId
 	 *
-	 * @return CChannel
+	 * @return Aurora\Modules\Core\Classes\Channel
 	 */
 	public function getChannelById($iChannelId)
 	{
@@ -106,7 +106,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		{
 			$oResult = $this->oEavManager->getEntity($iChannelId);
 			
-			if ($oResult instanceOf \CChannel)
+			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Channel)
 			{
 				$oChannel = $oResult;
 			}
@@ -129,7 +129,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iChannelId = 0;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities('CChannel', 
+			$aResultChannels = $this->oEavManager->getEntities('Aurora\Modules\Core\Classes\Channel', 
 				array(
 					'Login'
 				),
@@ -138,7 +138,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 				array('Login' => $sChannelLogin)
 			);
 			
-			if (isset($aResultChannels[0]) && $aResultChannels[0] instanceOf \CChannel)
+			if (isset($aResultChannels[0]) && $aResultChannels[0] instanceOf \Aurora\Modules\Core\Classes\Channel)
 			{
 				$iChannelId = $aResultChannels[0]->EntityId;
 			}
@@ -152,16 +152,16 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function isExists(\CChannel $oChannel)
+	public function isExists(\Aurora\Modules\Core\Classes\Channel $oChannel)
 	{
 		$bResult = false;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities('CChannel',
+			$aResultChannels = $this->oEavManager->getEntities('Aurora\Modules\Core\Classes\Channel',
 				array('Login'),
 				0,
 				0,
@@ -188,11 +188,11 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function createChannel(\CChannel &$oChannel)
+	public function createChannel(\Aurora\Modules\Core\Classes\Channel &$oChannel)
 	{
 		$bResult = false;
 		try
@@ -226,11 +226,11 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function updateChannel(\CChannel $oChannel)
+	public function updateChannel(\Aurora\Modules\Core\Classes\Channel $oChannel)
 	{
 		$bResult = false;
 		try
@@ -261,13 +261,13 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param CChannel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @throws $oException
 	 *
 	 * @return bool
 	 */
-	public function deleteChannel(\CChannel $oChannel)
+	public function deleteChannel(\Aurora\Modules\Core\Classes\Channel $oChannel)
 	{
 		$bResult = false;
 		try

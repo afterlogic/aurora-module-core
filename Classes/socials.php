@@ -24,7 +24,10 @@
  * @package Classes
  * @subpackage Tenants
  */
-class CTenantSocials extends \Aurora\System\AbstractContainer
+
+namespace Aurora\Modules\Core\Classes;
+
+class TenantSocials extends \Aurora\System\AbstractContainer
 {
 	public function __construct()
 	{
@@ -76,11 +79,11 @@ class CTenantSocials extends \Aurora\System\AbstractContainer
 	/**
 	 * @param array $aSocial
 	 * 
-	 * @return CTenantSocials
+	 * @return TenantSocials
 	 */
 	public static function initFromSettings($aSocial)
 	{
-		$oSocial = new CTenantSocials();
+		$oSocial = new TenantSocials();
 		
 		if (isset($aSocial['Allow'], $aSocial['Name'], $aSocial['Id'], $aSocial['Secret']))
 		{
@@ -118,7 +121,7 @@ class CTenantSocials extends \Aurora\System\AbstractContainer
 	public function toArray()
 	{
 		return array(
-			'@Object'	=> 'Object/CTenantSocials',
+			'@Object'	=> 'Object/Aurora\\Modules\\Core\\Classes\\TenantSocials',
 			'Id'		=> $this->SocialId,
 			'Name'		=> $this->SocialName,
 			'LowerName'	=> strtolower($this->SocialName),

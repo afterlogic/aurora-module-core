@@ -780,7 +780,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns tenant object by identifier.
 	 * 
 	 * @param int $iIdTenant Tenane id.
-	 * @return \CTenant
+	 * @return \Aurora\Modules\Core\Classes\Tenant
 	 */
 	public function GetTenantById($iIdTenant)
 	{
@@ -794,7 +794,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	/**
 	 * Returns default global tenant.
 	 * 
-	 * @return \CTenant
+	 * @return \Aurora\Modules\Core\Classes\Tenant
 	 */
 	public function GetDefaultGlobalTenant()
 	{
@@ -2103,7 +2103,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = \Aurora\System\EAV\Entity::createInstance('CChannel', $this->GetName());
+			$oChannel = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\Channel', $this->GetName());
 			
 			$oChannel->Login = $Login;
 			
@@ -2570,7 +2570,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = \Aurora\System\EAV\Entity::createInstance('CTenant', $this->GetName());
+			$oTenant = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\Tenant', $this->GetName());
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;

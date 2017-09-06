@@ -19,9 +19,9 @@
  */
 
 
+namespace Aurora\Modules\Core\Classes;
 
-
-class CChannel extends \Aurora\System\EAV\Entity
+class Channel extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
 		'Login'			=> array('string', ''),
@@ -42,7 +42,7 @@ class CChannel extends \Aurora\System\EAV\Entity
 				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_InvalidTenantName);
 			case \Aurora\System\Utils\Validate::IsEmpty($this->Login):
 				throw new \Aurora\System\Exceptions\ValidationException(Errs::Validation_FieldIsEmpty, null, array(
-					'{{ClassName}}' => 'CChannel', '{{ClassField}}' => 'Login'));
+					'{{ClassName}}' => 'Channel', '{{ClassField}}' => 'Login'));
 		}
 
 		return true;
