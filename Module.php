@@ -434,8 +434,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function EntrySso()
 	{
-		$oApiIntegratorManager = new Managers\Integrator();
-
 		try
 		{
 			$sHash = $this->oHttp->GetRequest('hash');
@@ -443,19 +441,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 			{
 				$sData = \Aurora\System\Api::Cacher()->get('SSO:'.$sHash, true);
 				$aData = \Aurora\System\Api::DecodeKeyValues($sData);
-
-				if (!empty($aData['Email']) && isset($aData['Password'], $aData['Login']))
+					
+				if (isset($aData['Password'], $aData['Email']))
 				{
-					$oAccount = $oApiIntegratorManager->loginToAccount($aData['Email'], $aData['Password'], $aData['Login']);
-					if ($oAccount)
+					$aResult = self::Decorator()->Login($aData['Email'], $aData['Password']);
+					
+					if (is_array($aResult) && isset($aResult['AuthToken']))
 					{
-						$oApiIntegratorManager->setAccountAsLoggedIn($oAccount);
+						@setcookie('AuthToken', $aResult['AuthToken'], time() + 60 * 60 * 24 * 30);
 					}
 				}
 			}
 			else
 			{
-				$oApiIntegratorManager->logoutAccount();
+				self::Decorator()->Logout();
 			}
 		}
 		catch (\Exception $oExc)
@@ -473,8 +472,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		if ($this->getConfig('AllowPostLogin', false))
 		{
-			$oApiIntegrator = new Managers\Integrator();
-					
 			$sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
 			$sLogin = (string) $this->oHttp->GetRequest('Login', '');
 			$sPassword = (string) $this->oHttp->GetRequest('Password', '');
@@ -486,56 +483,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$sLogin = $sEmail;
 			}
 
-			if (0 !== strlen($sPassword) && 0 !== strlen($sEmail.$sLogin))
+			$aResult = self::Decorator()->Login($sLogin, $sPassword);
+			if (is_array($aResult) && isset($aResult['AuthToken']))
 			{
-				try
-				{
-					$oAccount = $oApiIntegrator->loginToAccount($sEmail, $sPassword, $sLogin);
-				}
-				catch (\Exception $oException)
-				{
-					$iErrorCode = \Aurora\System\Notifications::UnknownError;
-					if ($oException instanceof \Aurora\System\Exceptions\ManagerException)
-					{
-						switch ($oException->getCode())
-						{
-							case \Errs::WebMailManager_AccountDisabled:
-							case \Errs::WebMailManager_AccountWebmailDisabled:
-								$iErrorCode = \Aurora\System\Notifications::AuthError;
-								break;
-							case \Errs::UserManager_AccountAuthenticationFailed:
-							case \Errs::WebMailManager_AccountAuthentication:
-							case \Errs::WebMailManager_NewUserRegistrationDisabled:
-							case \Errs::WebMailManager_AccountCreateOnLogin:
-							case \Errs::Mail_AccountAuthentication:
-							case \Errs::Mail_AccountLoginFailed:
-								$iErrorCode = \Aurora\System\Notifications::AuthError;
-								break;
-							case \Errs::UserManager_AccountConnectToMailServerFailed:
-							case \Errs::WebMailManager_AccountConnectToMailServerFailed:
-							case \Errs::Mail_AccountConnectToMailServerFailed:
-								$iErrorCode = \Aurora\System\Notifications::MailServerError;
-								break;
-							case \Errs::UserManager_LicenseKeyInvalid:
-							case \Errs::UserManager_AccountCreateUserLimitReached:
-							case \Errs::UserManager_LicenseKeyIsOutdated:
-							case \Errs::TenantsManager_AccountCreateUserLimitReached:
-								$iErrorCode = \Aurora\System\Notifications::LicenseProblem;
-								break;
-							case \Errs::Db_ExceptionError:
-								$iErrorCode = \Aurora\System\Notifications::DataBaseError;
-								break;
-						}
-					}
-					$sReditectUrl = $this->getConfig('PostLoginErrorRedirectUrl', './');
-					\Aurora\System\Api::Location($sReditectUrl . '?error=' . $iErrorCode);
-					exit;
-				}
-
-				if ($oAccount instanceof \Aurora\Modules\StandardAuth\Classes\Account)
-				{
-					$oApiIntegrator->setAccountAsLoggedIn($oAccount);
-				}
+				@setcookie('AuthToken', $aResult['AuthToken'], time() + 60 * 60 * 24 * 30);
 			}
 
 			\Aurora\System\Api::Location('./');
