@@ -24,9 +24,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	public $oEavManager = null;
 	
 	/**
-	 * @param \Aurora\System\Managers\GlobalManager &$oManager
+	 * 
+	 * @param \Aurora\System\Module\AbstractModule $oModule
 	 */
-	public function __construct($sForcedStorage = '', \Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct(\Aurora\System\Module\AbstractModule $oModule = null)
 	{
 		parent::__construct($oModule);
 		
