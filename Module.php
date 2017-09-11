@@ -29,9 +29,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init() 
 	{
-		$this->oApiTenantsManager = new Managers\Tenants();
-		$this->oApiChannelsManager = new Managers\Channels();
-		$this->oApiUsersManager = new Managers\Users();
+		$this->oApiTenantsManager = new Managers\Tenants($this);
+		$this->oApiChannelsManager = new Managers\Channels($this);
+		$this->oApiUsersManager = new Managers\Users($this);
 		
 		$this->AddEntries(array(
 			'api' => 'EntryApi',
