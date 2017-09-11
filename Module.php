@@ -711,7 +711,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\User', $this->GetName());
+		$oUser = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\User', $this->GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -2046,7 +2046,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($Login !== '')
 		{
-			$oChannel = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\Channel', $this->GetName());
+			$oChannel = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Channel', $this->GetName());
 			
 			$oChannel->Login = $Login;
 			
@@ -2513,7 +2513,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\Tenant', $this->GetName());
+			$oTenant = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Tenant', $this->GetName());
 
 			$oTenant->Name = $Name;
 			$oTenant->Description = $Description;
@@ -2920,7 +2920,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				}
 			}
 			
-			$oUser = \Aurora\System\EAV\Entity::createInstance('Aurora\Modules\Core\Classes\User', $this->GetName());
+			$oUser = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\User', $this->GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
