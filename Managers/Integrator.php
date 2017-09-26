@@ -1258,4 +1258,29 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			"\r\n".'<!-- '.\Aurora\System\Api::Version().' -->'
 		;
 	}
+	
+	public function GetModulesForEntry($sEntryModule)
+	{
+		$aResModuleList = [$sEntryModule];
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
+		$aAvailableOn = $oModuleManager->getModuleConfigValue($sEntryModule, 'AvailableOn');
+		if (is_array($aAvailableOn) && count($aAvailableOn) > 0)
+		{
+			$aResModuleList = array_merge($aResModuleList, $aAvailableOn);
+		}
+		else
+		{
+			$aAllowedModuleNames = $oModuleManager->GetAllowedModulesName();
+			foreach ($aAllowedModuleNames as $sAllowedModule)
+			{
+				$aAvailableFor = $oModuleManager->getModuleConfigValue($sAllowedModule, 'AvailableFor');
+				if (is_array($aAvailableFor) && count($aAvailableFor) > 0 && in_array($sEntryModule, $aAvailableFor))
+				{
+					$aResModuleList = array_merge($aResModuleList, [$sAllowedModule]);
+				}
+			}
+		}
+		
+		return $aResModuleList;
+	}
 }
