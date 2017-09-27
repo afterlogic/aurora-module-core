@@ -1183,62 +1183,32 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		{
 			$bAddModuleName = $bAddAnyway;
 			
+			$oModuleManager = \Aurora\System\Api::GetModuleManager();
 			if (!$bAddModuleName && $bIsMobileApplication)
 			{
-				$bAddModuleName = (bool) $this->getModuleProperty($sModulesPath, $sModuleName, 'include-in-mobile');
+				$bAddModuleName = $oModuleManager->getModuleConfigValue($sModuleName, 'IncludeInMobile', false);
 			}
 			elseif (!$bAddModuleName)
 			{
-				$bAddModuleName = (bool) $this->getModuleProperty($sModulesPath, $sModuleName, 'include-in-desktop');
+				$bAddModuleName = $oModuleManager->getModuleConfigValue($sModuleName, 'IncludeInDesktop', true);
 			}
 			
 			if ($bAddModuleName && \file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
 			{
 				$aClientModuleNames[] = $sModuleName;
-				$aRequire = $this->getModuleProperty($sModulesPath, $sModuleName, 'require');
-				if (is_array($aRequire))
+				if ($bIsMobileApplication)
 				{
-					foreach ($aRequire as $sRequireModuleName)
+					$aRequire = $oModuleManager->getModuleConfigValue($sModuleName, 'RequireInMobile', true);
+					if (is_array($aRequire))
 					{
-						$this->populateClientModuleNames($sModulesPath, $sRequireModuleName, $bIsMobileApplication, $aClientModuleNames, true);
+						foreach ($aRequire as $sRequireModuleName)
+						{
+							$this->populateClientModuleNames($sModulesPath, $sRequireModuleName, $bIsMobileApplication, $aClientModuleNames, true);
+						}
 					}
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Reads module properties from composer.json file and returns the one with specified key.
-	 * @staticvar array $aProperties Array of properties from composer.json file.
-	 * @param string $sModulesPath Path to folder with modules.
-	 * @param string $sModuleName Name of module to add.
-	 * @param string $sName Key of property that should be returned.
-	 * @return mixed
-	 */
-	protected function getModuleProperty($sModulesPath, $sModuleName, $sName)
-	{
-		static $aProperties = [];
-		
-		if (!array_key_exists($sModuleName, $aProperties))
-		{
-			$sPropertiesFilePath = $sModulesPath . $sModuleName . '/composer.json';
-			if (file_exists($sPropertiesFilePath))
-			{
-				$sJsonData = file_get_contents($sPropertiesFilePath);
-				$aProperties[$sModuleName] = json_decode($sJsonData, true);
-			}
-		}
-		
-		$sSection = 'extra';
-		if (array_key_exists($sModuleName, $aProperties) && is_array($aProperties[$sModuleName]) 
-				&& array_key_exists($sSection, $aProperties[$sModuleName])
-				&& is_array($aProperties[$sModuleName][$sSection]) 
-				&& array_key_exists($sName, $aProperties[$sModuleName][$sSection]))
-		{
-			return $aProperties[$sModuleName][$sSection][$sName];
-		}
-		
-		return false;
 	}
 	
 	/**
