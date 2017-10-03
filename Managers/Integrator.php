@@ -974,10 +974,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		{
 			\Aurora\System\Api::UserSession()->Delete($sAuthToken);
 		}
-//	echo '<pre>';
-//var_dump($aAppData);
-//	echo '</pre>';
-//exit;
+
 		return $aAppData;
 	}
 
@@ -1012,10 +1009,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return string
 	 */
-//	public function compileAppData($sHelpdeskHash = '', $sCalendarPubHash = '', $sFileStoragePubHash = '', $sAccessToken = '')
 	public function compileAppData()
 	{
-//		return '<script>window.auroraAppData='.@json_encode($this->appData($sHelpdeskHash, $sCalendarPubHash, $sFileStoragePubHash, $sAccessToken)).';</script>';
 		return '<script>window.auroraAppData='.@json_encode($this->appData()).';</script>';
 	}
 
