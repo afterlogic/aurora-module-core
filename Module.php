@@ -1726,6 +1726,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entities type.<br>
+	 * &emsp; **Search** *string* Search string.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -1761,16 +1762,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns entity list.
 	 * 
 	 * @param string $Type Entities type.
+	 * @param string $Search Search string.
 	 * @return array|null
 	 */
-	public function GetEntityList($Type)
+	public function GetEntityList($Type, $Search = '')
 	{
 		switch ($Type)
 		{
 			case 'Tenant':
-				return $this->GetTenantList();
+				return $this->GetTenantList($Search);
 			case 'User':
-				return $this->GetUserList();
+				return $this->GetUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search);
 		}
 		return null;
 	}
@@ -2280,7 +2282,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * }
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function GetTenantList()
+	public function GetTenantList($Search)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		

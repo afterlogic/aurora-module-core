@@ -83,7 +83,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			if ($sSearchDesc !== '')
 			{
-				$aFilters['Name'] = ['%'.$sSearchDesc.'%', 'LIKE'];
+				$aFilters['PublicId'] = ['%'.$sSearchDesc.'%', 'LIKE'];
 				if (count($aFilters) > 1)
 				{
 					$aFilters = ['$AND' => $aFilters];
