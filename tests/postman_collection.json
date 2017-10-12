@@ -1,0 +1,76 @@
+{
+	"variables": [],
+	"info": {
+		"name": "Aurora Core Module",
+		"description": "",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"var ",
+							"    oResponse = JSON.parse(responseBody),",
+							"    bResult = false",
+							";",
+							"if (oResponse.Result && oResponse.Result.AuthToken) {",
+							"    bResult = true;",
+							"    postman.setEnvironmentVariable(\"AuthToken\", oResponse.Result.AuthToken);",
+							"}",
+							"tests[\"Response\"] = bResult ? oResponse.Result.AuthToken : undefined;"
+						]
+					}
+				}
+			],
+			"request": {
+				"url": {
+					"raw": "{{ApiUrl}}/?/Api/",
+					"host": [
+						"{{ApiUrl}}"
+					],
+					"path": [
+						""
+					],
+					"query": [
+						{
+							"key": "/Api/",
+							"value": "",
+							"equals": false,
+							"description": ""
+						}
+					],
+					"variable": []
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "Module",
+							"value": "Core",
+							"type": "text"
+						},
+						{
+							"key": "Method",
+							"value": "Login",
+							"type": "text"
+						},
+						{
+							"key": "Parameters",
+							"value": "{\"Login\": \"{{Login}}\",\"Password\": \"{{Password}}\"}",
+							"type": "text"
+						}
+					]
+				},
+				"description": ""
+			},
+			"response": []
+		}
+	]
+}
