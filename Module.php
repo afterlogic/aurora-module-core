@@ -3108,7 +3108,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$bResult = false;
 		
-		if (!empty($UserId))
+		if (!empty($UserId) && is_int($UserId))
 		{
 			$oUser = $this->oApiUsersManager->getUser($UserId);
 			
