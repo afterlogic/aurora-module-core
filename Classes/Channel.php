@@ -24,7 +24,7 @@ namespace Aurora\Modules\Core\Classes;
 class Channel extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
-		'Login'			=> array('string', ''),
+		'Login'			=> array('string', '', true),
 		'Password'		=> array('string', ''),
 		'Description'	=> array('string', '')
 	);	

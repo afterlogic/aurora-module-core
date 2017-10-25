@@ -47,8 +47,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	{
 		$aResult = false;
 		$aSearch = empty($sSearchDesc) ? array() : array(
-			'Login' => '%'.$sSearchDesc.'%',
-			'Description' => '%'.$sSearchDesc.'%'
+			'Login' => '%'.$sSearchDesc.'%'
 		);
 		try
 		{

@@ -58,10 +58,10 @@ class User extends \Aurora\System\EAV\Entity
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$this->aStaticMap = array(
-			'Name'						=> array('string', ''),
-			'PublicId'					=> array('string', ''),
+			'Name'						=> array('string', '', true),
+			'PublicId'					=> array('string', '', true),
 			'IdTenant'					=> array('int', 0),
-			'IsDisabled'				=> array('bool', false),
+			'IsDisabled'				=> array('bool', false, true),
 			'IdSubscription'			=> array('int', 0),
 			'Role'						=> array('int', \Aurora\System\Enums\UserRole::NormalUser),
 

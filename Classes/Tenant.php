@@ -57,11 +57,11 @@ class Tenant extends \Aurora\System\EAV\Entity
 {
 	protected $aStaticMap = array(
 			'IdTenant'					=> array('int', 0),
-			'IdChannel'					=> array('int', 0),
-			'IsDisabled'				=> array('bool', false),
-			'IsDefault'					=> array('bool', false),
+			'IdChannel'					=> array('int', 0, true),
+			'IsDisabled'				=> array('bool', false, true),
+			'IsDefault'					=> array('bool', false, true),
 //			'IsEnableAdminPanelLogin'	=> array('bool', false),
-			'Name'						=> array('string', ''),
+			'Name'						=> array('string', '', true),
 //			'Email'						=> array('string', ''),
 //			'PasswordHash'				=> array('string', ''),
 			'Description'				=> array('string', ''),
