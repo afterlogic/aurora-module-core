@@ -67,6 +67,31 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
+	 * 
+	 * @param string $sSearchDesc
+	 * @param array $aFilters
+	 * @return int
+	 */
+	public function getUsersCount($sSearchDesc = '', $aFilters = [])
+	{
+		if ($sSearchDesc !== '')
+		{
+			$aFilters['PublicId'] = ['%'.$sSearchDesc.'%', 'LIKE'];
+			if (count($aFilters) > 1)
+			{
+				$aFilters = ['$AND' => $aFilters];
+			}
+		}
+		// TODO: use getEntitiesCount when it will be fixed
+		return count($this->oEavManager->getEntities($this->getModule()->getNamespace() . '\Classes\User',
+				array('PublicId'),
+				0,
+				0,
+				$aFilters
+				));
+	}
+	
+	/**
 	 * Obtains list of information about users.
 	 * @param int $iOffset
 	 * @param int $iLimit

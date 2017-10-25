@@ -1726,6 +1726,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Type** *string* Entities type.<br>
+	 * &emsp; **Offset** *int* Offset of entity list.<br>
+	 * &emsp; **Limit** *int* Limit of result entity list.<br>
 	 * &emsp; **Search** *string* Search string.<br>
 	 * }
 	 * 
@@ -1739,15 +1741,20 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Array of objects in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result Object with array of entities and its count in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'GetEntityList',
-	 *	Result: [{ Id: 123, UUID: "", PublicId: "PublicId_value123" },
-	 *		{ Id: 124, UUID: "", PublicId: "PublicId_value124" }]
+	 *	Result: {
+	 *				Items: [
+	 *					{ Id: 123, UUID: "", PublicId: "PublicId_value123" },
+	 *					{ Id: 124, UUID: "", PublicId: "PublicId_value124" }
+	 *				],
+	 *				Count: 2
+	 *			}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
@@ -1762,17 +1769,28 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * Returns entity list.
 	 * 
 	 * @param string $Type Entities type.
+	 * @param int $Offset Offset of entity list.
+	 * @param int $Limit Limit of result entity list.
 	 * @param string $Search Search string.
 	 * @return array|null
 	 */
-	public function GetEntityList($Type, $Search = '')
+	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '')
 	{
 		switch ($Type)
 		{
 			case 'Tenant':
-				return $this->GetTenantList($Search);
+				$aTenants = $this->GetTenantList($Offset, $Limit, $Search);
+				return array(
+					'Items' => $aTenants,
+					'Count' => count($aTenants),
+				);
 			case 'User':
-				return $this->GetUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search);
+				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search);
+				$aUsersCount = $Limit > 0 ? $this->oApiUsersManager->getUsersCount($Search) : count($aUsers);
+				return array(
+					'Items' => $aUsers,
+					'Count' => $aUsersCount,
+				);
 		}
 		return null;
 	}
@@ -2245,6 +2263,12 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=GetTenantList} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **Offset** *int* Offset of entity list (Reserved for future use).<br>
+	 * &emsp; **Limit** *int* Limit of result entity list (Reserved for future use).<br>
+	 * &emsp; **Search** *string* Search string (Reserved for future use).<br>
+	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
@@ -2275,14 +2299,16 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	/**
 	 * Obtains tenant list if super administrator is authenticated.
-	 * 
+	 * @param int $Offset Offset of tenant list.
+	 * @param int $Limit Limit of result tenant list.
+	 * @param string $Search Search string.
 	 * @return array {
 	 *		*int* **Id** Tenant identifier
 	 *		*string* **Name** Tenant name
 	 * }
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function GetTenantList($Search)
+	public function GetTenantList($Offset = 0, $Limit = 0, $Search = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -3108,7 +3134,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$bResult = false;
 		
-		if (!empty($UserId))
+		if (!empty($UserId) && is_int($UserId))
 		{
 			$oUser = $this->oApiUsersManager->getUser($UserId);
 			
