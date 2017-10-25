@@ -74,7 +74,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$iOffset,
 				$iLimit,
 				array(
-					'Description' => array(
+					'Name' => array(
 						'%'.$sSearchDesc.'%',
 						'LIKE'
 					)
