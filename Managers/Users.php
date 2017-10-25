@@ -118,7 +118,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			$aResult = $this->oEavManager->getEntities(
 				$this->getModule()->getNamespace() . '\Classes\User',
 				array(
-					'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
+					'PublicId', 'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
 				$iOffset,
 				$iLimit,
