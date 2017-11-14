@@ -918,11 +918,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param string $sHelpdeskTenantHash Default value is empty string.
-	 * @param string $sCalendarPubHash Default value is empty string.
-	 * @param string $sFileStoragePubHash Default value is empty string.
-	 * @param string $sAuthToken Default value is empty string.
-	 *
 	 * @return array
 	 */
 	public function appData()
