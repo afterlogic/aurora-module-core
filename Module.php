@@ -1997,9 +1997,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 		switch ($Type)
 		{
 			case 'Tenant':
-				return $this->DeleteTenant($Id);
+				return $this->Decorator()->DeleteTenant($Id);
 			case 'User':
-				return $this->DeleteUser($Id);
+				return $this->Decorator()->DeleteUser($Id);
 		}
 		return false;
 	}
