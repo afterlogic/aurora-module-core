@@ -251,7 +251,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		if (isset($sModule, $sMethod))
 		{
 			$oModule = \Aurora\System\Api::GetModule($sModule);
-			if ($oModule instanceof \Aurora\System\Module\AbstractModule) 
+			if ($oModule instanceof \Aurora\System\Module\AbstractModule && $oModule->IsAllowedModule()) 
 			{
 				try
 				{
