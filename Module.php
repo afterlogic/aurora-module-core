@@ -1640,6 +1640,63 @@ class Module extends \Aurora\System\Module\AbstractModule
 		}
 		throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 	}
+
+    /**
+     * @param $ResetEmail
+     * @return array
+     * @throws \Aurora\System\Exceptions\ApiException
+     */
+    public function ResetPassword($ResetEmail)
+    {
+
+        $mResult = false;
+
+        $aArgs = array (
+            'ResetEmail' => $ResetEmail
+        );
+        $this->broadcastEvent(
+            'ResetPassword',
+            $aArgs,
+            $mResult
+        );
+
+
+        if (!empty($mResult))
+        {
+            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $ResetEmail , $this->GetName());
+            return $mResult;
+        }
+
+        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $ResetEmail, $this->GetName());
+
+
+    }
+
+    public function UpdatePassword($Password, $ConfirmPassword, $Hash)
+    {
+
+        $mResult = false;
+
+        $aArgs = array (
+            'Password' => $Password,
+            'ConfirmPassword' => $ConfirmPassword,
+            'Hash' => $Hash
+        );
+        $this->broadcastEvent(
+            'UpdatePassword',
+            $aArgs,
+            $mResult
+        );
+
+        if (!empty($mResult))
+        {
+
+            \Aurora\System\Api::LogEvent('updatePassword-success: ' . $Hash , $this->GetName());
+            return $mResult;
+        }
+
+        \Aurora\System\Api::LogEvent('updatePassword-failed: ' . $Hash, $this->GetName());
+    }
 	
 	/**
 	 * @api {post} ?/Api/ Logout
