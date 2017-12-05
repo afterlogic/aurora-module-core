@@ -1642,17 +1642,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 	}
 
     /**
-     * @param $ResetEmail
+     * @param $email
      * @return array
      * @throws \Aurora\System\Exceptions\ApiException
      */
-    public function ResetPassword($ResetEmail)
+    public function ResetPassword($email)
     {
 
         $mResult = false;
 
         $aArgs = array (
-            'ResetEmail' => $ResetEmail
+            'email' => $email
         );
         $this->broadcastEvent(
             'ResetPassword',
@@ -1663,11 +1663,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         if (!empty($mResult))
         {
-            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $ResetEmail , $this->GetName());
+            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email , $this->GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $ResetEmail, $this->GetName());
+        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, $this->GetName());
 
 
     }
