@@ -381,11 +381,19 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		if (is_array($aAccountHashTable) && isset($aAccountHashTable['token']) &&
 			'auth' === $aAccountHashTable['token'] && 0 < strlen($aAccountHashTable['id'])) {
 			
-			$aInfo = array(
-				'isAdmin' => false,
-				'userId' => (int) $aAccountHashTable['id'],
-				'account' => isset($aAccountHashTable['account']) ? $aAccountHashTable['account'] : 0,
-			);
+			$oCoreModule = \Aurora\System\Api::GetModule('Core');
+			if ($oCoreModule)
+			{
+				$oUser = $oCoreModule->oApiUsersManager->getUser((int) $aAccountHashTable['id']);				
+				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+				{
+					$aInfo = array(
+						'isAdmin' => false,
+						'userId' => (int) $aAccountHashTable['id'],
+						'account' => isset($aAccountHashTable['account']) ? $aAccountHashTable['account'] : 0,
+					);
+				}
+			}
 		}
 		elseif (is_array($aAccountHashTable) && isset($aAccountHashTable['token']) &&
 			'admin' === $aAccountHashTable['token'])
