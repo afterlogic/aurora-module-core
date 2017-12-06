@@ -1643,16 +1643,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     /**
      * @param $email
-     * @return array
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @param $resetOption
+     * @return bool
      */
-    public function ResetPassword($email)
+    public function ResetPassword($email, $resetOption)
     {
 
         $mResult = false;
 
         $aArgs = array (
-            'email' => $email
+            'email' => $email,
+            'resetOption' => $resetOption
         );
         $this->broadcastEvent(
             'ResetPassword',
@@ -1668,8 +1669,32 @@ class Module extends \Aurora\System\Module\AbstractModule
         }
 
         \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, $this->GetName());
+    }
 
 
+    public function ResetPasswordBySecurityQuestion($securityAnswer, $securityToken)
+    {
+
+        $mResult = false;
+
+        $aArgs = array (
+            'securityAnswer' => $securityAnswer,
+            'securityToken' => $securityToken
+        );
+        $this->broadcastEvent(
+            'ResetPasswordBySecurityQuestion',
+            $aArgs,
+            $mResult
+        );
+
+
+        if (!empty($mResult))
+        {
+            \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-success: ' . $securityAnswer , $this->GetName());
+            return $mResult;
+        }
+
+        \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-failed: ' . $securityAnswer, $this->GetName());
     }
 
     public function UpdatePassword($Password, $ConfirmPassword, $Hash)
