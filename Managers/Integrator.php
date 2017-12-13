@@ -952,6 +952,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			{
 				$oDecorator = \Aurora\System\Api::GetModuleDecorator($sModuleName);
 				$aModuleAppData = $oDecorator->GetSettings();
+				$aModuleErrors = $oDecorator->GetErrors();
 			}
 			catch (\Aurora\System\Exceptions\ApiException $oEx)
 			{
@@ -962,6 +963,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			{
 				$aAppData[$oModule->GetName()] = $aModuleAppData;
 			}
+			$aAppData['module_errors'][$oModule->GetName()] = $aModuleErrors;
 		}
 		
 		if ($oUser)
