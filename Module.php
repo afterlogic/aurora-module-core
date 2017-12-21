@@ -995,7 +995,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$aSettings = array(
 			'AutodetectLanguage' => $this->getConfig('AutodetectLanguage'),
-			'DateFormat' => $this->getConfig('DateFormat'),
+			'UserSelectsDateFormat' => $this->getConfig('UserSelectsDateFormat', false),
+			'DateFormat' => $this->getConfig('DateFormat', 'DD/MM/YYYY'),
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \Aurora\System\Enums\UserRole)->getMap(),
 			'Language' => \Aurora\System\Api::GetLanguage(),
@@ -1028,6 +1029,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'LogFilesData' => $this->GetLogFilesData(),
 				'ELogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
 			));
+		}
+		
+		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oUser->DateFormat !== '')
+		{
+			$aSettings['DateFormat'] = $oUser->DateFormat;
 		}
 		
 		return $aSettings;
@@ -1118,8 +1124,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function UpdateSettings(
 			$DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null, $AdminLanguage = null,
-			$Language = null, $AutodetectLanguage = null, $TimeFormat = null, $EnableLogging = null,
-			$EnableEventLogging = null, $LoggingLevel = null)
+			$Language = null, $AutodetectLanguage = null, $TimeFormat = null, $DateFormat = null,
+			$EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		
@@ -1213,6 +1219,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 			if ($TimeFormat !== null)
 			{
 				$oUser->TimeFormat = $TimeFormat;
+			}
+			if ($DateFormat !== null)
+			{
+				$oUser->DateFormat = $DateFormat;
 			}
 			return $this->UpdateUserObject($oUser);
 		}

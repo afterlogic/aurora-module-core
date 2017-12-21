@@ -23,13 +23,21 @@
 		".clear.dat",
 		"string"
 	],
+	"UserSelectsDateFormat": [
+		false,
+		"bool"
+	],
     "DateFormat": [
         "DD\/MM\/YYYY",
         "spec",
         "EDateFormat"
     ],
     "DateFormatList": [
-		["DD/MM/YYYY", "MM/DD/YYYY", "DD Month YYYY"],
+        [
+            "DD\/MM\/YYYY",
+            "MM\/DD\/YYYY",
+            "DD Month YYYY"
+        ],
 		"array"
 	],
 	"Disabled": [
