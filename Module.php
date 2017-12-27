@@ -45,6 +45,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		));
 		
 		$this->subscribeEvent('CreateAccount::before', array($this, 'onCreateAccount'));
+		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
 	}
 	
 	/**
@@ -129,6 +130,221 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$Result = $oUser;
 	}
+	
+	/**
+	 * @ignore
+	 * @param type $aArgs
+	 * @param array $mResult
+	 */
+	public function onAfterGetCompatibilities($aArgs, &$mResult)
+	{
+		$aCompatibility['php.version'] = phpversion();
+		$aCompatibility['php.version.valid'] = (int) (version_compare($aCompatibility['php.version'], '5.3.0') > -1);
+
+		$aCompatibility['safe-mode'] = @ini_get('safe_mode');
+		$aCompatibility['safe-mode.valid'] = is_numeric($aCompatibility['safe-mode'])
+			? !((bool) $aCompatibility['safe-mode'])
+			: ('off' === strtolower($aCompatibility['safe-mode']) || empty($aCompatibility['safe-mode']));
+
+		$aCompatibility['mysql.valid'] = (int) extension_loaded('mysql');
+		$aCompatibility['pdo.valid'] = (int)
+			((bool) extension_loaded('pdo') && (bool) extension_loaded('pdo_mysql'));
+		
+		$aCompatibility['socket.valid'] = (int) function_exists('fsockopen');
+		$aCompatibility['iconv.valid'] = (int) function_exists('iconv');
+		$aCompatibility['curl.valid'] = (int) function_exists('curl_init');
+		$aCompatibility['mbstring.valid'] = (int) function_exists('mb_detect_encoding');
+		$aCompatibility['openssl.valid'] = (int) extension_loaded('openssl');
+		$aCompatibility['xml.valid'] = (int) (class_exists('DOMDocument') && function_exists('xml_parser_create'));
+		$aCompatibility['json.valid'] = (int) function_exists('json_decode');
+
+		$aCompatibility['ini-get.valid'] = (int) function_exists('ini_get');
+		$aCompatibility['ini-set.valid'] = (int) function_exists('ini_set');
+		$aCompatibility['set-time-limit.valid'] = (int) function_exists('set_time_limit');
+
+		$aCompatibility['session.valid'] = (int) (function_exists('session_start') && isset($_SESSION['checksessionindex']));
+
+		$dataPath = \Aurora\System\Api::DataPath();
+
+		$aCompatibility['data.dir'] = $dataPath;
+		$aCompatibility['data.dir.valid'] = (int) (@is_dir($aCompatibility['data.dir']) && @is_writable($aCompatibility['data.dir']));
+
+		$sTempPathName = '_must_be_deleted_'.md5(time());
+
+		$aCompatibility['data.dir.create'] =
+			(int) @mkdir($aCompatibility['data.dir'].'/'.$sTempPathName);
+		$aCompatibility['data.file.create'] =
+			(int) (bool) @fopen($aCompatibility['data.dir'].'/'.$sTempPathName.'/'.$sTempPathName.'.test', 'w+');
+		$aCompatibility['data.file.delete'] =
+			(int) (bool) @unlink($aCompatibility['data.dir'].'/'.$sTempPathName.'/'.$sTempPathName.'.test');
+		$aCompatibility['data.dir.delete'] =
+			(int) @rmdir($aCompatibility['data.dir'].'/'.$sTempPathName);
+
+		$aCompatibility['settings.file'] = \Aurora\System\Api::GetSettings()->GetConfigPath();
+		
+		$aCompatibility['settings.file.exist'] = (int) @file_exists($aCompatibility['settings.file']);
+		$aCompatibility['settings.file.read'] = (int) @is_readable($aCompatibility['settings.file']);
+		$aCompatibility['settings.file.write'] = (int) @is_writable($aCompatibility['settings.file']);
+		
+		$aCompatibilities = [
+			[
+				'Name' => 'PHP version', 
+				'Result' => $aCompatibility['php.version.valid'],
+				'Value' => $aCompatibility['php.version.valid']
+				? 'OK'
+				: [$aCompatibility['php.version'].' detected, 5.3.0 or above required.',
+'You need to upgrade PHP engine installed on your server.
+If it\'s a dedicated or your local server, you can download the latest version of PHP from its
+<a href="http://php.net/downloads.php" target="_blank">official site</a> and install it yourself.
+In case of a shared hosting, you need to ask your hosting provider to perform the upgrade.']
+			],
+			[
+				'Name' => 'Safe Mode is off', 
+				'Result' => $aCompatibility['safe-mode.valid'],
+				'Value' => ($aCompatibility['safe-mode.valid'])
+				? 'OK'
+				: ['Error, safe_mode is enabled.',
+'You need to <a href="http://php.net/manual/en/ini.sect.safe-mode.php" target="_blank">disable it in your php.ini</a>
+or contact your hosting provider and ask to do this.']
+			],
+			[
+				'Name' => 'PDO MySQL Extension', 
+				'Result' => $aCompatibility['pdo.valid'],
+				'Value' => ($aCompatibility['pdo.valid'])
+				? 'OK'
+				: ['Error, PHP PDO MySQL extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'Iconv Extension', 
+				'Result' => $aCompatibility['iconv.valid'],
+				'Value' => ($aCompatibility['iconv.valid'])
+				? 'OK'
+				: ['Error, iconv extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'Multibyte String Extension', 
+				'Result' => $aCompatibility['mbstring.valid'],
+				'Value' => ($aCompatibility['mbstring.valid'])
+				? 'OK'
+				: ['Error, mb_string extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'CURL Extension', 
+				'Result' => $aCompatibility['curl.valid'],
+				'Value' => ($aCompatibility['curl.valid'])
+				? 'OK'
+				: ['Error, curl extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'JSON Extension', 
+				'Result' => $aCompatibility['json.valid'],
+				'Value' => ($aCompatibility['json.valid'])
+				? 'OK'
+				: ['Error, JSON extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'XML/DOM Extension', 
+				'Result' => $aCompatibility['xml.valid'],
+				'Value' => ($aCompatibility['xml.valid'])
+				? 'OK'
+				: ['Error, xml (DOM) extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'Sockets', 
+				'Result' => $aCompatibility['socket.valid'],
+				'Value' => ($aCompatibility['socket.valid'])
+				? 'OK'
+				: ['Error, creating network sockets must be enabled.', '
+To enable sockets, you should remove fsockopen function from the list of prohibited functions in disable_functions directive of your php.ini file.
+In case of a shared hosting, you need to ask your hosting provider to do this.']
+			],
+			[
+				'Name' => 'SSL (OpenSSL extension)', 
+				'Result' => $aCompatibility['openssl.valid'],
+				'Value' => ($aCompatibility['openssl.valid'])
+				? 'OK'
+				: ['SSL connections (like Gmail) will not be available. ', '
+You need to enable OpenSSL support in your PHP configuration and make sure OpenSSL library is installed on your server.
+For instructions, please refer to the official PHP documentation. In case of a shared hosting,
+you need to ask your hosting provider to enable OpenSSL support.
+You may ignore this if you\'re not going to connect to SSL-only mail servers (like Gmail).']
+			],
+			[
+				'Name' => 'Setting memory limits', 
+				'Result' => $aCompatibility['ini-get.valid'],
+				'Value' => ($aCompatibility['ini-get.valid'] && $aCompatibility['ini-set.valid'])
+				? 'OK'
+				: ['Opening large e-mails may fail.', '
+You need to enable setting memory limits in your PHP configuration, i.e. remove ini_get and ini_set functions
+from the list of prohibited functions in disable_functions directive of your php.ini file.
+In case of a shared hosting, you need to ask your hosting provider to do this.']
+			],
+			[
+				'Name' => 'Setting script timeout', 
+				'Result' => $aCompatibility['set-time-limit.valid'],
+				'Value' => ($aCompatibility['set-time-limit.valid'])
+				? 'OK'
+				: ['Downloading large mailboxes may fail.', '
+To enable setting script timeout, you should remove set_time_limit function from the list
+of prohibited functions in disable_functions directive of your php.ini file.
+In case of a shared hosting, you need to ask your hosting provider to do this.']
+			],
+			[
+				'Name' => 'WebMail data folder', 
+				'Result' => $aCompatibility['data.dir.valid'],
+				'Value' => ($aCompatibility['data.dir.valid'])
+				? 'Found'
+				: ['Error, data folder path discovery failure.']
+			],
+			[
+				'Name' => 'Creating/deleting folders', 
+				'Result' => $aCompatibility['data.dir.create'] && $aCompatibility['data.dir.delete'],
+				'Value' => ($aCompatibility['data.dir.create'] && $aCompatibility['data.dir.delete'])
+				? 'OK'
+				: ['Error, can\'t create/delete sub-folders in the data folder.', '
+You need to grant read/write permission over data folder and all its contents to your web server user.
+For instructions, please refer to this section of documentation and our
+<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+			],
+			[
+				'Name' => 'Creating/deleting files', 
+				'Result' => $aCompatibility['data.file.create'] && $aCompatibility['data.file.delete'],
+				'Value' => ($aCompatibility['data.file.create'] && $aCompatibility['data.file.delete'])
+				? 'OK'
+				: ['Error, can\'t create/delete files in the data folder.', '
+You need to grant read/write permission over data folder and all its contents to your web server user.
+For instructions, please refer to this section of documentation and our
+<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+			],
+			[
+				'Name' => 'WebMail Settings File', 
+				'Result' => $aCompatibility['settings.file.exist'],
+				'Value' => ($aCompatibility['settings.file.exist'])
+				? 'Found'
+				: ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
+Make sure you completely copied the data folder with all its contents from installation package.
+By default, the data folder is webmail subfolder, and if it\'s not the case make sure its location matches one specified in inc_settings_path.php file.']
+			],
+			[
+				'Name' => 'Read/write settings file', 
+				'Result' => $aCompatibility['settings.file.read'] && $aCompatibility['settings.file.write'],
+				'Value' => ($aCompatibility['settings.file.read'] && $aCompatibility['settings.file.write'])
+				? 'OK / OK'
+				: ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
+You should grant read/write permission over settings file to your web server user.
+For instructions, please refer to this section of documentation and our
+<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+			],
+		];
+		
+		$mResult[$this->GetName()] = $aCompatibilities;
+	}	
 	
 	/**
 	 * Recursively deletes temporary files and folders on time.
@@ -3395,6 +3611,11 @@ class Module extends \Aurora\System\Module\AbstractModule
 			return false;
 		}
 		return true;
+	}
+
+	public function GetCompatibilities()
+	{
+		return array();
 	}
 	/***** public functions might be called with web API *****/
 }

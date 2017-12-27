@@ -1217,7 +1217,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 * @param array $aConfig
 	 * @return string
 	 */
-	public function buildBody($aConfig)
+	public function buildBody($aConfig = array())
 	{
 		list($sLanguage, $sTheme, $sSiteName) = $this->getThemeAndLanguage();
 		return
