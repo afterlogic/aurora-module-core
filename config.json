@@ -30,7 +30,7 @@
     "DateFormat": [
         "DD\/MM\/YYYY",
         "spec",
-        "EDateFormat"
+        "\\Aurora\\System\\Enums\\DateFormat"
     ],
     "DateFormatList": [
         [
