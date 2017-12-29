@@ -296,19 +296,19 @@ of prohibited functions in disable_functions directive of your php.ini file.
 In case of a shared hosting, you need to ask your hosting provider to do this.']
 			],
 			[
-				'Name' => 'WebMail data folder', 
+				'Name' => 'WebMail data directory', 
 				'Result' => $aCompatibility['data.dir.valid'],
 				'Value' => ($aCompatibility['data.dir.valid'])
 				? 'Found'
-				: ['Error, data folder path discovery failure.']
+				: ['Error, data directory path discovery failure.']
 			],
 			[
-				'Name' => 'Creating/deleting folders', 
+				'Name' => 'Creating/deleting directories', 
 				'Result' => $aCompatibility['data.dir.create'] && $aCompatibility['data.dir.delete'],
 				'Value' => ($aCompatibility['data.dir.create'] && $aCompatibility['data.dir.delete'])
 				? 'OK'
-				: ['Error, can\'t create/delete sub-folders in the data folder.', '
-You need to grant read/write permission over data folder and all its contents to your web server user.
+				: ['Error, can\'t create/delete sub-directories in the data directory.', '
+You need to grant read/write permission over data directory and all its contents to your web server user.
 For instructions, please refer to this section of documentation and our
 <a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
 			],
@@ -317,8 +317,8 @@ For instructions, please refer to this section of documentation and our
 				'Result' => $aCompatibility['data.file.create'] && $aCompatibility['data.file.delete'],
 				'Value' => ($aCompatibility['data.file.create'] && $aCompatibility['data.file.delete'])
 				? 'OK'
-				: ['Error, can\'t create/delete files in the data folder.', '
-You need to grant read/write permission over data folder and all its contents to your web server user.
+				: ['Error, can\'t create/delete files in the data directory.', '
+You need to grant read/write permission over data directory and all its contents to your web server user.
 For instructions, please refer to this section of documentation and our
 <a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
 			],
@@ -328,8 +328,8 @@ For instructions, please refer to this section of documentation and our
 				'Value' => ($aCompatibility['settings.file.exist'])
 				? 'Found'
 				: ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
-Make sure you completely copied the data folder with all its contents from installation package.
-By default, the data folder is webmail subfolder, and if it\'s not the case make sure its location matches one specified in inc_settings_path.php file.']
+Make sure you completely copied the data directory with all its contents from installation package.
+By default, the data directory is webmail subdirectory, and if it\'s not the case make sure its location matches one specified in inc_settings_path.php file.']
 			],
 			[
 				'Name' => 'Read/write settings file', 
