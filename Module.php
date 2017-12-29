@@ -310,7 +310,7 @@ In case of a shared hosting, you need to ask your hosting provider to do this.']
 				: ['Error, can\'t create/delete sub-directories in the data directory.', '
 You need to grant read/write permission over data directory and all its contents to your web server user.
 For instructions, please refer to this section of documentation and our
-<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+<a href="https://afterlogic.com/docs/webmail-pro-8/troubleshooting/troubleshooting-issues-with-data-directory" target="_blank">FAQ</a>.']
 			],
 			[
 				'Name' => 'Creating/deleting files', 
@@ -320,7 +320,7 @@ For instructions, please refer to this section of documentation and our
 				: ['Error, can\'t create/delete files in the data directory.', '
 You need to grant read/write permission over data directory and all its contents to your web server user.
 For instructions, please refer to this section of documentation and our
-<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+<a href="https://afterlogic.com/docs/webmail-pro-8/troubleshooting/troubleshooting-issues-with-data-directory" target="_blank">FAQ</a>.']
 			],
 			[
 				'Name' => 'WebMail Settings File', 
@@ -339,7 +339,7 @@ By default, the data directory is webmail subdirectory, and if it\'s not the cas
 				: ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
 You should grant read/write permission over settings file to your web server user.
 For instructions, please refer to this section of documentation and our
-<a href="http://www.afterlogic.com/docs/webmail-pro/troubleshooting/administration-settings-disappeared-are-not-saved-why" target="_blank">FAQ</a>.']
+<a href="https://afterlogic.com/docs/webmail-pro-8/troubleshooting/troubleshooting-issues-with-data-directory" target="_blank">FAQ</a>.']
 			],
 		];
 		
