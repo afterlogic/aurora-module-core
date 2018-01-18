@@ -56,12 +56,17 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		return $oUser;
 	}
 
-	public function getUserByPublicId($iUserPublicId)
+	public function getUserByPublicId($UserPublicId)
 	{
-		$aUsers = $this->oEavManager->getEntities($this->getModule()->getNamespace() . '\Classes\User', [], 0, 0, ['PublicId' => [$iUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
-		if (count($aUsers) > 0)
+		$sUserPublicId = trim((string)$UserPublicId);
+		
+		if ($sUserPublicId)
 		{
-			return $aUsers[0];
+			$aUsers = $this->oEavManager->getEntities($this->getModule()->getNamespace() . '\Classes\User', [], 0, 0, ['PublicId' => [$sUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
+			if (count($aUsers) > 0)
+			{
+				return $aUsers[0];
+			}
 		}
 		return null;
 	}
