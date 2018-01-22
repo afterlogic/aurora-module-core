@@ -44,7 +44,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'file-cache' => 'EntryFileCache'
 		));
 		
-//		$this->subscribeEvent('CreateAccount::before', array($this, 'onCreateAccount'));
+		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
 	}
 	
