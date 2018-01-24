@@ -105,6 +105,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		{
 			$Email = (isset($Args['Email'])) ? $Args['Email'] : '';
 			$PublicId = (isset($Args['PublicId'])) ? $Args['PublicId'] : '';
+			$sPublicId = null;
 			if (!empty($PublicId))
 			{
 				$sPublicId = $PublicId;
@@ -113,7 +114,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 			{
 				$sPublicId = $Email;
 			}
-			$oUser = $this->oApiUsersManager->getUserByPublicId($sPublicId);
+			if (!empty($sPublicId))
+			{
+				$oUser = $this->oApiUsersManager->getUserByPublicId($sPublicId);
+			}
 			if (!isset($oUser))
 			{
 				\Aurora\System\Api::skipCheckUserRole(true);
