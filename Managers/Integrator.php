@@ -210,19 +210,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		return $sLanguage;
 	}
 
-	private function getMomentLanguageString($sLanguage)
-	{
-		$sMomentLanguage = \Aurora\System\Utils::ConvertLanguageNameToShort($sLanguage);
-		if ($sLanguage === 'Arabic' || $sLanguage === 'Persian')
-		{
-			$sMoment = 'window.moment && window.moment.locale && window.moment.locale(\'en\');';
-		}
-		else
-		{
-			$sMoment = 'window.moment && window.moment.locale && window.moment.locale(\'' . $sMomentLanguage . '\');';
-		}
-	}
-	
 	/**
 	 * @TODO use tenants modules if exist
 	 * @param string $sLanguage
@@ -298,8 +285,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 
-//		return '<script>window.auroraI18n='.$this->getLanguageString($sLanguage).';'.$this->getMomentLanguageString($sLanguage).'</script>';
-		return '<script>window.auroraI18n='.($sResult ? $sResult : '{}').';'.$this->getMomentLanguageString($sLanguage).'</script>';
+		return '<script>window.auroraI18n='.($sResult ? $sResult : '{}').';</script>';
 	}
 
 	/**

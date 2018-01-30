@@ -1220,6 +1220,7 @@ For instructions, please refer to this section of documentation and our
 			'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
 			'EUserRole' => (new \Aurora\System\Enums\UserRole)->getMap(),
 			'Language' => \Aurora\System\Api::GetLanguage(),
+			'ShortLanguage' => \Aurora\System\Utils::ConvertLanguageNameToShort(\Aurora\System\Api::GetLanguage()),
 			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
 			'SiteName' => $oSettings->GetConf('SiteName'),
