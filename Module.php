@@ -1036,17 +1036,6 @@ For instructions, please refer to this section of documentation and our
 			$oApiIntegrator->resetCookies();
 		}
 
-		if ($iUserId && $Timezone)
-		{
-			$oUser = $this->GetUser($iUserId);
-			if ($oUser && $oUser->DefaultTimeZone !== $Timezone)
-			{
-				$result = array(
-					'Timezone' => $oUser->DefaultTimeZone
-				);
-			}
-		}
-
 		$oCacher = \Aurora\System\Api::Cacher();
 
 		$bDoGC = false;
@@ -1252,9 +1241,13 @@ For instructions, please refer to this section of documentation and our
 			));
 		}
 		
-		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oUser->DateFormat !== '')
+		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
 		{
-			$aSettings['DateFormat'] = $oUser->DateFormat;
+			if ($oUser->DateFormat !== '')
+			{
+				$aSettings['DateFormat'] = $oUser->DateFormat;
+			}
+			$aSettings['Timezone'] = $oUser->DefaultTimeZone;
 		}
 		
 		return $aSettings;
