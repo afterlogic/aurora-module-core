@@ -582,47 +582,7 @@ For instructions, please refer to this section of documentation and our
 		}
 		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
 	}
-	
-	/**
-	 * @ignore
-	 * @return string
-	 */
-	public function EntryPlugins()
-	{
-		$sResult = '';
-		$aPaths = $this->oHttp->GetPath();
-		$sType = !empty($aPaths[1]) ? trim($aPaths[1]) : '';
-		if ('js' === $sType)
-		{
-			@header('Content-Type: application/javascript; charset=utf-8');
-			$sResult = \Aurora\System\Api::Plugin()->CompileJs();
-		}
-		else if ('images' === $sType)
-		{
-			if (!empty($aPaths[2]) && !empty($aPaths[3]))
-			{
-				$oPlugin = \Aurora\System\Api::Plugin()->GetPluginByName($aPaths[2]);
-				if ($oPlugin)
-				{
-					echo $oPlugin->GetImage($aPaths[3]);exit;
-				}
-			}
-		}
-		else if ('fonts' === $sType)
-		{
-			if (!empty($aPaths[2]) && !empty($aPaths[3]))
-			{
-				$oPlugin = \Aurora\System\Api::Plugin()->GetPluginByName($aPaths[2]);
-				if ($oPlugin)
-				{
-					echo $oPlugin->GetFont($aPaths[3]);exit;
-				}
-			}
-		}	
 		
-		return $sResult;
-	}	
-	
 	/**
 	 * @ignore
 	 */
