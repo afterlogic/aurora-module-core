@@ -128,9 +128,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 			if (!isset($oUser))
 			{
-				\Aurora\System\Api::skipCheckUserRole(true);
+				$bPrevState = \Aurora\System\Api::skipCheckUserRole(true);
 				$iUserId = self::Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
-				\Aurora\System\Api::skipCheckUserRole(false);
+				\Aurora\System\Api::skipCheckUserRole($bPrevState);
 				$oUser = $this->oApiUsersManager->getUser($iUserId);
 			}
 			
@@ -357,7 +357,7 @@ For instructions, please refer to this section of documentation and our
 		
 		$mResult[$this->GetName()] = $aCompatibilities;
 	}	
-	
+
 	/**
 	 * Recursively deletes temporary files and folders on time.
 	 * 
@@ -447,7 +447,7 @@ For instructions, please refer to this section of documentation and our
 	 * @ignore
 	 * @return bool
 	 */
-	protected static function deleteTree($dir)
+	public static function deleteTree($dir)
 	{
 		$files = array_diff(scandir($dir), array('.','..'));
 			
@@ -458,7 +458,9 @@ For instructions, please refer to this section of documentation and our
 		
 		return rmdir($dir);
 	}
-	
+	/***** static functions *****/
+
+	/***** public functions *****/
 	/**
 	 * 
 	 * @return string
@@ -588,6 +590,7 @@ For instructions, please refer to this section of documentation and our
 		}
 		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
 	}
+		
 	/**
 	 * @ignore
 	 */
@@ -633,7 +636,7 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		\Aurora\System\Api::Location('./');		
-	}
+	}	
 	
 	/**
 	 * @ignore
@@ -710,9 +713,8 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 	}
-	/***** static functions *****/
-
-	/***** public functions *****/
+	
+	
 	public function IsModuleExists($Module)
 	{
 		return \Aurora\System\Api::GetModuleManager()->ModuleExists($Module);
@@ -775,6 +777,59 @@ For instructions, please refer to this section of documentation and our
 		return $this->oApiUsersManager->updateUser($oUser);
 	}
 	
+	/**
+	 * @api {post} ?/Api/ GetUser
+	 * @apiName GetUser
+	 * @apiGroup Core
+	 * @apiDescription Returns user data.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetUser} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *string* User identifer.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Parameters: '{ "UserId": "17" }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: "Core",
+	 *	Method: "GetUser",
+	 *	Result: {
+	 *		"@Object": "Object/User",
+     *		"Name": "",
+     *		"PublicId": "mail@domain.com",
+     *		"Role": 2,
+     *		"WriteSeparateLog": false
+	 *	}
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
 	/**
 	 * Returns user object.
 	 * 
@@ -2055,7 +2110,6 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetEntity($Type, $Id)
 	{
-		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		switch ($Type)
 		{
 			case 'Tenant':
@@ -2784,7 +2838,7 @@ For instructions, please refer to this section of documentation and our
 				
 				if (@is_dir($sTenantSpacePath))
 				{
-					self::deleteTree($sTenantSpacePath);
+					$this->deleteTree($sTenantSpacePath);
 				}
 						
 				return $this->oApiTenantsManager->deleteTenant($oTenant);
@@ -2882,7 +2936,6 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetTotalUsersCount()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		return $this->oApiUsersManager->getTotalUsersCount();
 	}
 
@@ -3223,7 +3276,6 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetLogFilesData()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		$aData = [];
 		
 		$sFileName = \Aurora\System\Api::GetLogFileName();
@@ -3317,29 +3369,26 @@ For instructions, please refer to this section of documentation and our
 	public function SaveContentAsTempFile($UserId, $Content, $FileName)
 	{
 		$mResult = false;
-		$iAuthenticatedUserId = \Aurora\System\Api::getAuthenticatedUserId();
-		if ($iAuthenticatedUserId !== false && $iAuthenticatedUserId === $UserId)
+		
+		$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
+		try
 		{
-			$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
-			try
-			{
-				$sTempName = md5($sUUID.$Content.$FileName);
-				$oApiFileCache = new \Aurora\System\Managers\Filecache();
+			$sTempName = md5($sUUID.$Content.$FileName);
+			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
-				if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
-				{
-					$oApiFileCache->put($sUUID, $sTempName, $Content);
-				}
-
-				if ($oApiFileCache->isFileExists($sUUID, $sTempName))
-				{
-					$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
-				}
-			}
-			catch (\Exception $oException)
+			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
 			{
-				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
+				$oApiFileCache->put($sUUID, $sTempName, $Content);
 			}
+
+			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
+			{
+				$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
+			}
+		}
+		catch (\Exception $oException)
+		{
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
 		}
 		
 		return $mResult;
@@ -3378,3 +3427,44 @@ For instructions, please refer to this section of documentation and our
 	}
 	/***** public functions might be called with web API *****/
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
