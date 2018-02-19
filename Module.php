@@ -53,6 +53,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->denyMethodCallByWebApi('GetAdminUser');
 		$this->denyMethodCallByWebApi('GetTenantById');
 		$this->denyMethodCallByWebApi('GetDefaultGlobalTenant');
+		$this->denyMethodCallByWebApi('GetUser');
 	}
 	
 	/**
@@ -774,59 +775,6 @@ For instructions, please refer to this section of documentation and our
 		return $this->oApiUsersManager->updateUser($oUser);
 	}
 	
-	/**
-	 * @api {post} ?/Api/ GetUser
-	 * @apiName GetUser
-	 * @apiGroup Core
-	 * @apiDescription Returns user data.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetUser} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **UserId** *string* User identifer.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUser',
-	 *	Parameters: '{ "UserId": "17" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: "Core",
-	 *	Method: "GetUser",
-	 *	Result: {
-	 *		"@Object": "Object/User",
-     *		"Name": "",
-     *		"PublicId": "mail@domain.com",
-     *		"Role": 2,
-     *		"WriteSeparateLog": false
-	 *	}
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUser',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
 	/**
 	 * Returns user object.
 	 * 
