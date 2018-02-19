@@ -830,7 +830,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUser($UserId = '')
 	{
-		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		
 		$oUser = $this->oApiUsersManager->getUser($UserId);
 		
@@ -845,7 +845,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUserByUUID($UUID)
 	{
-		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast functin calls GetUser function
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		
 		$oUser = $this->oApiUsersManager->getUser($UUID);
 		
