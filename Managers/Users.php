@@ -46,7 +46,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$oUser = false;
 		try
 		{
-			$oUser = $this->oEavManager->getEntity($mUserId);
+			$oUser = $this->oEavManager->getEntity($mUserId, $this->getModule()->getNamespace() . '\Classes\User');
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -182,7 +182,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	}
 	
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param Aurora\Modules\Core\Classes\Channel $oUser
 	 *
 	 * @return bool
 	 */
@@ -190,7 +190,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	{
 		$bResult = false;
 		
-		$oResult = $this->oEavManager->getEntity($oUser->EntityId);
+		$oResult = $this->oEavManager->getEntity($oUser->EntityId, $this->getModule()->getNamespace() . '\Classes\User');
 				
 		if ($oResult instanceof \Aurora\Modules\Core\Classes\User)
 		{
