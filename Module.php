@@ -46,6 +46,13 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
+		
+		$this->denyMethodCallByWebApi('UpdateUserObject');
+		$this->denyMethodCallByWebApi('GetUserByUUID');
+		$this->denyMethodCallByWebApi('GetUserByPublicId');
+		$this->denyMethodCallByWebApi('GetAdminUser');
+		$this->denyMethodCallByWebApi('GetTenantById');
+		$this->denyMethodCallByWebApi('GetDefaultGlobalTenant');
 	}
 	
 	/**
@@ -439,7 +446,7 @@ For instructions, please refer to this section of documentation and our
 	 * @ignore
 	 * @return bool
 	 */
-	public static function deleteTree($dir)
+	protected static function deleteTree($dir)
 	{
 		$files = array_diff(scandir($dir), array('.','..'));
 			
@@ -450,9 +457,7 @@ For instructions, please refer to this section of documentation and our
 		
 		return rmdir($dir);
 	}
-	/***** static functions *****/
-
-	/***** public functions *****/
+	
 	/**
 	 * 
 	 * @return string
@@ -582,7 +587,6 @@ For instructions, please refer to this section of documentation and our
 		}
 		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
 	}
-		
 	/**
 	 * @ignore
 	 */
@@ -628,7 +632,7 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		\Aurora\System\Api::Location('./');		
-	}	
+	}
 	
 	/**
 	 * @ignore
@@ -705,8 +709,9 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 	}
-	
-	
+	/***** static functions *****/
+
+	/***** public functions *****/
 	public function IsModuleExists($Module)
 	{
 		return \Aurora\System\Api::GetModuleManager()->ModuleExists($Module);
@@ -2830,7 +2835,7 @@ For instructions, please refer to this section of documentation and our
 				
 				if (@is_dir($sTenantSpacePath))
 				{
-					$this->deleteTree($sTenantSpacePath);
+					self::deleteTree($sTenantSpacePath);
 				}
 						
 				return $this->oApiTenantsManager->deleteTenant($oTenant);
