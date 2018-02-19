@@ -2107,6 +2107,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetEntity($Type, $Id)
 	{
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		switch ($Type)
 		{
 			case 'Tenant':
@@ -2933,6 +2934,7 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetTotalUsersCount()
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		return $this->oApiUsersManager->getTotalUsersCount();
 	}
 
@@ -3273,6 +3275,7 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetLogFilesData()
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		$aData = [];
 		
 		$sFileName = \Aurora\System\Api::GetLogFileName();
@@ -3366,26 +3369,29 @@ For instructions, please refer to this section of documentation and our
 	public function SaveContentAsTempFile($UserId, $Content, $FileName)
 	{
 		$mResult = false;
-		
-		$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
-		try
+		$iAuthenticatedUserId = \Aurora\System\Api::getAuthenticatedUserId();
+		if ($iAuthenticatedUserId !== false && $iAuthenticatedUserId === $UserId)
 		{
-			$sTempName = md5($sUUID.$Content.$FileName);
-			$oApiFileCache = new \Aurora\System\Managers\Filecache();
-
-			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
+			$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
+			try
 			{
-				$oApiFileCache->put($sUUID, $sTempName, $Content);
-			}
+				$sTempName = md5($sUUID.$Content.$FileName);
+				$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
-			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
-			{
-				$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
+				if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
+				{
+					$oApiFileCache->put($sUUID, $sTempName, $Content);
+				}
+
+				if ($oApiFileCache->isFileExists($sUUID, $sTempName))
+				{
+					$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
+				}
 			}
-		}
-		catch (\Exception $oException)
-		{
-			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
+			catch (\Exception $oException)
+			{
+				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
+			}
 		}
 		
 		return $mResult;
