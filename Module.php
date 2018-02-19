@@ -729,7 +729,7 @@ For instructions, please refer to this section of documentation and our
 	 * 
 	 * @return bool
 	 */
-	public function ClearTempFiles()
+	protected function ClearTempFiles()
 	{
 		$sTempPath =\Aurora\System\Api::DataPath().'/temp';
 		if (@is_dir($sTempPath))
@@ -907,9 +907,9 @@ For instructions, please refer to this section of documentation and our
 	public function GetDefaultGlobalTenant()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
+
 		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
-		
+
 		return $oTenant ? $oTenant : null;
 	}
 	/***** public functions *****/
@@ -1767,7 +1767,6 @@ For instructions, please refer to this section of documentation and our
 	public function Login($Login, $Password, $Language = '', $SignMe = false)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
 		$mResult = false;
 		
 		$aArgs = array (
@@ -1817,7 +1816,6 @@ For instructions, please refer to this section of documentation and our
      */
     public function ResetPassword($email, $resetOption)
     {
-
         $mResult = false;
 
         $aArgs = array (
@@ -1843,7 +1841,6 @@ For instructions, please refer to this section of documentation and our
 
     public function ResetPasswordBySecurityQuestion($securityAnswer, $securityToken)
     {
-
         $mResult = false;
 
         $aArgs = array (
@@ -2027,6 +2024,8 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '')
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		//User role is cheked in  GetTenantList and GetUserList methods. Here we used the lowest user role from both this methods.
 		switch ($Type)
 		{
 			case 'Tenant':
