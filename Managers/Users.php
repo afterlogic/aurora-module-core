@@ -279,21 +279,12 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$bResult = false;
 		try
 		{
-			if ($oUser->validate())
+			if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
 			{
-//				if ($this->isExists($oUser))
-//				{
-//					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
-					
-					if (!$this->oEavManager->saveEntity($oUser))
-					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
-					}
-//				}
-//				else
-//				{
-//					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserAlreadyExists);
-//				}
+				if (!$this->oEavManager->updateEntity($oUser))
+				{
+					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
+				}
 			}
 
 			$bResult = true;
