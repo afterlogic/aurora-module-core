@@ -104,9 +104,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$oChannel = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($iChannelId);
+			$oResult = $this->oEavManager->getEntity($iChannelId, $this->getModule()->getNamespace() . '\Classes\Channel');
 			
-			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Channel)
+			if (!empty($oResult))
 			{
 				$oChannel = $oResult;
 			}

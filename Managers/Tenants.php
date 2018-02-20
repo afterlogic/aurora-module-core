@@ -159,9 +159,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		$oTenant = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($mTenantId);
+			$oResult = $this->oEavManager->getEntity($mTenantId, $this->getModule()->getNamespace() . '\Classes\Tenant');
 				
-			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Tenant)
+			if (!empty($oResult))
 			{
 				$oTenant = $oResult;
 			}

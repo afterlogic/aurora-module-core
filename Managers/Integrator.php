@@ -377,6 +377,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 						'isAdmin' => false,
 						'userId' => (int) $aAccountHashTable['id'],
 						'account' => isset($aAccountHashTable['account']) ? $aAccountHashTable['account'] : 0,
+						'accountType' => isset($aAccountHashTable['account_type']) ? $aAccountHashTable['account_type'] : 0,
 					);
 				}
 			}
