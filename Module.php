@@ -47,13 +47,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
 		
-		$this->denyMethodCallByWebApi('UpdateUserObject');
-		$this->denyMethodCallByWebApi('GetUserByUUID');
-		$this->denyMethodCallByWebApi('GetUserByPublicId');
-		$this->denyMethodCallByWebApi('GetAdminUser');
-		$this->denyMethodCallByWebApi('GetTenantById');
-		$this->denyMethodCallByWebApi('GetDefaultGlobalTenant');
-		$this->denyMethodCallByWebApi('GetUser');
+		$this->denyMethodsCallByWebApi([
+			'UpdateUserObject',
+			'GetUserByUUID',
+			'GetUserByPublicId',
+			'GetAdminUser',
+			'GetTenantById',
+			'GetDefaultGlobalTenant',
+			'GetUser'
+		]);
 	}
 	
 	/**
