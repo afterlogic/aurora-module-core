@@ -47,7 +47,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		
 		$this->oEavManager = new \Aurora\System\Managers\Eav();
 		
-		$this->oChannelsManager = new Channels();
+		$this->oChannelsManager = new Channels($oModule);
 	}
 
 	/**
