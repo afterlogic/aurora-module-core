@@ -74,7 +74,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	public function __construct()
 	{
 		$this->bCache = false;
-		parent::__construct();
+		parent::__construct(\Aurora\System\Api::GetModule('Core'));
 	}
 
 	/**

@@ -41,7 +41,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 * Creates a new instance of the object.
 	 *
 	 */
-	public function __construct(\Aurora\System\Module\AbstractModule $oModule = null)
+	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
 	{
 		parent::__construct($oModule);
 		
