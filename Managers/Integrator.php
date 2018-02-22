@@ -66,6 +66,23 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	private $bCache;
 
+	private static $_instance = null;
+	
+	public static function createInstance()
+	{
+		return new self();
+	}
+	
+	public static function getInstance()
+	{
+		if(is_null(self::$_instance))
+		{
+			self::$_instance = new self();		
+		}
+		
+		return self::$_instance;
+	}	
+
 	/**
 	 * Creates a new instance of the object.
 	 *
@@ -76,7 +93,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		$this->bCache = false;
 		parent::__construct(\Aurora\System\Api::GetModule('Core'));
 	}
-
+	
 	/**
 	 * @param string $sDir
 	 * @param string $sType
