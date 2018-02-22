@@ -946,7 +946,12 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		// AuthToken reads from coockie for HTML
 		$sAuthToken = isset($_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY]) ? $_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY] : '';
 		
-		$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+		$oUser = null;
+		try
+		{
+			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+		}
+		catch (\Exception $oEx)	{}
 
 		$aModules = \Aurora\System\Api::GetModules();
 
