@@ -598,7 +598,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function EntryMobile()
 	{
-		$oApiIntegrator = new Managers\Integrator();
+		$oApiIntegrator = Managers\Integrator::getInstance();
 		$oApiIntegrator->setMobile(true);
 
 		\Aurora\System\Api::Location('./');
@@ -984,7 +984,7 @@ For instructions, please refer to this section of documentation and our
 		
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
-		$oApiIntegrator = new Managers\Integrator();
+		$oApiIntegrator = Managers\Integrator::getInstance();
 
 		if ($iUserId && $oApiIntegrator)
 		{
@@ -1148,7 +1148,7 @@ For instructions, please refer to this section of documentation and our
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		$oApiIntegrator = new Managers\Integrator();
+		$oApiIntegrator = Managers\Integrator::getInstance();
 		$iLastErrorCode = $oApiIntegrator->getLastErrorCode();
 		if (0 < $iLastErrorCode)
 		{
@@ -1430,7 +1430,7 @@ For instructions, please refer to this section of documentation and our
 	public function SetMobile($Mobile)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		$oApiIntegrator = new \Aurora\Modules\Core\Managers\Integrator();
+		$oApiIntegrator = Managers\Integrator::getInstance();
 		return $oApiIntegrator ? $oApiIntegrator->setMobile($Mobile) : false;
 	}	
 	
