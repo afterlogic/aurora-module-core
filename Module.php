@@ -870,8 +870,6 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-		
 		$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
 		
 		return $oUser ? $oUser : null;
