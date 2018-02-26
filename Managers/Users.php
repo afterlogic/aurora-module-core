@@ -189,45 +189,14 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	public function isExists(\Aurora\Modules\Core\Classes\User $oUser)
 	{
 		$bResult = false;
-		
+
 		$oResult = $this->oEavManager->getEntity($oUser->EntityId, $this->getModule()->getNamespace() . '\Classes\User');
-				
-		if ($oResult instanceof \Aurora\Modules\Core\Classes\User)
+		
+		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
 		{
 			$bResult = true;
 		}
 
-		$oUserByPublicId = $this->getUserByPublicId($oUser->PublicId);
-		if ($oUserByPublicId && isset($oUserByPublicId->IdTenant) && $oUserByPublicId->IdTenant === $oUser->IdTenant)
-		{
-			$bResult = true;
-		}
-//		try
-//		{
-//			$aResults = $this->oEavManager->getObjects(
-//				'Aurora\Modules\Core\Classes\User',
-//				array('Name'),
-//				0,
-//				0,
-//				array('Name' => $oUser->Name)
-//			);
-//
-//			if ($aResults)
-//			{
-//				foreach($aResults as $oObject)
-//				{
-//					if ($oObject->EntityId !== $oUser->EntityId)
-//					{
-//						$bResult = true;
-//						break;
-//					}
-//				}
-//			}
-//		}
-//		catch (\Aurora\System\Exceptions\BaseException $oException)
-//		{
-//			$this->setLastException($oException);
-//		}
 		return $bResult;
 	}
 	
