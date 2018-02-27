@@ -1793,9 +1793,11 @@ For instructions, please refer to this section of documentation and our
 			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
 			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
 			
+			//this will store user data in static variable of Api class for later usage
+			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+			
 			if ($Language !== '')
 			{
-				$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
 				if ($oUser && $oUser->Language !== $Language)
 				{
 					$oUser->Language = $Language;
