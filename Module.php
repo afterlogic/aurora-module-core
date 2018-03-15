@@ -702,7 +702,7 @@ For instructions, please refer to this section of documentation and our
 			$bResult = false;
 			$sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
 			$oApiFileCache = new \Aurora\System\Managers\Filecache();
-			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName']);
+			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName'], '', $this->GetName());
 
 			if (is_resource($mResult))
 			{
@@ -3378,14 +3378,14 @@ For instructions, please refer to this section of documentation and our
 			$sTempName = md5($sUUID.$Content.$FileName);
 			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
-			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
+			if (!$oApiFileCache->isFileExists($sUUID, $sTempName, '', $this->GetName()))
 			{
-				$oApiFileCache->put($sUUID, $sTempName, $Content);
+				$oApiFileCache->put($sUUID, $sTempName, $Content, '', $this->GetName());
 			}
 
-			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
+			if ($oApiFileCache->isFileExists($sUUID, $sTempName, '', $this->GetName()))
 			{
-				$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName));
+				$mResult = \Aurora\System\Utils::GetClientFileResponse($UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName, '', $this->GetName()));
 			}
 		}
 		catch (\Exception $oException)
