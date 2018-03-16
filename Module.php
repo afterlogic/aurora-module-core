@@ -699,10 +699,11 @@ For instructions, please refer to this section of documentation and our
 		
 		if (isset($aValues['TempFile'], $aValues['TempName'], $aValues['Name']))
 		{
+			$sModule = isset($aValues['Module']) && !empty($aValues['Module']) ? $aValues['Module'] : 'System';
 			$bResult = false;
 			$sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
 			$oApiFileCache = new \Aurora\System\Managers\Filecache();
-			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName'], '', $aValues['Module']);
+			$mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName'], '', $sModule);
 
 			if (is_resource($mResult))
 			{
