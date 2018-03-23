@@ -1791,7 +1791,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if (is_array($mResult))
 		{
-			$aAuthData = \Aurora\System\Api::UserSession()->GetById($mResult['id']);
+			$aAuthData = isset($mResult['id']) ? \Aurora\System\Api::UserSession()->GetById($mResult['id']) : false;
 			
 			if ($aAuthData && isset($aAuthData['auth-token']))
 			{
