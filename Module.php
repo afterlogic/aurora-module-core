@@ -1017,7 +1017,7 @@ For instructions, please refer to this section of documentation and our
 				}
 			}
 		}
-
+		\Aurora\System\Api::UserSession()->GC(24*30);
 		if ($bDoGC)
 		{
 			\Aurora\System\Api::Log('GC: FileCache / Start');
@@ -1791,8 +1791,17 @@ For instructions, please refer to this section of documentation and our
 		
 		if (is_array($mResult))
 		{
-			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
-			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
+			$aAuthData = \Aurora\System\Api::UserSession()->GetById($mResult['id']);
+			
+			if ($aAuthData && isset($aAuthData['auth-token']))
+			{
+				$sAuthToken = $aAuthData['auth-token'];
+			}
+			else
+			{
+				$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
+				$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
+			}
 			
 			//this will store user data in static variable of Api class for later usage
 			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
