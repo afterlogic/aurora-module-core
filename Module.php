@@ -194,7 +194,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aCompatibility['data.dir.delete'] =
 			(int) @rmdir($aCompatibility['data.dir'].'/'.$sTempPathName);
 
-		$aCompatibility['settings.file'] = \Aurora\System\Api::GetSettings()->GetConfigPath();
+		
+		$oSettings =& \Aurora\System\Api::GetSettings();
+		
+		$aCompatibility['settings.file'] = $oSettings ? $oSettings->GetConfigPath() : '';
 		
 		$aCompatibility['settings.file.exist'] = (int) @file_exists($aCompatibility['settings.file']);
 		$aCompatibility['settings.file.read'] = (int) @is_readable($aCompatibility['settings.file']);
@@ -3269,7 +3272,7 @@ For instructions, please refer to this section of documentation and our
 			if ($oUser)
 			{
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
-				$aArgs = array('UUID' => $oUser->UUID);
+				$aArgs = array('User' => $oUser);
 				$this->broadcastEvent(
 					$this->GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,
