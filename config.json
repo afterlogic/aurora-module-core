@@ -64,5 +64,9 @@
         "F24",
         "spec",
         "\\Aurora\\System\\Enums\\TimeFormat"
-    ]
+	],
+	"ProductName": [
+		"",
+        "string"
+	]
 }

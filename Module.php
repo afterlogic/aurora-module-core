@@ -1176,6 +1176,8 @@ For instructions, please refer to this section of documentation and our
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
 				(file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php'))),
+			'Version' => \Aurora\System\Api::VersionFull(),
+			'ProductName' => $this->getConfig('ProductName')
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
