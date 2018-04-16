@@ -653,9 +653,14 @@ For instructions, please refer to this section of documentation and our
 		{
 			$sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
 			$sLogin = (string) $this->oHttp->GetRequest('Login', '');
+			
+			if ($sLogin==='')
+			{
+				$sLogin = $sEmail;
+			}
 			$sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
-			$sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetConf('WebMail/LoginAtDomainValue'));
+			$sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetConf('LoginAtDomainValue'));
 			if (0 < strlen($sAtDomain))
 			{
 				$sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;

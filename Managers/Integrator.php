@@ -946,12 +946,12 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		catch (\Exception $oEx)	{}
 
 		$aModules = \Aurora\System\Api::GetModules();
-
 		foreach ($aModules as $sModuleName => $oModule)
 		{
 			try
 			{
 				$oDecorator = \Aurora\System\Api::GetModuleDecorator($sModuleName);
+					
 				$aModuleAppData = $oDecorator->GetSettings();
 				$aModuleErrors = $oDecorator->GetErrors();
 			}
