@@ -3427,7 +3427,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function UpdateUserTimezone($Timezone)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Customer);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 
