@@ -9,14 +9,17 @@
  * @copyright Copyright (c) 2018, Afterlogic Corp.
  */
 
+namespace Aurora\Modules\Core\Managers;
+
 /**
+ * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
+ * @license https://afterlogic.com/products/common-licensing AfterLogic Software License
+ * @copyright Copyright (c) 2018, Afterlogic Corp.
+ *
  * CApiChannelsManager class summary
  *
  * @package Channels
  */
-
-namespace Aurora\Modules\Core\Managers;
-
 class Groups extends \Aurora\System\Managers\AbstractManager
 {
 	/**
