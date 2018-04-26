@@ -483,11 +483,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function logoutAccount($sAuthToken = '')
 	{
-		if (strlen($sAuthToken) !== 0)
-		{
-			$sKey = \Aurora\System\Api::UserSession()->Delete($sAuthToken);
-		}
-		
 		@setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
 		return true;
 	}
@@ -975,10 +970,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId,
 			);
-		}
-		else
-		{
-			\Aurora\System\Api::UserSession()->Delete($sAuthToken);
 		}
 
 		return $aAppData;
