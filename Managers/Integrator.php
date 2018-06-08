@@ -370,7 +370,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	{
 		$aInfo = array(
 			'isAdmin' => false,
-			'userId' => 0
+			'userId' => 0,
+			'accountType' => 0
 		);
 		$aAccountHashTable = \Aurora\System\Api::UserSession()->Get($sAuthToken);
 		if (is_array($aAccountHashTable) && isset($aAccountHashTable['token']) &&
@@ -396,7 +397,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		{
 			$aInfo = array(
 				'isAdmin' => true,
-				'userId' => -1
+				'userId' => -1,
+				'accountType' => 0
 			);
 		}
 		return $aInfo;

@@ -1965,17 +1965,6 @@ For instructions, please refer to this section of documentation and our
 		
 		\Aurora\System\Api::LogEvent('logout', $this->GetName());
 		
-		$mAuthToken = \Aurora\System\Api::getAuthenticatedUserAuthToken();
-		
-		if ($mAuthToken !== false)
-		{
-			\Aurora\System\Api::UserSession()->Delete($mAuthToken);
-		}
-		else
-		{
-			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
-		}
-		
 		return true;
 	}
 	
