@@ -259,11 +259,11 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 
 				if (file_exists($sFileName))
 				{
-					$aLangContent = parse_ini_file($sFileName);
+					$aLangContent = @parse_ini_string(file_get_contents($sFileName), true);
 				} 
 				else if (file_exists($sPath . '/' . $sModuleName . '/i18n/English.ini'))
 				{
-					$aLangContent = parse_ini_file($sPath . '/' . $sModuleName . '/i18n/English.ini');
+					$aLangContent = @parse_ini_string(file_get_contents($sPath . '/' . $sModuleName . '/i18n/English.ini'), true);
 				}
 				else
 				{
