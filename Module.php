@@ -1688,7 +1688,7 @@ For instructions, please refer to this section of documentation and our
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
-			$oAccount = $oEavManager->getEntity((int)$aUserInfo['account'], $aUserInfo['account_type']);
+			$oAccount = $oEavManager->getEntity((int)$aUserInfo['account'], $aUserInfo['accountType']);
 		}
 		
 		return $oAccount;
