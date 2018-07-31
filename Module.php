@@ -2677,15 +2677,19 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$oTenant = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Tenant', $this->GetName());
-
-			$oTenant->Name = $Name;
-			$oTenant->Description = $Description;
-			$oTenant->IdChannel = $ChannelId;
-
-			if ($this->oApiTenantsManager->createTenant($oTenant))
+			$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($ChannelId);
+			if ($oSettings->GetConf('EnableMultiTenant') || is_array($aTenants) && count($aTenants) === 0)
 			{
-				return $oTenant->EntityId;
+				$oTenant = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Tenant', $this->GetName());
+
+				$oTenant->Name = $Name;
+				$oTenant->Description = $Description;
+				$oTenant->IdChannel = $ChannelId;
+
+				if ($this->oApiTenantsManager->createTenant($oTenant))
+				{
+					return $oTenant->EntityId;
+				}
 			}
 		}
 		else
