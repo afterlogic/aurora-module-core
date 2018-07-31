@@ -3357,6 +3357,7 @@ For instructions, please refer to this section of documentation and our
 		if (file_exists($sFileName))
 		{
 			$iOffset = filesize($sFileName) - $PartSize;
+			$iOffset = $iOffset < 0 ? 0 : $iOffset;
 			$logData = file_get_contents($sFileName, false, null, $iOffset, $PartSize);
 		}
 		
