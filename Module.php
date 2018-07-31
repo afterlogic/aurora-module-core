@@ -93,6 +93,21 @@ class Module extends \Aurora\System\Module\AbstractModule
 		return $mResult;
 	}
 	
+	private function getSingleTenantId()
+	{
+		$iTenantId = 0;
+		$oSettings =& \Aurora\System\Api::GetSettings();
+		if (!$oSettings->GetConf('EnableMultiChannel') && !$oSettings->GetConf('EnableMultiTenant'))
+		{
+			$oTenant = $this->oApiTenantsManager->getTenantByName('Default');
+			if ($oTenant)
+			{
+				$iTenantId = $oTenant->EntityId;
+			}
+		}
+		return $iTenantId;
+	}
+	
 	/**
 	 * Is called by CreateAccount event. Finds or creates and returns User for new account.
 	 * 
@@ -1201,6 +1216,7 @@ For instructions, please refer to this section of documentation and our
 				'SaltNotEmpty' => file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php')),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
+				'SingleTenantId' => $this->getSingleTenantId(),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
 				'LogFilesData' => $this->GetLogFilesData(),
 				'ELogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
