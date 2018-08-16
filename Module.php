@@ -1181,7 +1181,7 @@ For instructions, please refer to this section of documentation and our
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
-				(file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php'))),
+				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
 			'Version' => \Aurora\System\Api::VersionFull(),
 			'ProductName' => $this->getConfig('ProductName')
 		);
@@ -1197,8 +1197,7 @@ For instructions, please refer to this section of documentation and our
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
 				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
-				'CommonLanguage' => $this->getConfig('Language'),
-				'SaltNotEmpty' => file_exists(\Aurora\System\Api::DataPath() . '/salt.php') && strlen(@file_get_contents(\Aurora\System\Api::DataPath() . '/salt.php')),
+				'SaltNotEmpty' => file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath())),
 				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
 				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
 				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
@@ -3438,31 +3437,6 @@ For instructions, please refer to this section of documentation and our
 	}
 	/***** public functions might be called with web API *****/
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
