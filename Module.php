@@ -2031,9 +2031,10 @@ For instructions, please refer to this section of documentation and our
 	 * @param int $Offset Offset of entity list.
 	 * @param int $Limit Limit of result entity list.
 	 * @param string $Search Search string.
+	 * @param array $Filters Filters.
 	 * @return array|null
 	 */
-	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '')
+	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '', $Filters = [])
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		//User role is cheked in  GetTenantList and GetUserList methods. Here we used the lowest user role from both this methods.
@@ -2046,7 +2047,7 @@ For instructions, please refer to this section of documentation and our
 					'Count' => count($aTenants),
 				);
 			case 'User':
-				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search);
+				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
 				$aUsersCount = $Limit > 0 ? $this->oApiUsersManager->getUsersCount($Search) : count($aUsers);
 				return array(
 					'Items' => $aUsers,
@@ -2918,16 +2919,17 @@ For instructions, please refer to this section of documentation and our
 	 * @param string $OrderBy Name of field order by.
 	 * @param int $OrderType Order type.
 	 * @param string $Search Search string.
+	 * @param array $Filters Filters.
 	 * @return array {
 	 *		*int* **Id** Identifier of user.
 	 *		*string* **PublicId** User name.
 	 * }
 	 */
-	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '')
+	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search);
+		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
 		$aUsers = array();
 		foreach($aResults as $oUser)
 		{
