@@ -298,16 +298,24 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return string|null
+	 * @return string
 	 */
-	private function getCookiePath()
+	public function getCookiePath()
 	{
 		static $sPath = false;
 		
 		if (false === $sPath)
 		{
-			$oSettings =& \Aurora\System\Api::GetSettings();
-			$sPath = $oSettings->GetConf('AppCookiePath', '/');
+			$sScriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
+			$iPos = strripos($sScriptName, '/');
+			if ($iPos !== false)
+			{
+				$sPath = substr($sScriptName, 0, $iPos + 1);
+			}
+			if (false === $sPath)
+			{
+				$sPath = '/';
+			}
 		}
 
 		return $sPath;
@@ -457,7 +465,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function setLastErrorCode($iCode)
 	{
-		@setcookie(self::TOKEN_LAST_CODE, $iCode, 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_LAST_CODE, $iCode, 0, $this->getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -475,7 +483,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			unset($_COOKIE[self::TOKEN_LAST_CODE]);
 		}
 		
-		@setcookie(self::TOKEN_LAST_CODE, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+		@\setcookie(self::TOKEN_LAST_CODE, '', \strtotime('-1 hour'), $this->getCookiePath());
 	}
 
 	/**
@@ -485,7 +493,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function logoutAccount($sAuthToken = '')
 	{
-		@setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+		@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', \strtotime('-1 hour'), $this->getCookiePath());
 		return true;
 	}
 
@@ -504,7 +512,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		\Aurora\System\Api::LogObject($aHashTable);
 
 		$_COOKIE[self::TOKEN_HD_THREAD_ID] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@setcookie(self::TOKEN_HD_THREAD_ID,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_HD_THREAD_ID,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -532,7 +540,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_THREAD_ID]);
 			}
 
-			@setcookie(self::TOKEN_HD_THREAD_ID, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), $this->getCookiePath());
 		}
 
 		return $aHdThreadId;
@@ -544,7 +552,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		{
 			$_COOKIE[self::TOKEN_HD_ACTIVATED] = '';
 			unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
-			@setcookie(self::TOKEN_HD_ACTIVATED, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_ACTIVATED, '', \strtotime('-1 hour'), $this->getCookiePath());
 		}
 	}
 
@@ -563,7 +571,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		);
 
 		$_COOKIE[self::TOKEN_HD_ACTIVATED] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -590,7 +598,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
 			}
 
-			@setcookie(self::TOKEN_HD_THREAD_ID, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), $this->getCookiePath());
 		}
 
 		return $sEmail;
@@ -624,13 +632,13 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function logoutHelpdeskUser()
 	{
-		@setcookie(self::AUTH_HD_KEY, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+		@\setcookie(self::AUTH_HD_KEY, '', \strtotime('-1 hour'), $this->getCookiePath());
 		return true;
 	}
 
 	public function skipMobileCheck()
 	{
-		@setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, $this->getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -640,7 +648,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	{
 		if (isset($_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK]) && '1' === (string) $_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK])
 		{
-			@setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', time() - 60 * 60 * 24 * 30, $this->getCookiePath());
+			@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', \strtotime('-1 hour'), $this->getCookiePath());
 			return 0;
 		}
 
@@ -654,7 +662,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function setMobile($bMobile)
 	{
-		@setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', time() + 60 * 60 * 24 * 200, $this->getCookiePath());
+		@\setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', \strtotime('+200 days'), $this->getCookiePath());
 		return true;
 	}
 
@@ -666,8 +674,8 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			$aHelpdeskHashTable =\Aurora\System\Api::DecodeKeyValues($sHelpdeskHash);
 			if (isset($aHelpdeskHashTable['sign-me']) && $aHelpdeskHashTable['sign-me'])
 			{
-				@setcookie(self::AUTH_HD_KEY,\Aurora\System\Api::EncodeKeyValues($aHelpdeskHashTable),
-					time() + 60 * 60 * 24 * 30, $this->getCookiePath(), null, null, true);
+				@\setcookie(self::AUTH_HD_KEY,\Aurora\System\Api::EncodeKeyValues($aHelpdeskHashTable),
+					\strtotime('+30 days'), $this->getCookiePath(), null, null, true);
 			}
 		}
 	}
@@ -932,7 +940,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			)
 		);
 		
-		// AuthToken reads from coockie for HTML
+		// AuthToken reads from cookie for HTML
 		$sAuthToken = isset($_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY]) ? $_COOKIE[\Aurora\System\Application::AUTH_TOKEN_KEY] : '';
 		
 		$oUser = null;

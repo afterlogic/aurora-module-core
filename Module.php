@@ -627,7 +627,7 @@ For instructions, please refer to this section of documentation and our
 					
 					if (is_array($aResult) && isset($aResult['AuthToken']))
 					{
-						@setcookie('AuthToken', $aResult['AuthToken'], time() + 60 * 60 * 24 * 30);
+						@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, $aResult['AuthToken'], \strtotime('+30 days'), \Aurora\System\Api::getCookiePath());
 					}
 				}
 			}
@@ -670,7 +670,7 @@ For instructions, please refer to this section of documentation and our
 			$aResult = self::Decorator()->Login($sLogin, $sPassword);
 			if (is_array($aResult) && isset($aResult['AuthToken']))
 			{
-				@setcookie('AuthToken', $aResult['AuthToken'], time() + 60 * 60 * 24 * 30);
+				@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, $aResult['AuthToken'], \strtotime('+30 days'), \Aurora\System\Api::getCookiePath());
 			}
 
 			\Aurora\System\Api::Location('./');
