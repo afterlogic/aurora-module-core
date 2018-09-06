@@ -3066,7 +3066,7 @@ For instructions, please refer to this section of documentation and our
 				$oLicense = \Aurora\System\Api::GetModuleDecorator('Licensing');
 				if ($oLicense instanceof \Aurora\System\Module\Decorator)
 				{
-					if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()))
+					if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod())
 					{
 						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::LicenseLimit);
 					}
