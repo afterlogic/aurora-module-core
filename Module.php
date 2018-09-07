@@ -2048,7 +2048,7 @@ For instructions, please refer to this section of documentation and our
 				);
 			case 'User':
 				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
-				$aUsersCount = $Limit > 0 ? $this->oApiUsersManager->getUsersCount($Search) : count($aUsers);
+				$aUsersCount = $Limit > 0 ? $this->oApiUsersManager->getUsersCount($Search, $Filters) : count($aUsers);
 				return array(
 					'Items' => $aUsers,
 					'Count' => $aUsersCount,
