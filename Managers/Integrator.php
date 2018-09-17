@@ -298,30 +298,6 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return string
-	 */
-	public function getCookiePath()
-	{
-		static $sPath = false;
-		
-		if (false === $sPath)
-		{
-			$sScriptName = isset($_SERVER['SCRIPT_NAME']) ? $_SERVER['SCRIPT_NAME'] : '';
-			$iPos = strripos($sScriptName, '/');
-			if ($iPos !== false)
-			{
-				$sPath = substr($sScriptName, 0, $iPos + 1);
-			}
-			if (false === $sPath)
-			{
-				$sPath = '/';
-			}
-		}
-
-		return $sPath;
-	}
-
-	/**
 	 * @param string $sAuthToken Default value is empty string.
 	 *
 	 * @return \Aurora\Modules\Core\Classes\User
@@ -465,7 +441,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function setLastErrorCode($iCode)
 	{
-		@\setcookie(self::TOKEN_LAST_CODE, $iCode, 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_LAST_CODE, $iCode, 0, \Aurora\System\Api::getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -483,7 +459,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			unset($_COOKIE[self::TOKEN_LAST_CODE]);
 		}
 		
-		@\setcookie(self::TOKEN_LAST_CODE, '', \strtotime('-1 hour'), $this->getCookiePath());
+		@\setcookie(self::TOKEN_LAST_CODE, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 	}
 
 	/**
@@ -493,7 +469,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function logoutAccount($sAuthToken = '')
 	{
-		@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', \strtotime('-1 hour'), $this->getCookiePath());
+		@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 		return true;
 	}
 
@@ -512,7 +488,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		\Aurora\System\Api::LogObject($aHashTable);
 
 		$_COOKIE[self::TOKEN_HD_THREAD_ID] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@\setcookie(self::TOKEN_HD_THREAD_ID,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_HD_THREAD_ID,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, \Aurora\System\Api::getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -540,7 +516,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_THREAD_ID]);
 			}
 
-			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 		}
 
 		return $aHdThreadId;
@@ -552,7 +528,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		{
 			$_COOKIE[self::TOKEN_HD_ACTIVATED] = '';
 			unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
-			@\setcookie(self::TOKEN_HD_ACTIVATED, '', \strtotime('-1 hour'), $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_ACTIVATED, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 		}
 	}
 
@@ -571,7 +547,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 		);
 
 		$_COOKIE[self::TOKEN_HD_ACTIVATED] =\Aurora\System\Api::EncodeKeyValues($aHashTable);
-		@\setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_HD_ACTIVATED,\Aurora\System\Api::EncodeKeyValues($aHashTable), 0, \Aurora\System\Api::getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -598,7 +574,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				unset($_COOKIE[self::TOKEN_HD_ACTIVATED]);
 			}
 
-			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), $this->getCookiePath());
+			@\setcookie(self::TOKEN_HD_THREAD_ID, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 		}
 
 		return $sEmail;
@@ -632,13 +608,13 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function logoutHelpdeskUser()
 	{
-		@\setcookie(self::AUTH_HD_KEY, '', \strtotime('-1 hour'), $this->getCookiePath());
+		@\setcookie(self::AUTH_HD_KEY, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 		return true;
 	}
 
 	public function skipMobileCheck()
 	{
-		@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, $this->getCookiePath(), null, null, true);
+		@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '1', 0, \Aurora\System\Api::getCookiePath(), null, null, true);
 	}
 
 	/**
@@ -648,7 +624,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	{
 		if (isset($_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK]) && '1' === (string) $_COOKIE[self::TOKEN_SKIP_MOBILE_CHECK])
 		{
-			@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', \strtotime('-1 hour'), $this->getCookiePath());
+			@\setcookie(self::TOKEN_SKIP_MOBILE_CHECK, '', \strtotime('-1 hour'), \Aurora\System\Api::getCookiePath());
 			return 0;
 		}
 
@@ -662,7 +638,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function setMobile($bMobile)
 	{
-		@\setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', \strtotime('+200 days'), $this->getCookiePath());
+		@\setcookie(self::MOBILE_KEY, $bMobile ? '1' : '0', \strtotime('+200 days'), \Aurora\System\Api::getCookiePath());
 		return true;
 	}
 
@@ -675,7 +651,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			if (isset($aHelpdeskHashTable['sign-me']) && $aHelpdeskHashTable['sign-me'])
 			{
 				@\setcookie(self::AUTH_HD_KEY,\Aurora\System\Api::EncodeKeyValues($aHelpdeskHashTable),
-					\strtotime('+30 days'), $this->getCookiePath(), null, null, true);
+					\strtotime('+30 days'), \Aurora\System\Api::getCookiePath(), null, null, true);
 			}
 		}
 	}
