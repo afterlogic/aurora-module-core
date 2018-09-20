@@ -1178,6 +1178,7 @@ For instructions, please refer to this section of documentation and our
 			'SiteName' => $oSettings->GetConf('SiteName'),
 			'SocialName' => '',
 			'TenantName' => \Aurora\System\Api::getTenantName(),
+			'EnableMultiTenant' => $oSettings->GetConf('EnableMultiTenant', false),
 			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
