@@ -1501,43 +1501,29 @@ For instructions, please refer to this section of documentation and our
 		$oEavManager = new \Aurora\System\Managers\Eav();
 		if ($oEavManager->createTablesFromFile())
 		{
-			if ($oSettings->GetConf('EnableMultiChannel') && $oSettings->GetConf('EnableMultiTenant'))
+			$iChannelId = 0;
+			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+			if (is_array($aChannels) && count($aChannels) === 1)
 			{
-				$bResult = true;
+				$iChannelId = $aChannels[0]->EntityId;
 			}
 			else
 			{
-				$iChannelId = 0;
-				$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
-				if (is_array($aChannels) && count($aChannels) === 1)
+				$iChannelId = $this->CreateChannel('Default', '');
+			}
+			if ($iChannelId !== 0)
+			{
+				$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($iChannelId);
+				if (is_array($aTenants) && count($aTenants) === 1)
 				{
-					$iChannelId = $aChannels[0]->EntityId;
+					$bResult = true;
 				}
 				else
 				{
-					$iChannelId = $this->CreateChannel('Default', '');
-				}
-				if ($iChannelId !== 0)
-				{
-					if ($oSettings->GetConf('EnableMultiTenant'))
+					$mTenantId = $this->CreateTenant($iChannelId, 'Default');
+					if (is_int($mTenantId))
 					{
 						$bResult = true;
-					}
-					else
-					{
-						$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($iChannelId);
-						if (is_array($aTenants) && count($aTenants) === 1)
-						{
-							$bResult = true;
-						}
-						else
-						{
-							$mTenantId = $this->CreateTenant($iChannelId, 'Default');
-							if (is_int($mTenantId))
-							{
-								$bResult = true;
-							}
-						}
 					}
 				}
 			}
