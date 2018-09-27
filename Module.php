@@ -47,6 +47,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
+		$this->subscribeEvent('AdminPanelWebclient::GetEntityList::before', array($this, 'onBeforeGetEntityList'));
 		
 		$this->denyMethodsCallByWebApi([
 			'UpdateUserObject',
@@ -2044,6 +2045,24 @@ For instructions, please refer to this section of documentation and our
 		return null;
 	}
 	
+	public function onBeforeGetEntityList(&$aArgs, &$mResult)
+	{
+		if ($aArgs['Type'] === 'User' && isset($aArgs['TenantId']) && $aArgs['TenantId'] !== 0)
+		{
+			if (isset($aArgs['Filters']) && is_array($aArgs['Filters']) && count($aArgs['Filters']) > 0)
+			{
+				$aArgs['Filters']['IdTenant'] = [$aArgs['TenantId'], '='];
+				$aArgs['Filters'] = [
+					'$AND' => $aArgs['Filters']
+				];
+			}
+			else
+			{
+				$aArgs['Filters'] = ['IdTenant' => [$aArgs['TenantId'], '=']];
+			}
+		}
+	}
+
 	/**
 	 * @api {post} ?/Api/ GetEntity
 	 * @apiName GetEntity
