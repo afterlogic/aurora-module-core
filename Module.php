@@ -3054,9 +3054,9 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
-		if (!$oSettings->GetConf('EnableMultiTenant') && $TenantId === 0)
+		if ($TenantId === 0)
 		{
-			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1);
+			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1, '');
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
