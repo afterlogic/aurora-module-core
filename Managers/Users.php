@@ -215,6 +215,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				if (!$this->isExists($oUser))
 				{
 //					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
+					$oUser->DateCreated = date('Y-m-d H:i:s');
 					
 					if (!$this->oEavManager->saveEntity($oUser))
 					{
