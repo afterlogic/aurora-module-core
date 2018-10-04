@@ -1185,7 +1185,9 @@ For instructions, please refer to this section of documentation and our
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
 				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
 			'Version' => \Aurora\System\Api::VersionFull(),
-			'ProductName' => $this->getConfig('ProductName')
+			'ProductName' => $this->getConfig('ProductName'),
+			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
+			'PasswordMustBeComplex' => $oSettings->GetConf('PasswordMustBeComplex', false),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
