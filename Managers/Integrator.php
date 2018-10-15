@@ -870,6 +870,13 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 		
+		$oModuleManager = \Aurora\System\Api::GetModuleManager();
+		$aLanguageList = $oModuleManager->getModuleConfigValue('Core', 'LanguageList');
+		if (is_array($aLanguageList) && count($aLanguageList) > 0)
+		{
+			$aList = array_intersect($aLanguageList, $aList);
+		}
+		
 		return $aList;
 	}
 
