@@ -193,14 +193,4 @@ class User extends \Aurora\System\EAV\Entity
 
 		return true;
 	}
-	
-	public function toResponseArray()
-	{
-		return array(
-			'Name' => $this->Name,
-			'PublicId' => $this->PublicId,
-			'Role' => $this->Role,
-			'WriteSeparateLog' => $this->WriteSeparateLog,
-		);
-	}
 }
