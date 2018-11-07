@@ -1821,6 +1821,53 @@ For instructions, please refer to this section of documentation and our
 		throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 	}
 
+	/**
+	 * @param string $Password Account password.
+	 * @return bool
+	 * @throws \Aurora\System\Exceptions\ApiException
+	 */
+	public function VerifyPassword($Password)
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		$mResult = false;
+		$bResult = false;
+		$sAuthToken = \Aurora\System\Api::getAuthToken();
+		$aUserInfo = \Aurora\Modules\Core\Managers\Integrator::getInstance()->getAuthenticatedUserInfo($sAuthToken);
+		if (isset($aUserInfo['account']) && isset($aUserInfo['accountType']))
+		{
+			$oAccount = \Aurora\System\Managers\Eav::getInstance()->getEntity($aUserInfo['account'], $aUserInfo['accountType']);
+			if ($oAccount instanceof \Aurora\System\Classes\AbstractAccount)
+			{
+
+				$aArgs = array (
+					'Login' => $oAccount->getLogin(),
+					'Password' => $Password,
+					'SignMe' => false
+				);
+				$this->broadcastEvent(
+					'Login',
+					$aArgs,
+					$mResult
+				);
+
+				if (is_array($mResult)
+					&& isset($mResult['token'])
+					&& $mResult['token'] === 'auth'
+					&& isset($mResult['id'])
+				)
+				{
+					$UserId = \Aurora\System\Api::getAuthenticatedUserId();
+					if ($mResult['id'] === $UserId)
+					{
+						$bResult = true;
+					}
+				}
+			}
+		}
+
+		return $bResult;
+	}
+
     /**
      * @param $email
      * @param $resetOption
