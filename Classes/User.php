@@ -65,7 +65,7 @@ class User extends \Aurora\System\EAV\Entity
 			'IdSubscription'			=> array('int', 0),
 			'Role'						=> array('int', \Aurora\System\Enums\UserRole::NormalUser),
 
-			'DateCreated'				=> array('datetime', date('Y-m-d H:i:s', 0), true),
+			'DateCreated'				=> array('datetime', null, true),
 			'LastLogin'					=> array('string', ''),
 			'LastLoginNow'				=> array('string', ''),
 			'LoginsCount'				=> array('int', 0),
