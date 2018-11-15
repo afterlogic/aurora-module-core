@@ -48,6 +48,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
 		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
 		$this->subscribeEvent('AdminPanelWebclient::GetEntityList::before', array($this, 'onBeforeGetEntityList'));
+		$this->subscribeEvent('ChangePassword::after', array($this, 'onAfterChangePassword'));
+
 		
 		$this->denyMethodsCallByWebApi([
 			'UpdateUserObject',
@@ -56,7 +58,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'GetAdminUser',
 			'GetTenantById',
 			'GetDefaultGlobalTenant',
-			'GetUser'
+			'GetUser',
+			'UpdateTokensValidFromTimestamp'
 		]);
 	}
 	
@@ -364,6 +367,25 @@ For instructions, please refer to this section of documentation and our
 		
 		$mResult[$this->GetName()] = $aCompatibilities;
 	}	
+
+	public function onAfterChangePassword($aArgs, &$mResult)
+	{
+		if ($mResult && $mResult instanceof \Aurora\System\Classes\AbstractAccount && $mResult->UseToAuthorize)
+		{
+			$oUser = \Aurora\System\Api::getAuthenticatedUser();
+			if ($oUser instanceof \Aurora\Modules\Core\Classes\User &&
+				(($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oUser->EntityId === $mResult->IdUser) ||
+				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
+			)
+			{
+				$oUser = $this->GetUser($mResult->IdUser);
+				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+				{
+					$this->UpdateTokensValidFromTimestamp($oUser);
+				}
+			}
+		}
+	}
 
 	/**
 	 * Recursively deletes temporary files and folders on time.
@@ -1792,7 +1814,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if (is_array($mResult))
 		{
-			$iTime = $SignMe ? 0 : time() + 60 * 60 * 24 * 30;
+			$iTime = $SignMe ? 0 : time();
 			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
 			
 			//this will store user data in static variable of Api class for later usage
@@ -3252,6 +3274,16 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		return false;
+	}
+
+	/**
+	 * 
+	 */
+	public function UpdateTokensValidFromTimestamp($oUser)
+	{
+		$oUser->TokensValidFromTimestamp = time();
+		$this->oApiUsersManager->updateUser($oUser);		
+		return $oUser->TokensValidFromTimestamp;
 	}
 	
 	/**

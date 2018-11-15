@@ -98,6 +98,8 @@ class User extends \Aurora\System\EAV\Entity
 			'WriteSeparateLog'			=> array('bool', false),
 
 			'DefaultTimeZone'			=> array('string', ''),
+			
+			'TokensValidFromTimestamp' => array('int', 0),
 		);
 
 		$this->oSubCache = null;
