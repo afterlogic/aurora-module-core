@@ -52,7 +52,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				$this->getModule()->getNamespace() . '\Classes\Channel',
+				$this->getModule()::getNamespace() . '\Classes\Channel',
 				array('Login', 'Description', 'Password'),
 				$iOffset,
 				$iLimit,
@@ -78,7 +78,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$aResults = $this->oEavManager->getEntitiesCount($this->getModule()->getNamespace() . '\Classes\Channel',
+			$aResults = $this->oEavManager->getEntitiesCount($this->getModule()::getNamespace() . '\Classes\Channel',
 				array(
 					'Login' => '%'.$sSearchDesc.'%',
 					'Description' => '%'.$sSearchDesc.'%'
@@ -104,7 +104,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$oChannel = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($iChannelId, $this->getModule()->getNamespace() . '\Classes\Channel');
+			$oResult = $this->oEavManager->getEntity($iChannelId, $this->getModule()::getNamespace() . '\Classes\Channel');
 			
 			if (!empty($oResult))
 			{
@@ -129,7 +129,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iChannelId = 0;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities($this->getModule()->getNamespace() . '\Classes\Channel',
+			$aResultChannels = $this->oEavManager->getEntities($this->getModule()::getNamespace() . '\Classes\Channel',
 				array(
 					'Login'
 				),
@@ -161,7 +161,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$bResult = false;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities($this->getModule()->getNamespace() . '\Classes\Channel',
+			$aResultChannels = $this->oEavManager->getEntities($this->getModule()::getNamespace() . '\Classes\Channel',
 				array('Login'),
 				0,
 				0,

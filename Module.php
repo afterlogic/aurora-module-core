@@ -365,7 +365,7 @@ For instructions, please refer to this section of documentation and our
 			],
 		];
 		
-		$mResult[$this->GetName()] = $aCompatibilities;
+		$mResult[self::GetName()] = $aCompatibilities;
 	}	
 
 	public function onAfterChangePassword($aArgs, &$mResult)
@@ -917,7 +917,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\User', $this->GetName());
+		$oUser = new Classes\User(self::GetName());
 		$oUser->EntityId = -1;
 		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
 		$oUser->PublicId = 'Administrator';
@@ -1829,13 +1829,13 @@ For instructions, please refer to this section of documentation and our
 				}
 			}
 			
-			\Aurora\System\Api::LogEvent('login-success: ' . $Login, $this->GetName());
+			\Aurora\System\Api::LogEvent('login-success: ' . $Login, self::GetName());
 			return array(
 				'AuthToken' => $sAuthToken
 			);
 		}
 
-		\Aurora\System\Api::LogEvent('login-failed: ' . $Login, $this->GetName());
+		\Aurora\System\Api::LogEvent('login-failed: ' . $Login, self::GetName());
 		if (!is_writable(\Aurora\System\Api::DataPath()))
 		{
 			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::SystemNotConfigured);
@@ -1912,11 +1912,11 @@ For instructions, please refer to this section of documentation and our
 
         if (!empty($mResult))
         {
-            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email , $this->GetName());
+            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email , self::GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, $this->GetName());
+        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
     }
 
 
@@ -1937,11 +1937,11 @@ For instructions, please refer to this section of documentation and our
 
         if (!empty($mResult))
         {
-            \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-success: ' . $securityAnswer , $this->GetName());
+            \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-success: ' . $securityAnswer , self::GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-failed: ' . $securityAnswer, $this->GetName());
+        \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-failed: ' . $securityAnswer, self::GetName());
     }
 
     public function UpdatePassword($Password, $ConfirmPassword, $Hash)
@@ -1963,11 +1963,11 @@ For instructions, please refer to this section of documentation and our
         if (!empty($mResult))
         {
 
-            \Aurora\System\Api::LogEvent('updatePassword-success: ' . $Hash , $this->GetName());
+            \Aurora\System\Api::LogEvent('updatePassword-success: ' . $Hash , self::GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('updatePassword-failed: ' . $Hash, $this->GetName());
+        \Aurora\System\Api::LogEvent('updatePassword-failed: ' . $Hash, self::GetName());
     }
 	
 	/**
@@ -2022,7 +2022,7 @@ For instructions, please refer to this section of documentation and our
 	{	
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
-		\Aurora\System\Api::LogEvent('logout', $this->GetName());
+		\Aurora\System\Api::LogEvent('logout', self::GetName());
 		
 		return true;
 	}
@@ -2263,7 +2263,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($Login !== '')
 		{
-			$oChannel = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Channel', $this->GetName());
+			$oChannel = new Classes\Channel(self::GetName());
 			
 			$oChannel->Login = $Login;
 			
@@ -2741,7 +2741,7 @@ For instructions, please refer to this section of documentation and our
 			$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($ChannelId);
 			if ($oSettings->GetConf('EnableMultiTenant') || is_array($aTenants) && count($aTenants) === 0)
 			{
-				$oTenant = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\Tenant', $this->GetName());
+				$oTenant = new Classes\Tenant(self::GetName());
 
 				$oTenant->Name = $Name;
 				$oTenant->Description = $Description;
@@ -3150,7 +3150,7 @@ For instructions, please refer to this section of documentation and our
 				}
 			}
 			
-			$oUser = \Aurora\System\EAV\Entity::createInstance($this->getNamespace() . '\Classes\User', $this->GetName());
+			$oUser = new Classes\User(self::GetName());
 			
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
@@ -3355,7 +3355,7 @@ For instructions, please refer to this section of documentation and our
 				$bResult = $this->oApiUsersManager->deleteUser($oUser);
 				$aArgs = array('User' => $oUser);
 				$this->broadcastEvent(
-					$this->GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
+					self::GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
 					$aArgs,
 					$UserId
 				);
@@ -3473,15 +3473,15 @@ For instructions, please refer to this section of documentation and our
 			$sTempName = md5($sUUID.$Content.$FileName);
 			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
-			if (!$oApiFileCache->isFileExists($sUUID, $sTempName, '', $this->GetName()))
+			if (!$oApiFileCache->isFileExists($sUUID, $sTempName, '', self::GetName()))
 			{
-				$oApiFileCache->put($sUUID, $sTempName, $Content, '', $this->GetName());
+				$oApiFileCache->put($sUUID, $sTempName, $Content, '', self::GetName());
 			}
 
-			if ($oApiFileCache->isFileExists($sUUID, $sTempName, '', $this->GetName()))
+			if ($oApiFileCache->isFileExists($sUUID, $sTempName, '', self::GetName()))
 			{
 				$mResult = \Aurora\System\Utils::GetClientFileResponse(
-					$this->GetName(), $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName, '', $this->GetName())
+					self::GetName(), $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName, '', self::GetName())
 				);
 			}
 		}

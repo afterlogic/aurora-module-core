@@ -950,9 +950,9 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			
 			if (is_array($aModuleAppData))
 			{
-				$aAppData[$oModule->GetName()] = $aModuleAppData;
+				$aAppData[$oModule::GetName()] = $aModuleAppData;
 			}
-			$aAppData['module_errors'][$oModule->GetName()] = $aModuleErrors;
+			$aAppData['module_errors'][$oModule::GetName()] = $aModuleErrors;
 		}
 		
 		if ($oUser)
