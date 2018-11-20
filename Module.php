@@ -34,23 +34,29 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$this->oApiChannelsManager = new Managers\Channels($this);
 		$this->oApiUsersManager = new Managers\Users($this);
 		
-		$this->AddEntries(array(
-			'api' => 'EntryApi',
-			'ping' => 'EntryPing',
-			'pull' => 'EntryPull',
-			'plugins' => 'EntryPlugins',
-			'mobile' => 'EntryMobile',
-			'sso' => 'EntrySso',
-			'postlogin' => 'EntryPostlogin',
-			'file-cache' => 'EntryFileCache'
-		));
-		
-		$this->subscribeEvent('CreateAccount', array($this, 'onCreateAccount'));
-		$this->subscribeEvent('Core::GetCompatibilities::after', array($this, 'onAfterGetCompatibilities'));
-		$this->subscribeEvent('AdminPanelWebclient::GetEntityList::before', array($this, 'onBeforeGetEntityList'));
-		$this->subscribeEvent('ChangePassword::after', array($this, 'onAfterChangePassword'));
+		\Aurora\System\Router::getInstance()->registerArray(
+			self::GetName(),
+			[
+				'api' => [$this, 'EntryApi'],
+				'ping' => [$this, 'EntryPing'],
+				'pull' => [$this, 'EntryPull'],
+				'plugins' => [$this, 'EntryPlugins'],
+				'mobile' => [$this, 'EntryMobile'],
+				'sso' => [$this, 'EntrySso'],
+				'postlogin' => [$this, 'EntryPostlogin'],
+				'file-cache' => [$this, 'EntryFileCache']
+			]
+		);
 
-		
+		\Aurora\System\EventEmitter::getInstance()->onArray(
+			[
+				'CreateAccount' => [[$this, 'onCreateAccount'], 100],
+				'Core::GetCompatibilities::after' => [$this, 'onAfterGetCompatibilities'],
+				'AdminPanelWebclient::GetEntityList::before' => [$this, 'onBeforeGetEntityList'],
+				'ChangePassword::after' => [$this, 'onAfterChangePassword']
+			]
+		);
+
 		$this->denyMethodsCallByWebApi([
 			'UpdateUserObject',
 			'GetUserByUUID',
