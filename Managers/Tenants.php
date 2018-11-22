@@ -66,7 +66,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				$this->getModule()::getNamespace() . '\Classes\Tenant',
+				\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 				array(
 					'Name', 
 					'Description',
@@ -102,7 +102,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResultTenants = $this->oEavManager->getEntitiesCount(
-				$this->getModule()::getNamespace() . '\Classes\Tenant',
+				\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 				array(
 					'Description' => $sSearchDesc
 				)
@@ -127,7 +127,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			try
 			{
 				$oResult = $this->oEavManager->getEntities(
-					$this->getModule()::getNamespace() . '\Classes\Tenant',
+					\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 					array(
 						'IsDefault'
 					),
@@ -160,7 +160,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		$oTenant = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($mTenantId, $this->getModule()::getNamespace() . '\Classes\Tenant');
+			$oResult = $this->oEavManager->getEntity($mTenantId, \Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant');
 				
 			if (!empty($oResult))
 			{
@@ -199,7 +199,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 //				}
 				
 				$aResultTenants = $this->oEavManager->getEntities(
-					$this->getModule()::getNamespace() . '\Classes\Tenant',
+					\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 					array(
 						'Name'
 					),
@@ -261,7 +261,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 
 		try
 		{
-			$aResultTenants = $this->oEavManager->getEntities($this->getModule()::getNamespace() . '\Classes\Tenant',
+			$aResultTenants = $this->oEavManager->getEntities(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 				array('Name'),
 				0,
 				0,
@@ -400,7 +400,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				$this->getModule()::getNamespace() . '\Classes\Tenant',
+				\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Tenant',
 				array('IsDefault', 'IdChannel'),
 				0,
 				0,
