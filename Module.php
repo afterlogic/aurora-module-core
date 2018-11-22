@@ -1216,6 +1216,7 @@ For instructions, please refer to this section of documentation and our
 			'ProductName' => $this->getConfig('ProductName'),
 			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
 			'PasswordMustBeComplex' => $oSettings->GetConf('PasswordMustBeComplex', false),
+			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
