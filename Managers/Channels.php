@@ -31,7 +31,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	{
 		parent::__construct($oModule);
 		
-		$this->oEavManager = new \Aurora\System\Managers\Eav();
+		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
 	}
 
 	/**
@@ -52,7 +52,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		try
 		{
 			$aResult = $this->oEavManager->getEntities(
-				\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Channel',
+				\Aurora\Modules\Core\Classes\Channel::class,
 				array('Login', 'Description', 'Password'),
 				$iOffset,
 				$iLimit,
@@ -78,7 +78,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$aResults = $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Channel',
+			$aResults = $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\Channel::class,
 				array(
 					'Login' => '%'.$sSearchDesc.'%',
 					'Description' => '%'.$sSearchDesc.'%'
@@ -104,7 +104,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$oChannel = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($iChannelId, \Aurora\Modules\Core\Module::getNamespace() . '\Classes\Channel');
+			$oResult = $this->oEavManager->getEntity($iChannelId, \Aurora\Modules\Core\Classes\Channel::class);
 			
 			if (!empty($oResult))
 			{
@@ -129,7 +129,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iChannelId = 0;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Channel',
+			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\Channel::class,
 				array(
 					'Login'
 				),
@@ -161,7 +161,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$bResult = false;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\Channel',
+			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\Channel::class,
 				array('Login'),
 				0,
 				0,

@@ -364,7 +364,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 			$oCoreModule = \Aurora\System\Api::GetModule('Core');
 			if ($oCoreModule)
 			{
-				$oUser = $oCoreModule->oApiUsersManager->getUser((int) $aAccountHashTable['id']);				
+				$oUser = $oCoreModule->getUsersManager()->getUser((int) $aAccountHashTable['id']);				
 				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 				{
 					$aInfo = array(

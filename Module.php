@@ -16,11 +16,41 @@ namespace Aurora\Modules\Core;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
-	public $oApiTenantsManager = null;
+	protected $oApiTenantsManager = null;
 	
-	public $oApiChannelsManager = null;
+	protected $oApiChannelsManager = null;
 	
-	public $oApiUsersManager = null;
+	protected $oApiUsersManager = null;
+	
+	public function getTenantsManager()
+	{
+		if ($this->oApiTenantsManager === null)
+		{
+			$this->oApiTenantsManager = new Managers\Tenants($this);
+		}
+
+		return $this->oApiTenantsManager;
+	}
+
+	public function getChannelsManager()
+	{
+		if ($this->oApiChannelsManager === null)
+		{
+			$this->oApiChannelsManager = new Managers\Channels($this);
+		}
+
+		return $this->oApiChannelsManager;
+	}
+
+	public function getUsersManager()
+	{
+		if ($this->oApiUsersManager === null)
+		{
+			$this->oApiUsersManager = new Managers\Users($this);
+		}
+
+		return $this->oApiUsersManager;
+	}
 	
 	/***** private functions *****/
 	/**
@@ -30,10 +60,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init() 
 	{
-		$this->oApiTenantsManager = new Managers\Tenants($this);
-		$this->oApiChannelsManager = new Managers\Channels($this);
-		$this->oApiUsersManager = new Managers\Users($this);
-		
 		\Aurora\System\Router::getInstance()->registerArray(
 			self::GetName(),
 			[
@@ -50,10 +76,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 		\Aurora\System\EventEmitter::getInstance()->onArray(
 			[
-				'CreateAccount' => [[$this, 'onCreateAccount'], 100],
-				'Core::GetCompatibilities::after' => [$this, 'onAfterGetCompatibilities'],
-				'AdminPanelWebclient::GetEntityList::before' => [$this, 'onBeforeGetEntityList'],
-				'ChangePassword::after' => [$this, 'onAfterChangePassword']
+				['CreateAccount', [$this, 'onCreateAccount'], 100],
+				['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
+				['AdminPanelWebclient::GetEntityList::before', [$this, 'onBeforeGetEntityList']],
+				['ChangePassword::after', [$this, 'onAfterChangePassword']]
 			]
 		);
 
@@ -120,7 +146,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		if (isset($Args['UserId']) && (int)$Args['UserId'] > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUser($Args['UserId']);
+			$oUser = $this->getUsersManager()->getUser($Args['UserId']);
 		}
 		else
 		{
@@ -137,14 +163,14 @@ class Module extends \Aurora\System\Module\AbstractModule
 			}
 			if (!empty($sPublicId))
 			{
-				$oUser = $this->oApiUsersManager->getUserByPublicId($sPublicId);
+				$oUser = $this->getUsersManager()->getUserByPublicId($sPublicId);
 			}
 			if (!isset($oUser))
 			{
 				$bPrevState = \Aurora\System\Api::skipCheckUserRole(true);
 				$iUserId = self::Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
 				\Aurora\System\Api::skipCheckUserRole($bPrevState);
-				$oUser = $this->oApiUsersManager->getUser($iUserId);
+				$oUser = $this->getUsersManager()->getUser($iUserId);
 			}
 			
 			if (isset($oUser) && isset($oUser->EntityId))
@@ -815,7 +841,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		
-		return $this->oApiUsersManager->updateUser($oUser);
+		return $this->getUsersManager()->updateUser($oUser);
 	}
 	
 	/**
@@ -881,7 +907,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		
-		$oUser = $this->oApiUsersManager->getUser($UserId);
+		$oUser = $this->getUsersManager()->getUser($UserId);
 		
 		return $oUser ? $oUser : null;
 	}
@@ -896,7 +922,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
 		
-		$oUser = $this->oApiUsersManager->getUser($UUID);
+		$oUser = $this->getUsersManager()->getUser($UUID);
 		
 		return $oUser ? $oUser : null;
 	}	
@@ -909,7 +935,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
-		$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
+		$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
 		
 		return $oUser ? $oUser : null;
 	}	
@@ -941,7 +967,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
-		$oTenant = $this->oApiTenantsManager->getTenantById($iIdTenant);
+		$oTenant = $this->getTenantsManager()->getTenantById($iIdTenant);
 
 		return $oTenant ? $oTenant : null;
 	}
@@ -955,7 +981,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
-		$oTenant = $this->oApiTenantsManager->getDefaultGlobalTenant();
+		$oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
 
 		return $oTenant ? $oTenant : null;
 	}
@@ -1530,11 +1556,11 @@ For instructions, please refer to this section of documentation and our
 		
 		$bResult = false;
 		$oSettings =& \Aurora\System\Api::GetSettings();
-		$oEavManager = new \Aurora\System\Managers\Eav();
+		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		if ($oEavManager->createTablesFromFile())
 		{
 			$iChannelId = 0;
-			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			if (is_array($aChannels) && count($aChannels) === 1)
 			{
 				$iChannelId = $aChannels[0]->EntityId;
@@ -1545,7 +1571,7 @@ For instructions, please refer to this section of documentation and our
 			}
 			if ($iChannelId !== 0)
 			{
-				$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($iChannelId);
+				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
 				if (is_array($aTenants) && count($aTenants) === 1)
 				{
 					$bResult = true;
@@ -1637,7 +1663,7 @@ For instructions, please refer to this section of documentation and our
 		$oSettings->SetConf('DBName', $DbName);
 		$oSettings->SetConf('DBHost', $DbHost);
 		
-		$oEavManager = new \Aurora\System\Managers\Eav();
+		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		return $oEavManager->testStorageConnection();
 	}
 	
@@ -1703,7 +1729,7 @@ For instructions, please refer to this section of documentation and our
 	public function GetAuthenticatedAccount($AuthToken)
 	{
 		$oAccount = null;
-		$oEavManager = new \Aurora\System\Managers\Eav();
+		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
 		if (isset($aUserInfo['account']))
 		{
@@ -1832,7 +1858,7 @@ For instructions, please refer to this section of documentation and our
 				if ($oUser && $oUser->Language !== $Language)
 				{
 					$oUser->Language = $Language;
-					$this->oApiUsersManager->updateUser($oUser);
+					$this->getUsersManager()->updateUser($oUser);
 				}
 			}
 			
@@ -2114,7 +2140,7 @@ For instructions, please refer to this section of documentation and our
 				);
 			case 'User':
 				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
-				$aUsersCount = $Limit > 0 ? $this->oApiUsersManager->getUsersCount($Search, $Filters) : count($aUsers);
+				$aUsersCount = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
 				return array(
 					'Items' => $aUsers,
 					'Count' => $aUsersCount,
@@ -2279,7 +2305,7 @@ For instructions, please refer to this section of documentation and our
 				$oChannel->Description = $Description;
 			}
 
-			if ($this->oApiChannelsManager->createChannel($oChannel))
+			if ($this->getChannelsManager()->createChannel($oChannel))
 			{
 				return $oChannel->EntityId;
 			}
@@ -2354,7 +2380,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($ChannelId > 0)
 		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
+			$oChannel = $this->getChannelsManager()->getChannelById($ChannelId);
 			
 			if ($oChannel)
 			{
@@ -2367,7 +2393,7 @@ For instructions, please refer to this section of documentation and our
 					$oChannel->Description = $Description;
 				}
 				
-				return $this->oApiChannelsManager->updateChannel($oChannel);
+				return $this->getChannelsManager()->updateChannel($oChannel);
 			}
 		}
 		else
@@ -2438,11 +2464,11 @@ For instructions, please refer to this section of documentation and our
 
 		if ($ChannelId > 0)
 		{
-			$oChannel = $this->oApiChannelsManager->getChannelById($ChannelId);
+			$oChannel = $this->getChannelsManager()->getChannelById($ChannelId);
 			
 			if ($oChannel)
 			{
-				return $this->oApiChannelsManager->deleteChannel($oChannel);
+				return $this->getChannelsManager()->deleteChannel($oChannel);
 			}
 		}
 		else
@@ -2516,7 +2542,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		$aTenants = $this->oApiTenantsManager->getTenantList();
+		$aTenants = $this->getTenantsManager()->getTenantList();
 		$aItems = array();
 
 		foreach ($aTenants as $oTenat)
@@ -2587,7 +2613,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
-		$iTenantId = $this->oApiTenantsManager->getTenantIdByName((string) $TenantName);
+		$iTenantId = $this->getTenantsManager()->getTenantIdByName((string) $TenantName);
 
 		return $iTenantId ? $iTenantId : null;
 	}
@@ -2739,13 +2765,13 @@ For instructions, please refer to this section of documentation and our
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
 		{
-			$aChannels = $this->oApiChannelsManager->getChannelList(0, 1);
+			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->EntityId : 0;
 		}
 		
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$aTenants = $this->oApiTenantsManager->getTenantsByChannelId($ChannelId);
+			$aTenants = $this->getTenantsManager()->getTenantsByChannelId($ChannelId);
 			if ($oSettings->GetConf('EnableMultiTenant') || is_array($aTenants) && count($aTenants) === 0)
 			{
 				$oTenant = new Classes\Tenant(self::GetName());
@@ -2754,7 +2780,7 @@ For instructions, please refer to this section of documentation and our
 				$oTenant->Description = $Description;
 				$oTenant->IdChannel = $ChannelId;
 
-				if ($this->oApiTenantsManager->createTenant($oTenant))
+				if ($this->getTenantsManager()->createTenant($oTenant))
 				{
 					return $oTenant->EntityId;
 				}
@@ -2834,7 +2860,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if (!empty($TenantId))
 		{
-			$oTenant = $this->oApiTenantsManager->getTenantById($TenantId);
+			$oTenant = $this->getTenantsManager()->getTenantById($TenantId);
 			
 			if ($oTenant)
 			{
@@ -2851,7 +2877,7 @@ For instructions, please refer to this section of documentation and our
 					$oTenant->IdChannel = $ChannelId;
 				}
 				
-				return $this->oApiTenantsManager->updateTenant($oTenant);
+				return $this->getTenantsManager()->updateTenant($oTenant);
 			}
 		}
 		else
@@ -2922,7 +2948,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if (!empty($TenantId))
 		{
-			$oTenant = $this->oApiTenantsManager->getTenantById($TenantId);
+			$oTenant = $this->getTenantsManager()->getTenantById($TenantId);
 			
 			if ($oTenant)
 			{
@@ -2933,7 +2959,7 @@ For instructions, please refer to this section of documentation and our
 					$this->deleteTree($sTenantSpacePath);
 				}
 						
-				return $this->oApiTenantsManager->deleteTenant($oTenant);
+				return $this->getTenantsManager()->deleteTenant($oTenant);
 			}
 		}
 		else
@@ -3013,7 +3039,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
+		$aResults = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
 		$aUsers = array();
 		foreach($aResults as $oUser)
 		{
@@ -3029,14 +3055,14 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetTotalUsersCount()
 	{
-		return $this->oApiUsersManager->getTotalUsersCount();
+		return $this->getUsersManager()->getTotalUsersCount();
 	}
 
 	public function TurnOffSeparateLogs()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		foreach($aResults as $oUser)
 		{
 			$oUser->WriteSeparateLog = false;
@@ -3059,7 +3085,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$aResults = $this->oApiUsersManager->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		$aUsers = array();
 		foreach($aResults as $oUser)
 		{
@@ -3134,13 +3160,13 @@ For instructions, please refer to this section of documentation and our
 		$oSettings =&\Aurora\System\Api::GetSettings();
 		if ($TenantId === 0)
 		{
-			$aTenants = $this->oApiTenantsManager->getTenantList(0, 1, '');
+			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
 		if (!empty($TenantId) && !empty($PublicId))
 		{
-			$oUser = $this->oApiUsersManager->getUserByPublicId($PublicId);
+			$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
 			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 			{
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
@@ -3164,7 +3190,7 @@ For instructions, please refer to this section of documentation and our
 			$oUser->Role = $Role;
 			$oUser->WriteSeparateLog = $WriteSeparateLog;
 
-			if ($this->oApiUsersManager->createUser($oUser))
+			if ($this->getUsersManager()->createUser($oUser))
 			{
 				return $oUser->EntityId;
 			}
@@ -3251,7 +3277,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($UserId > 0)
 		{
-			$oUser = $this->oApiUsersManager->getUser($UserId);
+			$oUser = $this->getUsersManager()->getUser($UserId);
 			
 			if ($oUser)
 			{
@@ -3272,7 +3298,7 @@ For instructions, please refer to this section of documentation and our
 					$oUser->WriteSeparateLog = $WriteSeparateLog;
 				}
 				
-				return $this->oApiUsersManager->updateUser($oUser);
+				return $this->getUsersManager()->updateUser($oUser);
 			}
 		}
 		else
@@ -3289,7 +3315,7 @@ For instructions, please refer to this section of documentation and our
 	public function UpdateTokensValidFromTimestamp($oUser)
 	{
 		$oUser->TokensValidFromTimestamp = time();
-		$this->oApiUsersManager->updateUser($oUser);		
+		$this->getUsersManager()->updateUser($oUser);		
 		return $oUser->TokensValidFromTimestamp;
 	}
 	
@@ -3355,11 +3381,11 @@ For instructions, please refer to this section of documentation and our
 		
 		if (!empty($UserId) && is_int($UserId))
 		{
-			$oUser = $this->oApiUsersManager->getUser($UserId);
+			$oUser = $this->getUsersManager()->getUser($UserId);
 			
 			if ($oUser)
 			{
-				$bResult = $this->oApiUsersManager->deleteUser($oUser);
+				$bResult = $this->getUsersManager()->deleteUser($oUser);
 				$aArgs = array('User' => $oUser);
 				$this->broadcastEvent(
 					self::GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 

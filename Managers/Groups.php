@@ -35,7 +35,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	{
 		parent::__construct($oModule);
 		
-		$this->oEavManager = new \Aurora\System\Managers\Eav();
+		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
 	}
 
 	/**

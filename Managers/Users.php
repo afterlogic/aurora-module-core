@@ -31,7 +31,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	{
 		parent::__construct($oModule);
 		
-		$this->oEavManager = new \Aurora\System\Managers\Eav();
+		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
 	}
 
 	/**
@@ -46,7 +46,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$oUser = false;
 		try
 		{
-			$oUser = $this->oEavManager->getEntity($mUserId, \Aurora\Modules\Core\Module::getNamespace() . '\Classes\User');
+			$oUser = $this->oEavManager->getEntity($mUserId, \Aurora\Modules\Core\Classes\User::class);
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -62,7 +62,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		
 		if ($sUserPublicId)
 		{
-			$aUsers = $this->oEavManager->getEntities(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\User', [], 0, 0, ['PublicId' => [$sUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
+			$aUsers = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\User::class, [], 0, 0, ['PublicId' => [$sUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
 			if (count($aUsers) > 0)
 			{
 				return $aUsers[0];
@@ -88,7 +88,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			}
 		}
 		// TODO: use getEntitiesCount when it will be fixed
-		return count($this->oEavManager->getEntities(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\User',
+		return count($this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\User::class,
 				array('PublicId'),
 				0,
 				0,
@@ -121,7 +121,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			}
 				
 			$aResult = $this->oEavManager->getEntities(
-				\Aurora\Modules\Core\Module::getNamespace() . '\Classes\User',
+				\Aurora\Modules\Core\Classes\User::class,
 				array(
 					'PublicId', 'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
 				),
@@ -172,7 +172,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$iResult = $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Module::getNamespace() . '\Classes\User');
+			$iResult = $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\User::class);
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -190,7 +190,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	{
 		$bResult = false;
 
-		$oResult = $this->oEavManager->getEntity($oUser->EntityId, \Aurora\Modules\Core\Module::getNamespace() . '\Classes\User');
+		$oResult = $this->oEavManager->getEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class);
 		
 		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
 		{
