@@ -1090,7 +1090,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	{
 		$aClientModuleNames = [];
 		$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
-		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
+		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesRootPath();
 		$bIsMobileApplication = \Aurora\System\Api::IsMobileApplication();
 		foreach ($aModuleNames as $sModuleName)
 		{
@@ -1104,7 +1104,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	{
 		$aBackendModuleNames = [];
 		$aModuleNames = \Aurora\System\Api::GetModuleManager()->GetAllowedModulesName();
-		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesPath();
+		$sModulesPath = \Aurora\System\Api::GetModuleManager()->GetModulesRootPath();
 		foreach ($aModuleNames as $sModuleName)
 		{
 			if (!\file_exists($sModulesPath . $sModuleName . '/js/manager.js'))
