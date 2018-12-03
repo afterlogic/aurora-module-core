@@ -326,7 +326,9 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getAuthenticatedUserByIdHelper($iUserId)
 	{
-		$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
+		
+		$oCoreDecorator = \Aurora\System\Api::GetModuleDecorator('Core');
+//		$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
 		$oUser = null;
 		if (0 < $iUserId)
 		{
