@@ -3386,13 +3386,6 @@ For instructions, please refer to this section of documentation and our
 			if ($oUser)
 			{
 				$bResult = $this->getUsersManager()->deleteUser($oUser);
-				$aArgs = array('User' => $oUser);
-				$this->broadcastEvent(
-					self::GetName() . \Aurora\System\Module\AbstractModule::$Delimiter . 'AfterDeleteUser', 
-					$aArgs,
-					$UserId
-				);
-				$oUser->EntityId = $UserId;
 			}
 		}
 		else
