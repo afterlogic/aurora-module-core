@@ -964,6 +964,7 @@ class Integrator extends \Aurora\System\Managers\AbstractManager
 				'Role' => $oUser->Role,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId,
+				'TenantId' => $oUser->IdTenant,
 			);
 		}
 
