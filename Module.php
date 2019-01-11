@@ -531,6 +531,11 @@ For instructions, please refer to this section of documentation and our
 	{
 		@ob_start();
 
+		if (!is_writable(\Aurora\System\Api::DataPath()))
+		{
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::SystemNotConfigured);
+		}
+
 		$aResponseItem = null;
 		$sModule = $this->oHttp->GetPost('Module', null);
 		$sMethod = $this->oHttp->GetPost('Method', null);
@@ -589,6 +594,13 @@ For instructions, please refer to this section of documentation and our
 							$aParameters, 
 							true
 						);
+
+						$oLastException = \Aurora\System\Api::GetModuleManager()->GetLastException();
+						if (isset($oLastException))
+						{
+							throw $oLastException;
+						}
+
 						$aResponseItem = $oModule->DefaultResponse(
 							$sMethod,
 							\Aurora\System\Api::GetModuleManager()->GetResults()
@@ -1839,12 +1851,21 @@ For instructions, please refer to this section of documentation and our
 			'Password' => $Password,
 			'SignMe' => $SignMe
 		);
-		$this->broadcastEvent(
-			'Login', 
-			$aArgs,
-			$mResult
-		);
-		
+
+
+		try
+		{
+			$this->broadcastEvent(
+				'Login', 
+				$aArgs,
+				$mResult
+			);
+		}
+		catch (\Exception $oException)
+		{
+			\Aurora\System\Api::GetModuleManager()->SetLastException($oException);
+		}
+
 		if (is_array($mResult))
 		{
 			$iTime = $SignMe ? 0 : time();
@@ -1853,27 +1874,24 @@ For instructions, please refer to this section of documentation and our
 			//this will store user data in static variable of Api class for later usage
 			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
 			
-			if ($Language !== '')
+			if ($Language !== '' && $oUser && $oUser->Language !== $Language)
 			{
-				if ($oUser && $oUser->Language !== $Language)
-				{
-					$oUser->Language = $Language;
-					$this->getUsersManager()->updateUser($oUser);
-				}
+				$oUser->Language = $Language;
+				$this->getUsersManager()->updateUser($oUser);
 			}
 			
 			\Aurora\System\Api::LogEvent('login-success: ' . $Login, self::GetName());
-			return array(
+			$mResult = [
 				'AuthToken' => $sAuthToken
-			);
+			];
+		}
+		else
+		{
+			\Aurora\System\Api::LogEvent('login-failed: ' . $Login, self::GetName());
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 		}
 
-		\Aurora\System\Api::LogEvent('login-failed: ' . $Login, self::GetName());
-		if (!is_writable(\Aurora\System\Api::DataPath()))
-		{
-			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::SystemNotConfigured);
-		}
-		throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+		return $mResult;
 	}
 
 	/**
