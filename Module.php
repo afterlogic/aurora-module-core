@@ -1888,7 +1888,9 @@ For instructions, please refer to this section of documentation and our
 		else
 		{
 			\Aurora\System\Api::LogEvent('login-failed: ' . $Login, self::GetName());
-			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+			\Aurora\System\Api::GetModuleManager()->SetLastException(
+				new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
+			);
 		}
 
 		return $mResult;
