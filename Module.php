@@ -3198,6 +3198,7 @@ For instructions, please refer to this section of documentation and our
 				{
 					if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod())
 					{
+						\Aurora\System\Api::Log("Error: License limit");
 						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::LicenseLimit);
 					}
 				}
