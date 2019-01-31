@@ -3520,15 +3520,15 @@ For instructions, please refer to this section of documentation and our
 			$sTempName = md5($sUUID.$Content.$FileName);
 			$oApiFileCache = new \Aurora\System\Managers\Filecache();
 
-			if (!$oApiFileCache->isFileExists($sUUID, $sTempName, '', self::GetName()))
+			if (!$oApiFileCache->isFileExists($sUUID, $sTempName))
 			{
-				$oApiFileCache->put($sUUID, $sTempName, $Content, '', self::GetName());
+				$oApiFileCache->put($sUUID, $sTempName, $Content);
 			}
 
-			if ($oApiFileCache->isFileExists($sUUID, $sTempName, '', self::GetName()))
+			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
 			{
 				$mResult = \Aurora\System\Utils::GetClientFileResponse(
-					self::GetName(), $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName, '', self::GetName())
+					self::GetName(), $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName)
 				);
 			}
 		}
