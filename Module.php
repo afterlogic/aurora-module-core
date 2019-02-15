@@ -1403,19 +1403,19 @@ For instructions, please refer to this section of documentation and our
 			$oSettings =&\Aurora\System\Api::GetSettings();
 			if ($DbLogin !== null)
 			{
-				$oSettings->SetConf('DBLogin', $DbLogin);
+				$oSettings->DBLogin = $DbLogin;
 			}
 			if ($DbPassword !== null)
 			{
-				$oSettings->SetConf('DBPassword', $DbPassword);
+				$oSettings->DBPassword = $DbPassword;
 			}
 			if ($DbName !== null)
 			{
-				$oSettings->SetConf('DBName', $DbName);
+				$oSettings->DBName = $DbName;
 			}
 			if ($DbHost !== null)
 			{
-				$oSettings->SetConf('DBHost', $DbHost);
+				$oSettings->DBHost = $DbHost;
 			}
 			if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
 			{
@@ -1427,7 +1427,7 @@ For instructions, please refer to this section of documentation and our
 					$aArgs
 				);
 
-				$oSettings->SetConf('AdminLogin', $AdminLogin);
+				$oSettings->AdminLogin = $AdminLogin;
 			}
 			
 			$sAdminPassword = $oSettings->GetConf('AdminPassword');
@@ -1435,7 +1435,7 @@ For instructions, please refer to this section of documentation and our
 			{
 				if (empty($sAdminPassword) || crypt(trim($Password), \Aurora\System\Api::$sSalt) === $sAdminPassword)
 				{
-					$oSettings->SetConf('AdminPassword', crypt(trim($NewPassword), \Aurora\System\Api::$sSalt));
+					$oSettings->AdminPassword = crypt(trim($NewPassword), \Aurora\System\Api::$sSalt);
 				}
 				else
 				{
@@ -1444,19 +1444,19 @@ For instructions, please refer to this section of documentation and our
 			}
 			if ($AdminLanguage !== null)
 			{
-				$oSettings->SetConf('AdminLanguage', $AdminLanguage);
+				$oSettings->AdminLanguage = $AdminLanguage;
 			}
 			if ($EnableLogging !== null)
 			{
-				$oSettings->SetConf('EnableLogging', $EnableLogging);
+				$oSettings->EnableLogging = $EnableLogging;
 			}
 			if ($EnableEventLogging !== null)
 			{
-				$oSettings->SetConf('EnableEventLogging', $EnableEventLogging);
+				$oSettings->EnableEventLogging = $EnableEventLogging;
 			}
 			if ($LoggingLevel !== null)
 			{
-				$oSettings->SetConf('LoggingLevel', $LoggingLevel);
+				$oSettings->LoggingLevel = $LoggingLevel;
 			}
 			return $oSettings->Save();
 		}
@@ -1489,15 +1489,15 @@ For instructions, please refer to this section of documentation and our
 
 		if ($EnableLogging !== null)
 		{
-			$oSettings->SetConf('EnableLogging', $EnableLogging);
+			$oSettings->EnableLogging = $EnableLogging;
 		}
 		if ($EnableEventLogging !== null)
 		{
-			$oSettings->SetConf('EnableEventLogging', $EnableEventLogging);
+			$oSettings->EnableEventLogging = $EnableEventLogging;
 		}
 		if ($LoggingLevel !== null)
 		{
-			$oSettings->SetConf('LoggingLevel', $LoggingLevel);
+			$oSettings->LoggingLevel = $LoggingLevel;
 		}
 
 		return $oSettings->Save();
@@ -1668,13 +1668,13 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$oSettings =&\Aurora\System\Api::GetSettings();
-		$oSettings->SetConf('DBLogin', $DbLogin);
+		$oSettings->DBLogin = $DbLogin;
 		if ($DbPassword !== null)
 		{
-			$oSettings->SetConf('DBPassword', $DbPassword);
+			$oSettings->DBPassword = $DbPassword;
 		}
-		$oSettings->SetConf('DBName', $DbName);
-		$oSettings->SetConf('DBHost', $DbHost);
+		$oSettings->DBName = $DbName;
+		$oSettings->DBHost = $DbHost;
 		
 		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		return $oEavManager->testStorageConnection();
