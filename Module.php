@@ -1585,7 +1585,7 @@ For instructions, please refer to this section of documentation and our
 			if ($iChannelId !== 0)
 			{
 				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
-				if (is_array($aTenants) && count($aTenants) === 1)
+				if (is_array($aTenants) && count($aTenants) > 1)
 				{
 					$bResult = true;
 				}
