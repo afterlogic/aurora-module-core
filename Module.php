@@ -1568,13 +1568,12 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$bResult = false;
-		$oSettings =& \Aurora\System\Api::GetSettings();
 		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		if ($oEavManager->createTablesFromFile())
 		{
 			$iChannelId = 0;
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
-			if (is_array($aChannels) && count($aChannels) === 1)
+			if (is_array($aChannels) && count($aChannels) > 0)
 			{
 				$iChannelId = $aChannels[0]->EntityId;
 			}
@@ -1585,7 +1584,7 @@ For instructions, please refer to this section of documentation and our
 			if ($iChannelId !== 0)
 			{
 				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
-				if (is_array($aTenants) && count($aTenants) > 1)
+				if (is_array($aTenants) && count($aTenants) > 0)
 				{
 					$bResult = true;
 				}
