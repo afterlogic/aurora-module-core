@@ -21,6 +21,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	protected $oApiChannelsManager = null;
 	
 	protected $oApiUsersManager = null;
+
+	protected $oIntegratorManager = null;
 	
 	public function getTenantsManager()
 	{
@@ -51,6 +53,17 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 		return $this->oApiUsersManager;
 	}
+
+	public function getIntegratorManager()
+	{
+		if ($this->oIntegratorManager === null)
+		{
+			$this->oIntegratorManager = new \Aurora\System\Managers\Integrator();
+		}
+
+		return $this->oIntegratorManager;
+	}
+
 	
 	/***** private functions *****/
 	/**
@@ -541,6 +554,7 @@ For instructions, please refer to this section of documentation and our
 		$sMethod = $this->oHttp->GetPost('Method', null);
 		$sParameters = $this->oHttp->GetPost('Parameters', null);
 		$sFormat = $this->oHttp->GetPost('Format', null);
+		$sTenantName = $this->oHttp->GetPost('TenantName', null);
 
 		if (isset($sModule, $sMethod))
 		{
@@ -569,11 +583,9 @@ For instructions, please refer to this section of documentation and our
 							);
 						}
 						
-						\Aurora\System\Api::setTenantName(
-							$this->oHttp->GetPost('TenantName', '')
-						);
+						\Aurora\System\Api::setTenantName($sTenantName);
 
-						$aParameters = array();
+						$aParameters = [];
 						if (isset($sParameters) && \is_string($sParameters))
 						{
 							$aParameters = @\json_decode($sParameters, true);
@@ -669,7 +681,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function EntryMobile()
 	{
-		$oApiIntegrator = Managers\Integrator::getInstance();
+		$oApiIntegrator = $this->getIntegratorManager();
 		$oApiIntegrator->setMobile(true);
 
 		\Aurora\System\Api::Location('./');
@@ -961,12 +973,8 @@ For instructions, please refer to this section of documentation and our
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
-		$oUser = new Classes\User(self::GetName());
-		$oUser->EntityId = -1;
-		$oUser->Role = \Aurora\System\Enums\UserRole::SuperAdmin;
-		$oUser->PublicId = 'Administrator';
-		
-		return $oUser;
+		return $this->getIntegratorManager()->GetAdminUser();
+
 	}
 	
 	/**
@@ -1059,7 +1067,7 @@ For instructions, please refer to this section of documentation and our
 		
 		$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
 
-		$oApiIntegrator = Managers\Integrator::getInstance();
+		$oApiIntegrator = $this->getIntegratorManager();
 
 		if ($iUserId && $oApiIntegrator)
 		{
@@ -1223,7 +1231,7 @@ For instructions, please refer to this section of documentation and our
 		
 		$oUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		$oApiIntegrator = Managers\Integrator::getInstance();
+		$oApiIntegrator = $this->getIntegratorManager();
 		$iLastErrorCode = $oApiIntegrator->getLastErrorCode();
 		if (0 < $iLastErrorCode)
 		{
@@ -1512,7 +1520,7 @@ For instructions, please refer to this section of documentation and our
 	public function SetMobile($Mobile)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		$oApiIntegrator = Managers\Integrator::getInstance();
+		$oApiIntegrator = $this->getIntegratorManager();
 		return $oApiIntegrator ? $oApiIntegrator->setMobile($Mobile) : false;
 	}	
 	
@@ -1764,7 +1772,7 @@ For instructions, please refer to this section of documentation and our
 			'AuthToken' => $AuthToken,
 			'WithPassword' => $this->getConfig('GetAccountWithPassword')
 		);
-		$aResult = array();
+		$aResult = [];
 		
 		$this->broadcastEvent(
 			'GetAccounts', 
@@ -1773,7 +1781,7 @@ For instructions, please refer to this section of documentation and our
 		);		
 		if (!empty($Type))
 		{
-			$aTempResult = array();
+			$aTempResult = [];
 			foreach ($aResult as $aItem)
 			{
 				if ($aItem['Type'] === $Type)
@@ -1907,7 +1915,9 @@ For instructions, please refer to this section of documentation and our
 		$mResult = false;
 		$bResult = false;
 		$sAuthToken = \Aurora\System\Api::getAuthToken();
-		$aUserInfo = \Aurora\Modules\Core\Managers\Integrator::getInstance()->getAuthenticatedUserInfo($sAuthToken);
+		$oApiIntegrator = $this->getIntegratorManager();
+
+		$aUserInfo = $oApiIntegrator->getAuthenticatedUserInfo($sAuthToken);
 		if (isset($aUserInfo['account']) && isset($aUserInfo['accountType']))
 		{
 			$oAccount = \Aurora\System\Managers\Eav::getInstance()->getEntity($aUserInfo['account'], $aUserInfo['accountType']);
@@ -2563,7 +2573,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$aTenants = $this->getTenantsManager()->getTenantList();
-		$aItems = array();
+		$aItems = [];
 
 		foreach ($aTenants as $oTenat)
 		{
@@ -3060,7 +3070,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$aResults = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
-		$aUsers = array();
+		$aUsers = [array()];
 		foreach($aResults as $oUser)
 		{
 			$aUsers[] = array(
@@ -3106,7 +3116,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
-		$aUsers = array();
+		$aUsers = [];
 		foreach($aResults as $oUser)
 		{
 			$aUsers[] = $oUser->PublicId;
@@ -3569,7 +3579,7 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetCompatibilities()
 	{
-		return array();
+		return [];
 	}
 	/***** public functions might be called with web API *****/
 }

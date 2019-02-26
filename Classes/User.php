@@ -70,10 +70,10 @@ class User extends \Aurora\System\EAV\Entity
 			'LastLoginNow'				=> array('string', ''),
 			'LoginsCount'				=> array('int', 0),
 
-			'Language'					=> array('string', \Aurora\System\Api::GetLanguage(true)),
+			'Language'					=> array('string', /*\Aurora\System\Api::GetLanguage(true)*/''),
 
-			'TimeFormat'				=> array('int', $oModuleManager->getModuleConfigValue('Core', 'TimeFormat')),
-			'DateFormat'				=> array('string', $oModuleManager->getModuleConfigValue('Core', 'DateFormat')),
+			'TimeFormat'				=> array('int', 1/*$oModuleManager->getModuleConfigValue('Core', 'TimeFormat')*/),
+			'DateFormat'				=> array('string', ''/*$oModuleManager->getModuleConfigValue('Core', 'DateFormat')*/),
 
 			'Question1'					=> array('string', ''),
 			'Question2'					=> array('string', ''),
@@ -108,6 +108,12 @@ class User extends \Aurora\System\EAV\Entity
 
 //		$this->SetUpper(array('Capa'));
 	}
+
+
+	public function isAdmin()
+	{
+		return $this->EntityId === -1;
+	}	
 	
 	/**
 	 * @ignore
