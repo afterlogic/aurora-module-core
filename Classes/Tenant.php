@@ -21,6 +21,7 @@ namespace Aurora\Modules\Core\Classes;
  * @property string $Email
  * @property string $PasswordHash
  * @property string $Description
+ * @property string $WebDomain
  * @property int $UserCountLimit
  * @property string $Capa
  * @property int $Expared
@@ -64,6 +65,7 @@ class Tenant extends \Aurora\System\EAV\Entity
 //			'Email'						=> array('string', ''),
 //			'PasswordHash'				=> array('string', ''),
 			'Description'				=> array('string', ''),
+			'WebDomain'					=> array('string', ''),
 			'UserCountLimit'			=> array('int', 0),
 			'Capa'						=> array('string', '', false), //(string) $oSettings->GetConf('TenantGlobalCapa')
 			
@@ -333,7 +335,8 @@ class Tenant extends \Aurora\System\EAV\Entity
 	{
 		return array(
 			'Name' => $this->Name,
-			'Description' => $this->Description
+			'Description' => $this->Description,
+			'WebDomain' => $this->WebDomain
 		);
 	}
 }

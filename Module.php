@@ -1882,6 +1882,12 @@ For instructions, please refer to this section of documentation and our
 			//this will store user data in static variable of Api class for later usage
 			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
 			
+			$oTenant = \Aurora\System\Api::getTenantByWebDomain();
+			if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin && $oTenant && $oUser->IdTenant !== $oTenant->EntityId)
+			{
+				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+			}
+			
 			if ($Language !== '' && $oUser && $oUser->Language !== $Language)
 			{
 				$oUser->Language = $Language;
@@ -2785,10 +2791,11 @@ For instructions, please refer to this section of documentation and our
 	 * @param int $ChannelId Identifier of channel new tenant belongs to.
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
+	 * @param string $WebDomain New tenant web domain.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '')
+	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '', $WebDomain = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -2808,6 +2815,7 @@ For instructions, please refer to this section of documentation and our
 
 				$oTenant->Name = $Name;
 				$oTenant->Description = $Description;
+				$oTenant->WebDomain = $WebDomain;
 				$oTenant->IdChannel = $ChannelId;
 
 				if ($this->getTenantsManager()->createTenant($oTenant))
@@ -2878,13 +2886,14 @@ For instructions, please refer to this section of documentation and our
 	 * Updates tenant.
 	 * 
 	 * @param int $TenantId Identifier of tenant to update.
-	 * @param string $Name New tenant name.
-	 * @param string $Description New tenant description.
-	 * @param int $ChannelId Identifier of the new tenant channel.
+	 * @param string $Name Tenant name.
+	 * @param string $Description Tenant description.
+	 * @param string $WebDomain Tenant web domain.
+	 * @param int $ChannelId Identifier of the tenant channel.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateTenant($TenantId, $Name = '', $Description = '', $ChannelId = 0)
+	public function UpdateTenant($TenantId, $Name = '', $Description = '', $WebDomain = '', $ChannelId = 0)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -2901,6 +2910,10 @@ For instructions, please refer to this section of documentation and our
 				if (!empty($Description))
 				{
 					$oTenant->Description = $Description;
+				}
+				if (!empty($WebDomain))
+				{
+					$oTenant->WebDomain = $WebDomain;
 				}
 				if (!empty($ChannelId))
 				{
