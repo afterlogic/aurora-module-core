@@ -2849,7 +2849,6 @@ For instructions, please refer to this section of documentation and our
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identifier of tenant to update.<br>
-	 * &emsp; **Name** *string* New tenant name.<br>
 	 * &emsp; **Description** *string* New tenant description.<br>
 	 * &emsp; **ChannelId** *int* Identifier of the new tenant channel.<br>
 	 * }
@@ -2858,7 +2857,7 @@ For instructions, please refer to this section of documentation and our
 	 * {
 	 *	Module: 'Core',
 	 *	Method: 'UpdateTenant',
-	 *	Parameters: '{ TenantId: 123, Name: "name_value", Description: "description_value", ChannelId: 123 }'
+	 *	Parameters: '{ TenantId: 123, Description: "description_value", ChannelId: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
@@ -2886,14 +2885,13 @@ For instructions, please refer to this section of documentation and our
 	 * Updates tenant.
 	 * 
 	 * @param int $TenantId Identifier of tenant to update.
-	 * @param string $Name Tenant name.
 	 * @param string $Description Tenant description.
 	 * @param string $WebDomain Tenant web domain.
 	 * @param int $ChannelId Identifier of the tenant channel.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateTenant($TenantId, $Name = '', $Description = '', $WebDomain = '', $ChannelId = 0)
+	public function UpdateTenant($TenantId, $Description = '', $WebDomain = '', $ChannelId = 0)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -2903,10 +2901,6 @@ For instructions, please refer to this section of documentation and our
 			
 			if ($oTenant)
 			{
-				if (!empty($Name))
-				{
-					$oTenant->Name = $Name;
-				}
 				if (!empty($Description))
 				{
 					$oTenant->Description = $Description;
