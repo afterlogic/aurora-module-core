@@ -333,10 +333,17 @@ class Tenant extends \Aurora\System\EAV\Entity
 	
 	public function toResponseArray()
 	{
-		return array(
+		$aResponse = array(
 			'Name' => $this->Name,
 			'Description' => $this->Description,
 			'WebDomain' => $this->WebDomain
 		);
+		$aArgs = ['Tenant' => $this];
+		\Aurora\System\Api::GetModule('Core')->broadcastEvent(
+			'Tenant::ToResponseArray',
+			$aArgs,
+			$aResponse
+		);
+		return $aResponse;
 	}
 }
