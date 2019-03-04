@@ -70,6 +70,10 @@
         "spec",
         "\\Aurora\\System\\Enums\\TimeFormat"
 	],
+    "SiteName": [
+        "Afterlogic Platform",
+        "string"
+    ],
 	"ProductName": [
 		"Unknown",
         "string"

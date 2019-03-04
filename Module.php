@@ -1250,7 +1250,7 @@ For instructions, please refer to this section of documentation and our
 			'ShortLanguage' => \Aurora\System\Utils::ConvertLanguageNameToShort(\Aurora\System\Api::GetLanguage()),
 			'LanguageList' => $oApiIntegrator->getLanguageList(),
 			'LastErrorCode' => $iLastErrorCode,
-			'SiteName' => $oSettings->GetConf('SiteName'),
+			'SiteName' => $this->getConfig('SiteName'),
 			'SocialName' => '',
 			'TenantName' => \Aurora\System\Api::getTenantName(),
 			'EnableMultiTenant' => $oSettings->GetConf('EnableMultiTenant', false),
@@ -1371,6 +1371,7 @@ For instructions, please refer to this section of documentation and our
 	 * @param string $Password Current password for super administrator.
 	 * @param string $NewPassword New password for super administrator.
 	 * @param string $AdminLanguage Language for super administrator.
+	 * @param string $SiteName Site name.
 	 * @param string $Language Language that is used on login and for new users.
 	 * @param bool $AutodetectLanguage Indicates if browser language should be used on login and for new users.
 	 * @param int $TimeFormat Time format that is used for new users.
@@ -1383,7 +1384,7 @@ For instructions, please refer to this section of documentation and our
 	public function UpdateSettings(
 			$DbLogin = null, $DbPassword = null, $DbName = null, $DbHost = null,
 			$AdminLogin = null, $Password = null, $NewPassword = null, $AdminLanguage = null,
-			$Language = null, $AutodetectLanguage = null, $TimeFormat = null, $DateFormat = null,
+			$SiteName = null, $Language = null, $AutodetectLanguage = null, $TimeFormat = null, $DateFormat = null,
 			$EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
@@ -1392,8 +1393,12 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
-			if ($Language !== null || $TimeFormat !== null || $AutodetectLanguage !== null)
+			if ($SiteName !== null || $Language !== null || $TimeFormat !== null || $AutodetectLanguage !== null)
 			{
+				if ($SiteName !== null)
+				{
+					$this->setConfig('SiteName', $SiteName);
+				}
 				if ($AutodetectLanguage !== null)
 				{
 					$this->setConfig('AutodetectLanguage', $AutodetectLanguage);
