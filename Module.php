@@ -2584,14 +2584,16 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$aTenants = $this->getTenantsManager()->getTenantList();
+		$oSettings = $this->GetModuleSettings();
 		$aItems = [];
 
-		foreach ($aTenants as $oTenat)
+		foreach ($aTenants as $oTenant)
 		{
-			$aItems[] = array(
-				'Id' => $oTenat->EntityId,
-				'Name' => $oTenat->Name
-			);
+			$aItems[] = [
+				'Id' => $oTenant->EntityId,
+				'Name' => $oTenant->Name,
+				'SiteName' => $oSettings->GetTenantValue($oTenant->Name, 'SiteName', '')
+			];
 		}
 		
 		return $aItems;
@@ -2896,7 +2898,7 @@ For instructions, please refer to this section of documentation and our
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateTenant($TenantId, $Description = '', $WebDomain = '', $ChannelId = 0)
+	public function UpdateTenant($TenantId, $Description = '', $WebDomain = '', $SiteName = '', $ChannelId = 0)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -2906,6 +2908,12 @@ For instructions, please refer to this section of documentation and our
 			
 			if ($oTenant)
 			{
+				if (!empty($SiteName))
+				{
+					$oSettings = $this->GetModuleSettings();
+					$oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);		
+					$oSettings->SaveTenantSettings($oTenant->Name);
+				}
 				if (!empty($Description))
 				{
 					$oTenant->Description = $Description;
