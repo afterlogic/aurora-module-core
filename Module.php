@@ -2898,27 +2898,26 @@ For instructions, please refer to this section of documentation and our
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateTenant($TenantId, $Description = '', $WebDomain = '', $SiteName = '', $ChannelId = 0)
+	public function UpdateTenant($TenantId, $Description = null, $WebDomain = null, $SiteName = null, $ChannelId = 0)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		if (!empty($TenantId))
 		{
 			$oTenant = $this->getTenantsManager()->getTenantById($TenantId);
-			
 			if ($oTenant)
 			{
-				if (!empty($SiteName))
+				if ($SiteName !== null)
 				{
 					$oSettings = $this->GetModuleSettings();
 					$oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);		
 					$oSettings->SaveTenantSettings($oTenant->Name);
 				}
-				if (!empty($Description))
+				if ($Description !== null)
 				{
 					$oTenant->Description = $Description;
 				}
-				if (!empty($WebDomain))
+				if ($WebDomain !== null)
 				{
 					$oTenant->WebDomain = $WebDomain;
 				}
