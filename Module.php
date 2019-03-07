@@ -1876,6 +1876,7 @@ For instructions, please refer to this section of documentation and our
 		}
 		catch (\Exception $oException)
 		{
+			var_dump($oException);
 			\Aurora\System\Api::GetModuleManager()->SetLastException($oException);
 		}
 
@@ -1887,10 +1888,15 @@ For instructions, please refer to this section of documentation and our
 			//this will store user data in static variable of Api class for later usage
 			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
 			
-			$oTenant = \Aurora\System\Api::getTenantByWebDomain();
-			if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin && $oTenant && $oUser->IdTenant !== $oTenant->EntityId)
+			if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
 			{
-				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+				// If User is super admin don't try to detect tenant. It will try to connect to DB.
+				// Super admin should be able to log in without connecting to DB.
+				$oTenant = \Aurora\System\Api::getTenantByWebDomain();
+				if ($oTenant && $oUser->IdTenant !== $oTenant->EntityId)
+				{
+					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+				}
 			}
 			
 			if ($Language !== '' && $oUser && $oUser->Language !== $Language)
