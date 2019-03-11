@@ -1876,7 +1876,6 @@ For instructions, please refer to this section of documentation and our
 		}
 		catch (\Exception $oException)
 		{
-			var_dump($oException);
 			\Aurora\System\Api::GetModuleManager()->SetLastException($oException);
 		}
 
