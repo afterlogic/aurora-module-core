@@ -2767,6 +2767,8 @@ For instructions, please refer to this section of documentation and our
 	 * &emsp; **ChannelId** *int* Identifier of channel new tenant belongs to.<br>
 	 * &emsp; **Name** *string* New tenant name.<br>
 	 * &emsp; **Description** *string* New tenant description.<br>
+	 * &emsp; **WebDomain** *string* New tenant web domain.<br>
+	 * &emsp; **SiteName** *string* New tenant site name.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
@@ -2804,10 +2806,11 @@ For instructions, please refer to this section of documentation and our
 	 * @param string $Name New tenant name.
 	 * @param string $Description New tenant description.
 	 * @param string $WebDomain New tenant web domain.
+	 * @param string $SiteName Tenant site name.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '', $WebDomain = '')
+	public function CreateTenant($ChannelId = 0, $Name = '', $Description = '', $WebDomain = '', $SiteName = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
@@ -2832,6 +2835,12 @@ For instructions, please refer to this section of documentation and our
 
 				if ($this->getTenantsManager()->createTenant($oTenant))
 				{
+					if ($SiteName !== null)
+					{
+						$oSettings = $this->GetModuleSettings();
+						$oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);		
+						$oSettings->SaveTenantSettings($oTenant->Name);
+					}
 					return $oTenant->EntityId;
 				}
 			}
@@ -2861,7 +2870,9 @@ For instructions, please refer to this section of documentation and our
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **TenantId** *int* Identifier of tenant to update.<br>
-	 * &emsp; **Description** *string* New tenant description.<br>
+	 * &emsp; **Description** *string* Tenant description.<br>
+	 * &emsp; **WebDomain** *string* Tenant web domain.<br>
+	 * &emsp; **SiteName** *string* Tenant site name.<br>
 	 * &emsp; **ChannelId** *int* Identifier of the new tenant channel.<br>
 	 * }
 	 * 
@@ -2899,6 +2910,7 @@ For instructions, please refer to this section of documentation and our
 	 * @param int $TenantId Identifier of tenant to update.
 	 * @param string $Description Tenant description.
 	 * @param string $WebDomain Tenant web domain.
+	 * @param string $SiteName Tenant site name.
 	 * @param int $ChannelId Identifier of the tenant channel.
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
@@ -3211,11 +3223,10 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$oSettings =&\Aurora\System\Api::GetSettings();
-		if ($TenantId === 0)
+		$oTenant = $this->getTenantsManager()->getTenantById($TenantId);
+		if (!$oTenant)
 		{
-			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
-			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
 		}
 		
 		if (!empty($TenantId) && !empty($PublicId))
