@@ -52,69 +52,48 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param int $iOffset Default value is **0**.
-	 * @param int $iLimit Default value is **0**.
-	 * @param string $sOrderBy Default value is **'Name'**.
-	 * @param int $iOrderType Default value is **0**.
-	 * @param string $sSearchDesc Default value is empty string.
-	 *
-	 * @return array|false [Id => [Name, Description]]
+	 * @param int $iOffset Offset of list.
+	 * @param int $iLimit Limit of the list.
+	 * @param string $sSearch Search string.
+	 * @return array|false
 	 */
-	public function getTenantList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '')
+	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '')
 	{
-		$aResult = false;
-		try
-		{
-			$aResult = $this->oEavManager->getEntities(
-				\Aurora\Modules\Core\Classes\Tenant::class,
-				array(
-					'Name', 
-					'Description',
-					'IdChannel'
-				),
-				$iOffset,
-				$iLimit,
-				array(
-					'Name' => array(
-						'%'.$sSearchDesc.'%',
-						'LIKE'
-					)
-				),
-				$sOrderBy,
-				$iOrderType
-			);
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $aResult;
+		$aFilters = [
+			'Name' => ['%' . $sSearch . '%', 'LIKE'],
+		];
+		$sOrderBy = 'Name';
+		$iOrderType = \Aurora\System\Enums\SortOrder::ASC;
+		
+		return $this->oEavManager->getEntities(
+			\Aurora\Modules\Core\Classes\Tenant::class,
+			array(
+				'Name', 
+				'Description',
+				'IdChannel'
+			),
+			$iOffset,
+			$iLimit,
+			$aFilters,
+			$sOrderBy,
+			$iOrderType
+		);
 	}
 
 	/**
-	 * @param string $sSearchDesc Default value is empty string.
-	 *
+	 * @param string $sSearch Search string.
 	 * @return int|false
 	 */
-	public function getTenantCount($sSearchDesc = '')
+	public function getTenantsCount($sSearch = '')
 	{
-		$iResult = false;
-		try
-		{
-			$aResultTenants = $this->oEavManager->getEntitiesCount(
-				\Aurora\Modules\Core\Classes\Tenant::class,
-				array(
-					'Description' => $sSearchDesc
-				)
-			);
-			
-			$iResult = count($aResultTenants);
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $iResult;
+		$aFilters = [
+			'Name' => ['%' . $sSearch . '%', 'LIKE'],
+		];
+		
+		return $this->oEavManager->getEntitiesCount(
+			\Aurora\Modules\Core\Classes\Tenant::class,
+			$aFilters
+		);
 	}
 
 	/**

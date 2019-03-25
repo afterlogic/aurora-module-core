@@ -2174,15 +2174,17 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '', $Filters = [])
 	{
+		// User role is cheked in GetTenantList and GetUserList methods. The lowest user role from both this methods is used here.
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
-		//User role is cheked in  GetTenantList and GetUserList methods. Here we used the lowest user role from both this methods.
+		
 		switch ($Type)
 		{
 			case 'Tenant':
 				$aTenants = $this->GetTenantList($Offset, $Limit, $Search);
+				$iTenantsCount = $Limit > 0 ? $this->getTenantsManager()->getTenantsCount($Search) : count($aTenants);
 				return array(
 					'Items' => $aTenants,
-					'Count' => count($aTenants),
+					'Count' => $iTenantsCount,
 				);
 			case 'User':
 				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
@@ -2575,8 +2577,8 @@ For instructions, please refer to this section of documentation and our
 	 */
 	/**
 	 * Obtains tenant list if super administrator is authenticated.
-	 * @param int $Offset Offset of tenant list.
-	 * @param int $Limit Limit of result tenant list.
+	 * @param int $Offset Offset of the list.
+	 * @param int $Limit Limit of the list.
 	 * @param string $Search Search string.
 	 * @return array {
 	 *		*int* **Id** Tenant identifier
@@ -2588,7 +2590,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		$aTenants = $this->getTenantsManager()->getTenantList();
+		$aTenants = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
 		$oSettings = $this->GetModuleSettings();
 		$aItems = [];
 
@@ -3225,7 +3227,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($TenantId === 0)
 		{
-			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
+			$aTenants = $this->getTenantsManager()->getTenantList(0, 1);
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
