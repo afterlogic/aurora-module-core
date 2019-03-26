@@ -3020,7 +3020,7 @@ For instructions, please refer to this section of documentation and our
 			
 			if ($oTenant)
 			{
-				$sTenantSpacePath = AU_APP_ROOT_PATH.'tenants/'.$oTenant->Name;
+				$sTenantSpacePath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
 				
 				if (@is_dir($sTenantSpacePath))
 				{
