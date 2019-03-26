@@ -2822,7 +2822,7 @@ For instructions, please refer to this section of documentation and our
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->EntityId : 0;
 		}
-		
+		$Name = \Aurora\System\Utils::getSanitizedFilename($Name);
 		if ($Name !== '' && $ChannelId > 0)
 		{
 			$aTenants = $this->getTenantsManager()->getTenantsByChannelId($ChannelId);
