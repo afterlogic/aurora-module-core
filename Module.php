@@ -247,7 +247,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$oSettings =& \Aurora\System\Api::GetSettings();
 		
-		$aCompatibility['settings.file'] = $oSettings ? $oSettings->GetConfigPath() : '';
+		$aCompatibility['settings.file'] = $oSettings ? $oSettings->GetPath() : '';
 		
 		$aCompatibility['settings.file.exist'] = (int) @file_exists($aCompatibility['settings.file']);
 		$aCompatibility['settings.file.read'] = (int) @is_readable($aCompatibility['settings.file']);
@@ -1254,7 +1254,7 @@ For instructions, please refer to this section of documentation and our
 			'SocialName' => '',
 			'TenantName' => \Aurora\System\Api::getTenantName(),
 			'EnableMultiTenant' => $oSettings->GetConf('EnableMultiTenant', false),
-			'TimeFormat' => $oUser ? $oUser->TimeFormat : $this->getConfig('TimeFormat'),
+			'TimeFormat' => $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) && 
 				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
@@ -1292,6 +1292,7 @@ For instructions, please refer to this section of documentation and our
 			{
 				$aSettings['DateFormat'] = $oUser->DateFormat;
 			}
+			$aSettings['TimeFormat'] = $oUser->TimeFormat;
 			$aSettings['Timezone'] = $oUser->DefaultTimeZone;
 		}
 		
