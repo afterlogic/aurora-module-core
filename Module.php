@@ -3265,6 +3265,10 @@ For instructions, please refer to this section of documentation and our
 			$oUser->Role = $Role;
 			$oUser->WriteSeparateLog = $WriteSeparateLog;
 
+			$oUser->Language = \Aurora\System\Api::GetLanguage(true);
+			$oUser->TimeFormat = \Aurora\Modules\Core\Module::getInstance()->getConfig('TimeFormat');
+			$oUser->DateFormat = \Aurora\Modules\Core\Module::getInstance()->getConfig('DateFormat');
+
 			if ($this->getUsersManager()->createUser($oUser))
 			{
 				return $oUser->EntityId;

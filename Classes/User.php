@@ -70,9 +70,9 @@ class User extends \Aurora\System\EAV\Entity
 			'LastLoginNow'				=> array('string', ''),
 			'LoginsCount'				=> array('int', 0),
 
-			'Language'					=> array('string', /*\Aurora\System\Api::GetLanguage(true)*/''),
+			'Language'					=> array('string', ''),
 
-			'TimeFormat'				=> array('int', 1/*$oModuleManager->getModuleConfigValue('Core', 'TimeFormat')*/),
+			'TimeFormat'				=> array('int', 1 /*$oModuleManager->getModuleConfigValue('Core', 'TimeFormat')*/),
 			'DateFormat'				=> array('string', ''/*$oModuleManager->getModuleConfigValue('Core', 'DateFormat')*/),
 
 			'Question1'					=> array('string', ''),
