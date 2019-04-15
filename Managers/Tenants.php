@@ -57,12 +57,11 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 * @param string $sSearch Search string.
 	 * @return array|false
 	 */
-	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '')
+	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '', $sOrderBy = 'Name')
 	{
 		$aFilters = [
 			'Name' => ['%' . $sSearch . '%', 'LIKE'],
 		];
-		$sOrderBy = 'Name';
 		$iOrderType = \Aurora\System\Enums\SortOrder::ASC;
 		
 		return $this->oEavManager->getEntities(

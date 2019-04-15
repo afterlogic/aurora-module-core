@@ -3228,7 +3228,7 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($TenantId === 0)
 		{
-			$aTenants = $this->getTenantsManager()->getTenantList(0, 1);
+			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '', '');
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
