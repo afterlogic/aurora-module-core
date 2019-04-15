@@ -3021,13 +3021,21 @@ For instructions, please refer to this section of documentation and our
 			
 			if ($oTenant)
 			{
+				// Tenant users should be deleted here in case if other modules (MailDomains for example) are turned off.
+				$aUsers = \Aurora\Modules\Core\Module::Decorator()->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['IdTenant' => $oTenant->EntityId]);
+				foreach ($aUsers as $oUser)
+				{
+					\Aurora\Modules\Core\Module::Decorator()->DeleteUser($oUser->EntityId);
+				}
+
+				// Delete tenant config files.
 				$sTenantSpacePath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
-				
 				if (@is_dir($sTenantSpacePath))
 				{
 					$this->deleteTree($sTenantSpacePath);
 				}
-						
+				
+				// Delete tenant itself.
 				return $this->getTenantsManager()->deleteTenant($oTenant);
 			}
 		}
