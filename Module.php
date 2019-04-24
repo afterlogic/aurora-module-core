@@ -706,7 +706,13 @@ For instructions, please refer to this section of documentation and our
 					
 					if (is_array($aResult) && isset($aResult['AuthToken']))
 					{
-						@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, $aResult['AuthToken'], \strtotime('+30 days'), \Aurora\System\Api::getCookiePath());
+						$iAuthTokenCookieExpireTime = (int) \Aurora\Modules\Core\Module::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+						@\setcookie(
+							\Aurora\System\Application::AUTH_TOKEN_KEY, 
+							$aResult['AuthToken'], 
+							\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'), 
+							\Aurora\System\Api::getCookiePath()
+						);
 					}
 				}
 			}
@@ -749,7 +755,13 @@ For instructions, please refer to this section of documentation and our
 			$aResult = self::Decorator()->Login($sLogin, $sPassword);
 			if (is_array($aResult) && isset($aResult['AuthToken']))
 			{
-				@\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, $aResult['AuthToken'], \strtotime('+30 days'), \Aurora\System\Api::getCookiePath());
+				$iAuthTokenCookieExpireTime = (int) \Aurora\Modules\Core\Module::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+				@\setcookie(
+					\Aurora\System\Application::AUTH_TOKEN_KEY, 
+					$aResult['AuthToken'], 
+					\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'), 
+					\Aurora\System\Api::getCookiePath()
+				);
 			}
 
 			\Aurora\System\Api::Location('./');
@@ -1263,6 +1275,7 @@ For instructions, please refer to this section of documentation and our
 			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
 			'PasswordMustBeComplex' => $oSettings->GetConf('PasswordMustBeComplex', false),
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
+			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
 		);
 		
 		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)

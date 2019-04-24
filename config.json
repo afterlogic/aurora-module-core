@@ -77,5 +77,9 @@
 	"ProductName": [
 		"Unknown",
         "string"
+	],
+	"AuthTokenCookieExpireTime": [
+		30,
+		"int"
 	]
 }
