@@ -12,8 +12,6 @@ namespace Aurora\Modules\Core\Managers;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2019, Afterlogic Corp.
  *
- * CApiChannelsManager class summary
- *
  * @package Channels
  */
 class Channels extends \Aurora\System\Managers\AbstractManager
