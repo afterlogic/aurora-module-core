@@ -94,7 +94,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 				['CreateAccount', [$this, 'onCreateAccount'], 100],
 				['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
 				['AdminPanelWebclient::GetEntityList::before', [$this, 'onBeforeGetEntityList']],
-				['ChangePassword::after', [$this, 'onAfterChangePassword']]
+				['ChangePassword::after', [$this, 'onAfterChangePassword']],
+				['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100]
 			]
 		);
 
@@ -434,6 +435,12 @@ For instructions, please refer to this section of documentation and our
 		}
 	}
 
+	public function onBeforeRunEntry($aArgs, &$mResult)
+	{
+		$this->redirectToHttps();
+		\Aurora\Api::removeOldLogs();
+	}
+
 	/**
 	 * Recursively deletes temporary files and folders on time.
 	 * 
@@ -516,6 +523,23 @@ For instructions, please refer to this section of documentation and our
 		}
 		return $bResult;
 	}
+
+	protected function redirectToHttps()
+	{
+		$oSettings =& \Aurora\Api::GetSettings();
+		if ($oSettings)
+		{
+			$bRedirectToHttps = $oSettings->RedirectToHttps;
+
+			$bHttps = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== "off") || 
+					(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == "443"));
+			if ($bRedirectToHttps && !$bHttps) 
+			{
+				\header("Location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+			}
+		}
+	}
+
 	/***** private functions *****/
 	
 	/***** static functions *****/
@@ -774,8 +798,8 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 
-		$sRawKey = \Aurora\System\Application::GetPathItemByIndex(1, '');
-		$sAction = \Aurora\System\Application::GetPathItemByIndex(2, '');
+		$sRawKey = \Aurora\System\Router::getItemByIndex(1, '');
+		$sAction = \Aurora\System\Router::getItemByIndex(2, '');
 		$aValues = \Aurora\System\Api::DecodeKeyValues($sRawKey);
 		
 		$bDownload = true;
@@ -818,7 +842,6 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 	}
-	
 	
 	public function IsModuleExists($Module)
 	{
