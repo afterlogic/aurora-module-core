@@ -3632,7 +3632,7 @@ For instructions, please refer to this section of documentation and our
 			if ($oApiFileCache->isFileExists($sUUID, $sTempName))
 			{
 				$mResult = \Aurora\System\Utils::GetClientFileResponse(
-					self::GetName(), $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName)
+					null, $UserId, $FileName, $sTempName, $oApiFileCache->fileSize($sUUID, $sTempName)
 				);
 			}
 		}
