@@ -115,6 +115,11 @@ class User extends \Aurora\System\EAV\Entity
 		return $this->EntityId === -1;
 	}	
 	
+	public function isNormalOrTenant()
+	{
+		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
+	}	
+	
 	/**
 	 * @ignore
 	 * @todo not used

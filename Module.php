@@ -422,7 +422,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
 			if ($oUser instanceof \Aurora\Modules\Core\Classes\User &&
-				(($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oUser->EntityId === $mResult->IdUser) ||
+				(($oUser->isNormalOrTenant() && $oUser->EntityId === $mResult->IdUser) ||
 				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 			)
 			{
@@ -1324,7 +1324,7 @@ For instructions, please refer to this section of documentation and our
 			));
 		}
 		
-		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+		if (!empty($oUser) && $oUser->isNormalOrTenant())
 		{
 			if ($oUser->DateFormat !== '')
 			{
@@ -1513,7 +1513,7 @@ For instructions, please refer to this section of documentation and our
 			return $oSettings->Save();
 		}
 		
-		if ($oUser->Role === \Aurora\System\Enums\UserRole::NormalUser)
+		if ($oUser->isNormalOrTenant())
 		{
 			if ($Language !== null)
 			{
