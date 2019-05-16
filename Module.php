@@ -2624,19 +2624,25 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetTenantList($Offset = 0, $Limit = 0, $Search = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		$bTenant = $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
 		
 		$aTenants = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
 		$oSettings = $this->GetModuleSettings();
 		$aItems = [];
-
+		
 		foreach ($aTenants as $oTenant)
 		{
-			$aItems[] = [
-				'Id' => $oTenant->EntityId,
-				'Name' => $oTenant->Name,
-				'SiteName' => $oSettings->GetTenantValue($oTenant->Name, 'SiteName', '')
-			];
+			if (!$bTenant || $oTenant->EntityId === $oAuthenticatedUser->IdTenant)
+			{
+				$aItems[] = [
+					'Id' => $oTenant->EntityId,
+					'Name' => $oTenant->Name,
+					'SiteName' => $oSettings->GetTenantValue($oTenant->Name, 'SiteName', '')
+				];
+			}
 		}
 		
 		return $aItems;
@@ -2955,7 +2961,15 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function UpdateTenant($TenantId, $Description = null, $WebDomain = null, $SiteName = null, $ChannelId = 0)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
 		
 		if (!empty($TenantId))
 		{
@@ -3497,7 +3511,19 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function DeleteUser($UserId = 0)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		
+		$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
+		$oUser = $oCoreDecorator ? $oCoreDecorator->GetUser($UserId) : null;
+		
+		if ($oUser instanceof \Aurora\Modules\Core\Classes\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
 		
 		$bResult = false;
 		
