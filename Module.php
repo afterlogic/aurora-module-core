@@ -695,11 +695,8 @@ For instructions, please refer to this section of documentation and our
 		{
 			unset($aResponseItem['Parameters']);
 		}
-		if ($sFormat !== 'Raw')
-		{
-			@header('Content-Type: application/json; charset=utf-8');
-		}
-		return \MailSo\Base\Utils::Php2js($aResponseItem, \Aurora\System\Api::SystemLogger());		
+
+		return \Aurora\System\Managers\Response::GetJsonFromObject($sFormat, $aResponseItem);
 	}
 		
 	/**
