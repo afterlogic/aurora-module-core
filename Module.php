@@ -3005,6 +3005,28 @@ For instructions, please refer to this section of documentation and our
 
 		return false;
 	}
+
+	/**
+	 * Updates tenant.
+	 *
+	 * @param Classes\Tenant $oTenant
+	 * @return void
+	 */
+	public function UpdateTenantObject($oTenant)
+	{
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oTenant->EntityId)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
+		
+		return $this->getTenantsManager()->updateTenant($oTenant);
+	}
+
 	
 	/**
 	 * @api {post} ?/Api/ DeleteTenant
