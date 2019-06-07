@@ -3575,7 +3575,7 @@ For instructions, please refer to this section of documentation and our
 		$aData['LogFileName'] = $sFileName;
 		$aData['LogSizeBytes'] = file_exists($sFilePath) ? filesize($sFilePath) : 0;
 
-		$sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Api::$sEventLogPrefix);
+		$sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Logger::$sEventLogPrefix);
 		$sEventFilePath = \Aurora\System\Api::GetLogFileDir() . $sEventFileName;
 		$aData['EventLogFileName'] = $sEventFileName;
 		$aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
@@ -3587,7 +3587,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
 		if ($PublicId !== '')
 		{
 			$sLogFilePrefix = $PublicId . '-';
@@ -3621,7 +3621,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
 		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 		
 		$logData = '';
@@ -3645,7 +3645,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		$sLogFilePrefix = $EventsLog ? \Aurora\System\Api::$sEventLogPrefix : '';
+		$sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
 		$sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
 		
 		return \Aurora\System\Api::ClearLog($sFileName);
