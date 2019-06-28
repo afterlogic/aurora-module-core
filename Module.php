@@ -593,7 +593,7 @@ For instructions, please refer to this section of documentation and our
 					
 					$bIsEmptyAuthToken = !\Aurora\System\Api::getAuthTokenFromHeaders();
 
-					if ($this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateCsrfToken() && !$bIsEmptyAuthToken) 
+					if ($this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) 
 					{
 						throw new \Aurora\System\Exceptions\ApiException(
 							\Aurora\System\Notifications::InvalidToken
