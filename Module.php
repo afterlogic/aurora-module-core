@@ -2138,6 +2138,11 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		\Aurora\System\Api::LogEvent('logout', self::GetName());
+
+		\Aurora\System\Api::UserSession()->Delete(
+			\Aurora\System\Api::getAuthToken()
+		);
+
 		
 		return true;
 	}
