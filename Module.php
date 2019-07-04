@@ -1308,6 +1308,7 @@ For instructions, please refer to this section of documentation and our
 				'DBHost' => $oSettings->GetConf('DBHost'),
 				'DBName' => $oSettings->GetConf('DBName'),
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
+				'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
 				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
