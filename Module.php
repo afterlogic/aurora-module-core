@@ -734,7 +734,7 @@ For instructions, please refer to this section of documentation and our
 							\Aurora\System\Application::AUTH_TOKEN_KEY, 
 							$aResult['AuthToken'], 
 							\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'), 
-							\Aurora\System\Api::getCookiePath()
+							\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure()
 						);
 					}
 				}
@@ -783,7 +783,7 @@ For instructions, please refer to this section of documentation and our
 					\Aurora\System\Application::AUTH_TOKEN_KEY, 
 					$aResult['AuthToken'], 
 					\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'), 
-					\Aurora\System\Api::getCookiePath()
+					\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure()
 				);
 			}
 
@@ -1297,6 +1297,7 @@ For instructions, please refer to this section of documentation and our
 			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
 			'PasswordMustBeComplex' => $oSettings->GetConf('PasswordMustBeComplex', false),
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
+			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
 		);
 		
