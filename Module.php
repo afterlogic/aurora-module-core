@@ -18,42 +18,42 @@ namespace Aurora\Modules\Core;
  */
 class Module extends \Aurora\System\Module\AbstractModule
 {
-	protected $oApiTenantsManager = null;
+	protected $oTenantsManager = null;
 	
-	protected $oApiChannelsManager = null;
+	protected $oChannelsManager = null;
 	
-	protected $oApiUsersManager = null;
+	protected $oUsersManager = null;
 
 	protected $oIntegratorManager = null;
 	
 	public function getTenantsManager()
 	{
-		if ($this->oApiTenantsManager === null)
+		if ($this->oTenantsManager === null)
 		{
-			$this->oApiTenantsManager = new Managers\Tenants($this);
+			$this->oTenantsManager = new Managers\Tenants($this);
 		}
 
-		return $this->oApiTenantsManager;
+		return $this->oTenantsManager;
 	}
 
 	public function getChannelsManager()
 	{
-		if ($this->oApiChannelsManager === null)
+		if ($this->oChannelsManager === null)
 		{
-			$this->oApiChannelsManager = new Managers\Channels($this);
+			$this->oChannelsManager = new Managers\Channels($this);
 		}
 
-		return $this->oApiChannelsManager;
+		return $this->oChannelsManager;
 	}
 
 	public function getUsersManager()
 	{
-		if ($this->oApiUsersManager === null)
+		if ($this->oUsersManager === null)
 		{
-			$this->oApiUsersManager = new Managers\Users($this);
+			$this->oUsersManager = new Managers\Users($this);
 		}
 
-		return $this->oApiUsersManager;
+		return $this->oUsersManager;
 	}
 
 	public function getIntegratorManager()
@@ -93,7 +93,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 			[
 				['CreateAccount', [$this, 'onCreateAccount'], 100],
 				['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
-				['AdminPanelWebclient::GetEntityList::before', [$this, 'onBeforeGetEntityList']],
 				['ChangePassword::after', [$this, 'onAfterChangePassword']],
 				['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100]
 			]
@@ -104,9 +103,12 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'GetUserByUUID',
 			'GetUserByPublicId',
 			'GetAdminUser',
-			'GetTenantById',
+			'GetTenantUnchecked',
+			'GetTenantName',
+			'GetTenantIdByName',
 			'GetDefaultGlobalTenant',
-			'GetUser',
+			'UpdateTenantObject',
+			'GetUserUnchecked',
 			'UpdateTokensValidFromTimestamp'
 		]);
 	}
@@ -426,7 +428,7 @@ For instructions, please refer to this section of documentation and our
 				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 			)
 			{
-				$oUser = $this->GetUser($mResult->IdUser);
+				$oUser = self::Decorator()->GetUserUnchecked($mResult->IdUser);
 				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
 				{
 					$this->UpdateTokensValidFromTimestamp($oUser);
@@ -729,7 +731,7 @@ For instructions, please refer to this section of documentation and our
 					
 					if (is_array($aResult) && isset($aResult['AuthToken']))
 					{
-						$iAuthTokenCookieExpireTime = (int) \Aurora\Modules\Core\Module::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+						$iAuthTokenCookieExpireTime = (int) self::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
 						@\setcookie(
 							\Aurora\System\Application::AUTH_TOKEN_KEY, 
 							$aResult['AuthToken'], 
@@ -778,7 +780,7 @@ For instructions, please refer to this section of documentation and our
 			$aResult = self::Decorator()->Login($sLogin, $sPassword);
 			if (is_array($aResult) && isset($aResult['AuthToken']))
 			{
-				$iAuthTokenCookieExpireTime = (int) \Aurora\Modules\Core\Module::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+				$iAuthTokenCookieExpireTime = (int) self::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
 				@\setcookie(
 					\Aurora\System\Application::AUTH_TOKEN_KEY, 
 					$aResult['AuthToken'], 
@@ -890,6 +892,9 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Updates user by object.
 	 * 
 	 * @param \Aurora\Modules\Core\Classes\User $oUser
@@ -897,73 +902,25 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function UpdateUserObject($oUser)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 		
 		return $this->getUsersManager()->updateUser($oUser);
 	}
 	
 	/**
-	 * @api {post} ?/Api/ GetUser
-	 * @apiName GetUser
-	 * @apiGroup Core
-	 * @apiDescription Returns user data.
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
 	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetUser} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **UserId** *string* User identifer.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUser',
-	 *	Parameters: '{ "UserId": "17" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: "Core",
-	 *	Method: "GetUser",
-	 *	Result: {
-	 *		"@Object": "Object/User",
-     *		"Name": "",
-     *		"PublicId": "mail@domain.com",
-     *		"Role": 2,
-     *		"WriteSeparateLog": false
-	 *	}
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetUser',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
 	 * Returns user object.
 	 * 
 	 * @param int|string $UserId User identifier or UUID.
 	 * @return \Aurora\Modules\Core\Classes\User
 	 */
-	public function GetUser($UserId = '')
+	public function GetUserUnchecked($UserId = '')
 	{
-		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserUnchecked function
+		
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 		
 		$oUser = $this->getUsersManager()->getUser($UserId);
 		
@@ -971,6 +928,9 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Returns user object.
 	 * 
 	 * @param int $UUID User uuid identifier.
@@ -978,7 +938,9 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUserByUUID($UUID)
 	{
-		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUser function
+		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserUnchecked function
+		
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 		
 		$oUser = $this->getUsersManager()->getUser($UUID);
 		
@@ -986,6 +948,9 @@ For instructions, please refer to this section of documentation and our
 	}	
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Returns user object.
 	 * 
 	 * @param string $PublicId User public identifier.
@@ -993,12 +958,17 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
 		$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
 		
 		return $oUser ? $oUser : null;
 	}	
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Creates and returns user with super administrator role.
 	 * 
 	 * @return \Aurora\Modules\Core\Classes\User
@@ -1007,37 +977,146 @@ For instructions, please refer to this section of documentation and our
 	{
 		// doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
 		
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
 		return $this->getIntegratorManager()->GetAdminUser();
 
 	}
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Returns tenant object by identifier.
 	 * 
-	 * @param int $iIdTenant Tenane id.
-	 * @return \Aurora\Modules\Core\Classes\Tenant
+	 * @param int $Id Tenant identifier.
+	 * @return \Aurora\Modules\Core\Classes\Tenant|null
 	 */
-	public function GetTenantById($iIdTenant)
+	public function GetTenantUnchecked($Id)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 		
-		$oTenant = $this->getTenantsManager()->getTenantById($iIdTenant);
+		$oTenant = $this->getTenantsManager()->getTenantById($Id);
 
 		return $oTenant ? $oTenant : null;
 	}
 	
 	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
+	 * Returns tenant identifier by tenant name.
+	 * 
+	 * @param string $TenantName Tenant name.
+	 * @return int|null
+	 */
+	public function GetTenantIdByName($TenantName = '')
+	{
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
+		$iTenantId = $this->getTenantsManager()->getTenantIdByName((string) $TenantName);
+
+		return $iTenantId ? $iTenantId : null;
+	}
+	
+	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
+	 * Returns current tenant name.
+	 * 
+	 * @return string
+	 */
+	public function GetTenantName()
+	{
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
+		$sTenant = '';
+		$sAuthToken = \Aurora\System\Api::getAuthToken();
+		if (!empty($sAuthToken))
+		{
+			$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
+			if ($iUserId !== false && $iUserId > 0)
+			{
+				$oUser = self::Decorator()->GetUserUnchecked($iUserId);
+				if ($oUser)
+				{
+					$oTenant = self::Decorator()->GetTenantUnchecked($oUser->IdTenant);
+					if ($oTenant)
+					{
+						$sTenant = $oTenant->Name;
+					}
+				}
+			}
+			$sPostTenant = $this->oHttp->GetPost('TenantName', '');
+			if (!empty($sPostTenant) && !empty($sTenant) && $sPostTenant !== $sTenant)
+			{
+				$sTenant = '';
+			}
+		}
+		else
+		{
+			$sTenant = $this->oHttp->GetRequest('tenant', '');
+		}
+		\Aurora\System\Api::setTenantName($sTenant);
+		return $sTenant;
+	}
+	
+	/**
+	 * @deprecated since version 8.3.7
+	 */
+	public function GetTenantById($Id)
+	{
+		return self::Decorator()->GetTenant($Id);
+	}
+	
+	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
 	 * Returns default global tenant.
 	 * 
 	 * @return \Aurora\Modules\Core\Classes\Tenant
 	 */
 	public function GetDefaultGlobalTenant()
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
 		$oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
 
 		return $oTenant ? $oTenant : null;
+	}
+	
+	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
+	 * Updates tenant.
+	 *
+	 * @param Classes\Tenant $oTenant
+	 * @return void
+	 */
+	public function UpdateTenantObject($oTenant)
+	{
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
+		return $this->getTenantsManager()->updateTenant($oTenant);
+	}
+	
+	/**
+	 * !Not public
+	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
+	 * 
+	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @return int
+	 */
+	public function UpdateTokensValidFromTimestamp($oUser)
+	{
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+		
+		$oUser->TokensValidFromTimestamp = time();
+		$this->getUsersManager()->updateUser($oUser);		
+		return $oUser->TokensValidFromTimestamp;
 	}
 	/***** public functions *****/
 	
@@ -1610,7 +1689,7 @@ For instructions, please refer to this section of documentation and our
 	 * }
 	 */
 	/**
-	 * Creates tables reqired for module work. Creates first channel and tenant if it is necessary.
+	 * Creates tables required for module work. Creates first channel and tenant if it is necessary.
 	 * 
 	 * @return bool
 	 */
@@ -1630,7 +1709,7 @@ For instructions, please refer to this section of documentation and our
 			}
 			else
 			{
-				$iChannelId = $this->CreateChannel('Default', '');
+				$iChannelId = self::Decorator()->CreateChannel('Default', '');
 			}
 			if ($iChannelId !== 0)
 			{
@@ -1641,7 +1720,7 @@ For instructions, please refer to this section of documentation and our
 				}
 				else
 				{
-					$mTenantId = $this->CreateTenant($iChannelId, 'Default');
+					$mTenantId = self::Decorator()->CreateTenant($iChannelId, 'Default');
 					if (is_int($mTenantId))
 					{
 						$bResult = true;
@@ -1650,6 +1729,26 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 		
+		return $bResult;
+	}
+	
+	/**
+	 * Updates config files.
+	 * @return boolean
+	 */
+	public function UpdateConfig()
+	{
+		$bResult = true;
+		try
+		{
+			\Aurora\System\Api::Init();
+			\Aurora\System\Api::GetModuleManager()->SyncModulesConfigs();
+		}
+		catch (Exception $e)
+		{
+			$bResult = false;
+		}
+
 		return $bResult;
 	}
 	
@@ -1729,68 +1828,16 @@ For instructions, please refer to this section of documentation and our
 		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		return $oEavManager->testStorageConnection();
 	}
-	
+
 	/**
-	 * @api {post} ?/Api/ GetAuthenticatedAccount
-	 * @apiName GetAuthenticatedAccount
-	 * @apiGroup Core
-	 * @apiDescription Returns account which user authenticated with.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetAuthenticatedAccount} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **AuthToken** *string* Current Authentication token.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetAuthenticatedAccount',
-	 *	Parameters: '{ "AuthToken": "32b2ecd4a4016fedc4abee880425b6b8" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: "Core",
-	 *	Method: "GetAuthenticatedAccount",
-	 *	Result: {
-	 *		"@Object": "Object/Aurora\Modules\Mail\Classes\Account",
-     *		"EntityId": 55,
-     *		"UUID": "2cef5179-84ff-4f3d-a160-59254b6eee9c",
-     *		"IsDisabled": false,
-     *		"IdUser": 53,
-     *		"UseToAuthorize": true,
-	 *		...
-	 *	}
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetAuthenticatedAccount',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
+	 * Obtains authenticated account.
 	 * 
 	 * @param string $AuthToken
 	 */
 	public function GetAuthenticatedAccount($AuthToken)
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		
 		$oAccount = null;
 		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
@@ -1803,14 +1850,16 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
+	 * Obtains all accounts from all modules for authenticated user.
 	 * 
 	 * @param string $AuthToken
 	 * @param string $Type
-	 * 
 	 * @return array
 	 */
 	public function GetAccounts($AuthToken, $Type = '')
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		
 		$aArgs = array (
 			'AuthToken' => $AuthToken,
 			'WithPassword' => $this->getConfig('GetAccountWithPassword')
@@ -2150,229 +2199,35 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
-	 * @api {post} ?/Api/ GetEntityList
-	 * @apiName GetEntityList
-	 * @apiGroup Core
-	 * @apiDescription Returns entity list.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetEntityList} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **Type** *string* Entities type.<br>
-	 * &emsp; **Offset** *int* Offset of entity list.<br>
-	 * &emsp; **Limit** *int* Limit of result entity list.<br>
-	 * &emsp; **Search** *string* Search string.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntityList',
-	 *	Parameters: '{ Type: "Tenant" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Object with array of entities and its count in case of success, otherwise **false**.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntityList',
-	 *	Result: {
-	 *				Items: [
-	 *					{ Id: 123, UUID: "", PublicId: "PublicId_value123" },
-	 *					{ Id: 124, UUID: "", PublicId: "PublicId_value124" }
-	 *				],
-	 *				Count: 2
-	 *			}
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntityList',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
+	 * @deprecated since version 8.3.7
 	 */
-	/**
-	 * Returns entity list.
-	 * 
-	 * @param string $Type Entities type.
-	 * @param int $Offset Offset of entity list.
-	 * @param int $Limit Limit of result entity list.
-	 * @param string $Search Search string.
-	 * @param array $Filters Filters.
-	 * @return array|null
-	 */
-	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '', $Filters = [])
+	public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '', $TenantId = 0, $Filters = [])
 	{
-		// User role is cheked in GetTenantList and GetUserList methods. The lowest user role from both this methods is used here.
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
-		
 		switch ($Type)
 		{
 			case 'Tenant':
-				$aTenants = $this->GetTenantList($Offset, $Limit, $Search);
-				$iTenantsCount = $Limit > 0 ? $this->getTenantsManager()->getTenantsCount($Search) : count($aTenants);
-				return array(
-					'Items' => $aTenants,
-					'Count' => $iTenantsCount,
-				);
+				return self::Decorator()->GetTenants($Offset, $Limit, $Search);
 			case 'User':
-				$aUsers = $this->GetUserList($Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
-				$aUsersCount = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
-				return array(
-					'Items' => $aUsers,
-					'Count' => $aUsersCount,
-				);
+				return self::Decorator()->GetUsers($TenantId, $Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
 		}
 		return null;
 	}
 	
-	public function onBeforeGetEntityList(&$aArgs, &$mResult)
-	{
-		if ($aArgs['Type'] === 'User' && isset($aArgs['TenantId']) && $aArgs['TenantId'] !== 0)
-		{
-			if (isset($aArgs['Filters']) && is_array($aArgs['Filters']) && count($aArgs['Filters']) > 0)
-			{
-				$aArgs['Filters']['IdTenant'] = [$aArgs['TenantId'], '='];
-				$aArgs['Filters'] = [
-					'$AND' => $aArgs['Filters']
-				];
-			}
-			else
-			{
-				$aArgs['Filters'] = ['IdTenant' => [$aArgs['TenantId'], '=']];
-			}
-		}
-	}
-
 	/**
-	 * @api {post} ?/Api/ GetEntity
-	 * @apiName GetEntity
-	 * @apiGroup Core
-	 * @apiDescription Returns entity.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetEntity} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **Type** *string* Entity type.<br>
-	 * &emsp; **Id** *int* Entity identifier.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntity',
-	 *	Parameters: '{ Type: "User", Id: 123 }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Object in case of success, otherwise **false**.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntity',
-	 *	Result: { PublicId: "PublicId_value", Role: 2 }
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetEntity',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
-	 * Returns entity.
-	 * 
-	 * @param string $Type Entity type.
-	 * @param int $Id Entity identifier.
-	 * @return array
+	 * @deprecated since version 8.3.7
 	 */
 	public function GetEntity($Type, $Id)
 	{
 		switch ($Type)
 		{
 			case 'Tenant':
-				return $this->GetTenantById($Id);
+				return self::Decorator()->GetTenant($Id);
 			case 'User':
-				return $this->GetUser($Id);
+				return self::Decorator()->GetUser($Id);
 		}
 		return null;
 	}
-	
-	/**
-	 * @api {post} ?/Api/ CreateChannel
-	 * @apiName CreateChannel
-	 * @apiGroup Core
-	 * @apiDescription Creates channel with specified login and description.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=CreateChannel} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **Login** *string* New channel login.<br>
-	 * &emsp; **Description** *string* New channel description.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateChannel',
-	 *	Parameters: '{ Login: "login_value", Description: "description_value" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result New channel identifier in case of success, otherwise **false**.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateChannel',
-	 *	Result: 123
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'CreateChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
+
 	/**
 	 * Creates channel with specified login and description.
 	 * 
@@ -2407,55 +2262,6 @@ For instructions, please refer to this section of documentation and our
 		}
 	}
 	
-	/**
-	 * @api {post} ?/Api/ UpdateChannel
-	 * @apiName UpdateChannel
-	 * @apiGroup Core
-	 * @apiDescription Updates channel.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=UpdateChannel} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **ChannelId** *int* Channel identifier.<br>
-	 * &emsp; **Login** *string* New login for channel.<br>
-	 * &emsp; **Description** *string* New description for channel.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateChannel',
-	 *	Parameters: '{ ChannelId: 123, Login: "login_value", Description: "description_value" }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if channel was updated successfully.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateChannel',
-	 *	Result: true
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'UpdateChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
 	/**
 	 * Updates channel.
 	 * 
@@ -2496,53 +2302,6 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
-	 * @api {post} ?/Api/ DeleteChannel
-	 * @apiName DeleteChannel
-	 * @apiGroup Core
-	 * @apiDescription Deletes channel.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=DeleteChannel} Method Method name.
-	 * @apiParam {string} Parameters JSON.stringified object <br>
-	 * {<br>
-	 * &emsp; **ChannelId** *int* Identifier of channel to delete.<br>
-	 * }
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteChannel',
-	 *	Parameters: '{ ChannelId: 123 }'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {bool} Result.Result Indicates if channel was deleted successfully.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteChannel',
-	 *	Result: true
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'DeleteChannel',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
 	 * Deletes channel.
 	 * 
 	 * @param int $ChannelId Identifier of channel to delete.
@@ -2571,8 +2330,8 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
-	 * @api {post} ?/Api/ GetTenantList
-	 * @apiName GetTenantList
+	 * @api {post} ?/Api/ GetTenants
+	 * @apiName GetTenants
 	 * @apiGroup Core
 	 * @apiDescription Obtains tenant list if super administrator is authenticated.
 	 * 
@@ -2583,37 +2342,42 @@ For instructions, please refer to this section of documentation and our
 	 *	}
 	 * 
 	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetTenantList} Method Method name.
+	 * @apiParam {string=GetTenants} Method Method name.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **Offset** *int* Offset of entity list (Reserved for future use).<br>
-	 * &emsp; **Limit** *int* Limit of result entity list (Reserved for future use).<br>
-	 * &emsp; **Search** *string* Search string (Reserved for future use).<br>
+	 * &emsp; **Offset** *int* Offset of tenant list.<br>
+	 * &emsp; **Limit** *int* Limit of result tenant list.<br>
+	 * &emsp; **Search** *string* Search string.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantList'
+	 *	Method: 'GetTenants'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result List of tenants in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result Object with array of tenants and their count in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantList',
-	 *	Result: [{ Id: 123, Name: "name_value" }]
+	 *	Method: 'GetTenants',
+	 *	Result: {
+	 *				Items: [
+	 *					{ Id: 123, Name: 'Default', SiteName: '' }
+	 *				],
+	 *				Count: 1
+	 *			}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantList',
+	 *	Method: 'GetTenants',
 	 *	Result: false,
 	 *	ErrorCode: 102
 	 * }
@@ -2624,27 +2388,27 @@ For instructions, please refer to this section of documentation and our
 	 * @param int $Limit Limit of the list.
 	 * @param string $Search Search string.
 	 * @return array {
-	 *		*int* **Id** Tenant identifier
-	 *		*string* **Name** Tenant name
+	 *		*array* **Items** Tenant list
+	 *		*int* **Count** Tenant count
 	 * }
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function GetTenantList($Offset = 0, $Limit = 0, $Search = '')
+	public function GetTenants($Offset = 0, $Limit = 0, $Search = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 		$bTenant = $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
 		
-		$aTenants = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
+		$aTenantsFromDb = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
 		$oSettings = $this->GetModuleSettings();
-		$aItems = [];
+		$aTenants = [];
 		
-		foreach ($aTenants as $oTenant)
+		foreach ($aTenantsFromDb as $oTenant)
 		{
 			if (!$bTenant || $oTenant->EntityId === $oAuthenticatedUser->IdTenant)
 			{
-				$aItems[] = [
+				$aTenants[] = [
 					'Id' => $oTenant->EntityId,
 					'Name' => $oTenant->Name,
 					'SiteName' => $oSettings->GetTenantValue($oTenant->Name, 'SiteName', '')
@@ -2652,14 +2416,26 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 		
-		return $aItems;
+		$iTenantsCount = $Limit > 0 ? $this->getTenantsManager()->getTenantsCount($Search) : count($aTenantsFromDb);
+		return array(
+			'Items' => $aTenants,
+			'Count' => $iTenantsCount,
+		);
 	}
 	
 	/**
-	 * @api {post} ?/Api/ GetTenantIdByName
-	 * @apiName GetTenantIdByName
+	 * @deprecated since version 8.3.7
+	 */
+	public function GetTenantList($Offset = 0, $Limit = 0, $Search = '')
+	{
+		return self::Decorator()->GetTenants($Offset, $Limit, $Search);
+	}
+	
+	/**
+	 * @api {post} ?/Api/ GetTenant
+	 * @apiName GetTenant
 	 * @apiGroup Core
-	 * @apiDescription Returns tenant identifier by tenant name.
+	 * @apiDescription Returns tenant.
 	 * 
 	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
 	 * @apiHeaderExample {json} Header-Example:
@@ -2668,135 +2444,51 @@ For instructions, please refer to this section of documentation and our
 	 *	}
 	 * 
 	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetTenantIdByName} Method Method name.
+	 * @apiParam {string=GetTenant} Method Method name.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
-	 * &emsp; **TenantName** *string* Tenant name.<br>
+	 * &emsp; **Id** *int* Tenant identifier.<br>
 	 * }
 	 * 
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantIdByName',
-	 *	Parameters: '{ TenantName: "name_value" }'
+	 *	Method: 'GetTenant',
+	 *	Parameters: '{ Id: 123 }'
 	 * }
 	 * 
 	 * @apiSuccess {object[]} Result Array of response objects.
 	 * @apiSuccess {string} Result.Module Module name.
 	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Tenant identifier in case of success, otherwise **false**.
+	 * @apiSuccess {mixed} Result.Result Object in case of success, otherwise **false**.
 	 * @apiSuccess {int} [Result.ErrorCode] Error code.
 	 * 
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantIdByName',
-	 *	Result: 123
+	 *	Method: 'GetTenant',
+	 *	Result: { Description: '', Name: 'Default', SiteName: '', WebDomain: '' }
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetTenantIdByName',
+	 *	Method: 'GetTenant',
 	 *	Result: false,
 	 *	ErrorCode: 102
 	 * }
 	 */
 	/**
-	 * Returns tenant identifier by tenant name.
+	 * Returns tenant object by identifier.
 	 * 
-	 * @param string $TenantName Tenant name.
-	 * @return int|null
+	 * @param int $Id Tenant identifier.
+	 * @return \Aurora\Modules\Core\Classes\Tenant|null
 	 */
-	public function GetTenantIdByName($TenantName = '')
+	public function GetTenant($Id)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
-		$iTenantId = $this->getTenantsManager()->getTenantIdByName((string) $TenantName);
-
-		return $iTenantId ? $iTenantId : null;
-	}
-	
-	/**
-	 * @api {post} ?/Api/ GetTenantName
-	 * @apiName GetTenantName
-	 * @apiGroup Core
-	 * @apiDescription Returns current tenant name.
-	 * 
-	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-	 * @apiHeaderExample {json} Header-Example:
-	 *	{
-	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-	 *	}
-	 * 
-	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetTenantName} Method Method name.
-	 * 
-	 * @apiParamExample {json} Request-Example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantName'
-	 * }
-	 * 
-	 * @apiSuccess {object[]} Result Array of response objects.
-	 * @apiSuccess {string} Result.Module Module name.
-	 * @apiSuccess {string} Result.Method Method name.
-	 * @apiSuccess {mixed} Result.Result Tenant name for authenticated user in case of success, otherwise **false**.
-	 * @apiSuccess {int} [Result.ErrorCode] Error code.
-	 * 
-	 * @apiSuccessExample {json} Success response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantName',
-	 *	Result: 'TenantName'
-	 * }
-	 * 
-	 * @apiSuccessExample {json} Error response example:
-	 * {
-	 *	Module: 'Core',
-	 *	Method: 'GetTenantName',
-	 *	Result: false,
-	 *	ErrorCode: 102
-	 * }
-	 */
-	/**
-	 * Returns current tenant name.
-	 * 
-	 * @return string
-	 */
-	public function GetTenantName()
-	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		
-		$sTenant = '';
-		$sAuthToken = \Aurora\System\Api::getAuthToken();
-		if (!empty($sAuthToken))
-		{
-			$iUserId = \Aurora\System\Api::getAuthenticatedUserId();
-			if ($iUserId !== false && $iUserId > 0)
-			{
-				$oUser = $this->GetUser($iUserId);
-				if ($oUser)
-				{
-					$oTenant = $this->GetTenantById($oUser->IdTenant);
-					if ($oTenant)
-					{
-						$sTenant = $oTenant->Name;
-					}
-				}
-			}
-			$sPostTenant = $this->oHttp->GetPost('TenantName', '');
-			if (!empty($sPostTenant) && !empty($sTenant) && $sPostTenant !== $sTenant)
-			{
-				$sTenant = '';
-			}
-		}
-		else
-		{
-			$sTenant = $this->oHttp->GetRequest('tenant', '');
-		}
-		\Aurora\System\Api::setTenantName($sTenant);
-		return $sTenant;
+		return $this->GetTenantUnchecked($Id);
 	}
 	
 	/**
@@ -3013,27 +2705,69 @@ For instructions, please refer to this section of documentation and our
 		return false;
 	}
 
-	/**
-	 * Updates tenant.
-	 *
-	 * @param Classes\Tenant $oTenant
-	 * @return void
+		/**
+	 * @api {post} ?/Api/ DeleteTenants
+	 * @apiName DeleteTenants
+	 * @apiGroup Core
+	 * @apiDescription Deletes tenants specified by a list of identifiers.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteTenants} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **IdList** *array* List of tenants identifiers.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenants',
+	 *	Parameters: '{ IdList: [123, 456] }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if tenants were deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenants',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteTenants',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
 	 */
-	public function UpdateTenantObject($oTenant)
+	/**
+	 * Deletes tenants specified by a list of identifiers.
+	 * @param array $IdList List of tenants identifiers.
+	 * @return bool
+	 */
+	public function DeleteTenants($IdList)
 	{
-		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-		if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oTenant->EntityId)
+		$bResult = true;
+		
+		foreach ($IdList as $sId)
 		{
-			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
-		}
-		else
-		{
-			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+			$bResult = $bResult && self::Decorator()->DeleteTenant($sId);
 		}
 		
-		return $this->getTenantsManager()->updateTenant($oTenant);
+		return $bResult;
 	}
-
 	
 	/**
 	 * @api {post} ?/Api/ DeleteTenant
@@ -3100,10 +2834,10 @@ For instructions, please refer to this section of documentation and our
 			if ($oTenant)
 			{
 				// Tenant users should be deleted here in case if other modules (MailDomains for example) are turned off.
-				$aUsers = \Aurora\Modules\Core\Module::Decorator()->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['IdTenant' => $oTenant->EntityId]);
+				$aUsers = self::Decorator()->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['IdTenant' => $oTenant->EntityId]);
 				foreach ($aUsers as $oUser)
 				{
-					\Aurora\Modules\Core\Module::Decorator()->DeleteUser($oUser->EntityId);
+					self::Decorator()->DeleteUser($oUser->EntityId);
 				}
 
 				// Delete tenant config files.
@@ -3126,8 +2860,8 @@ For instructions, please refer to this section of documentation and our
 	}
 	
 	/**
-	 * @api {post} ?/Api/ GetUserList
-	 * @apiName GetUserList
+	 * @api {post} ?/Api/ GetUsers
+	 * @apiName GetUsers
 	 * @apiGroup Core
 	 * @apiDescription Returns user list.
 	 * 
@@ -3138,7 +2872,7 @@ For instructions, please refer to this section of documentation and our
 	 *	}
 	 * 
 	 * @apiParam {string=Core} Module Module name.
-	 * @apiParam {string=GetUserList} Method Method name.
+	 * @apiParam {string=GetUsers} Method Method name.
 	 * @apiParam {string} Parameters JSON.stringified object <br>
 	 * {<br>
 	 * &emsp; **Offset** *int* Offset of user list.<br>
@@ -3151,7 +2885,7 @@ For instructions, please refer to this section of documentation and our
 	 * @apiParamExample {json} Request-Example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetUserList',
+	 *	Method: 'GetUsers',
 	 *	Parameters: '{ Offset: 0, Limit: 0, OrderBy: "", OrderType: 0, Search: 0 }'
 	 * }
 	 * 
@@ -3164,14 +2898,20 @@ For instructions, please refer to this section of documentation and our
 	 * @apiSuccessExample {json} Success response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetUserList',
-	 *	Result: [{ Id: 123, PublicId: 'user123_PublicId' }, { Id: 124, PublicId: 'user124_PublicId' }]
+	 *	Method: 'GetUsers',
+	 *	Result: {
+	 *				Items: [
+	 *					{ Id: 123, PublicId: 'user123_PublicId' },
+	 *					{ Id: 124, PublicId: 'user124_PublicId' }
+	 *				],
+	 *				Count: 2
+	 *			}
 	 * }
 	 * 
 	 * @apiSuccessExample {json} Error response example:
 	 * {
 	 *	Module: 'Core',
-	 *	Method: 'GetUserList',
+	 *	Method: 'GetUsers',
 	 *	Result: false,
 	 *	ErrorCode: 102
 	 * }
@@ -3179,6 +2919,7 @@ For instructions, please refer to this section of documentation and our
 	/**
 	 * Returns user list.
 	 * 
+	 * @param int $TenantId Tenant identifier.
 	 * @param int $Offset Offset of user list.
 	 * @param int $Limit Limit of result user list.
 	 * @param string $OrderBy Name of field order by.
@@ -3186,16 +2927,31 @@ For instructions, please refer to this section of documentation and our
 	 * @param string $Search Search string.
 	 * @param array $Filters Filters.
 	 * @return array {
-	 *		*int* **Id** Identifier of user.
-	 *		*string* **PublicId** User name.
+	 *		*array* **Items** User list.
+	 *		*int* **Count** Users count.
 	 * }
 	 */
-	public function GetUserList($Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
+	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		
+		if ($TenantId !== 0)
+		{
+			if (isset($Filters) && is_array($Filters) && count($Filters) > 0)
+			{
+				$Filters['IdTenant'] = [$TenantId, '='];
+				$Filters = [
+					'$AND' => $Filters
+				];
+			}
+			else
+			{
+				$Filters = ['IdTenant' => [$TenantId, '=']];
+			}
+		}
+		
 		$aResults = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
-		$aUsers = [array()];
+		$aUsers = [];
 		foreach($aResults as $oUser)
 		{
 			$aUsers[] = array(
@@ -3205,7 +2961,20 @@ For instructions, please refer to this section of documentation and our
 				'PublicId' => $oUser->PublicId
 			);
 		}
-		return $aUsers;
+		$aUsersCount = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
+		
+		return array(
+			'Items' => $aUsers,
+			'Count' => $aUsersCount,
+		);
+	}
+	
+	/**
+	 * @deprecated since version 8.3.7
+	 */
+	public function GetUserList($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
+	{
+		return self::Decorator()->GetUsers($TenantId, $Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
 	}
 	
 	public function GetTotalUsersCount()
@@ -3213,6 +2982,73 @@ For instructions, please refer to this section of documentation and our
 		return $this->getUsersManager()->getTotalUsersCount();
 	}
 
+	/**
+	 * @api {post} ?/Api/ GetUser
+	 * @apiName GetUser
+	 * @apiGroup Core
+	 * @apiDescription Returns user data.
+	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetUser} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **UserId** *string* User identifier.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Parameters: '{ "Id": 17 }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Result: {
+     *		'Name': '',
+     *		'PublicId': 'mail@domain.com',
+     *		'Role': 2,
+     *		'WriteSeparateLog': false
+	 *	}
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetUser',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
+	 */
+	/**
+	 * Returns user object.
+	 * 
+	 * @param int|string $Id User identifier or UUID.
+	 * @return \Aurora\Modules\Core\Classes\User
+	 */
+	public function GetUser($Id = '')
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		
+		$oUser = $this->getUsersManager()->getUser($Id);
+		
+		return $oUser ? $oUser : null;
+	}
+	
 	public function TurnOffSeparateLogs()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
@@ -3352,8 +3188,8 @@ For instructions, please refer to this section of documentation and our
 			$oUser->WriteSeparateLog = $WriteSeparateLog;
 
 			$oUser->Language = \Aurora\System\Api::GetLanguage(true);
-			$oUser->TimeFormat = \Aurora\Modules\Core\Module::getInstance()->getConfig('TimeFormat');
-			$oUser->DateFormat = \Aurora\Modules\Core\Module::getInstance()->getConfig('DateFormat');
+			$oUser->TimeFormat = self::getInstance()->getConfig('TimeFormat');
+			$oUser->DateFormat = self::getInstance()->getConfig('DateFormat');
 
 			if ($this->getUsersManager()->createUser($oUser))
 			{
@@ -3475,13 +3311,67 @@ For instructions, please refer to this section of documentation and our
 	}
 
 	/**
+	 * @api {post} ?/Api/ DeleteUsers
+	 * @apiName DeleteUsers
+	 * @apiGroup Core
+	 * @apiDescription Deletes users specified by a list of identifiers.
 	 * 
+	 * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+	 * @apiHeaderExample {json} Header-Example:
+	 *	{
+	 *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+	 *	}
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=DeleteUsers} Method Method name.
+	 * @apiParam {string} Parameters JSON.stringified object <br>
+	 * {<br>
+	 * &emsp; **IdList** *int* List of users identifiers.<br>
+	 * }
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUsers',
+	 *	Parameters: '{ IdList: [125, 457] }'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {bool} Result.Result Indicates if users were deleted successfully.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUsers',
+	 *	Result: true
+	 * }
+	 * 
+	 * @apiSuccessExample {json} Error response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'DeleteUsers',
+	 *	Result: false,
+	 *	ErrorCode: 102
+	 * }
 	 */
-	public function UpdateTokensValidFromTimestamp($oUser)
+	/**
+	 * Deletes users specified by a list of identifiers.
+	 * @param array $IdList List of users identifiers.
+	 * @return bool
+	 */
+	public function DeleteUsers($IdList)
 	{
-		$oUser->TokensValidFromTimestamp = time();
-		$this->getUsersManager()->updateUser($oUser);		
-		return $oUser->TokensValidFromTimestamp;
+		$bResult = true;
+		
+		foreach ($IdList as $sId)
+		{
+			$bResult = $bResult && self::Decorator()->DeleteUser($sId);
+		}
+		
+		return $bResult;
 	}
 	
 	/**
@@ -3542,8 +3432,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		$oCoreDecorator = \Aurora\Modules\Core\Module::Decorator();
-		$oUser = $oCoreDecorator ? $oCoreDecorator->GetUser($UserId) : null;
+		$oUser = self::Decorator()->GetUserUnchecked($UserId);
 		
 		if ($oUser instanceof \Aurora\Modules\Core\Classes\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
 		{
@@ -3660,10 +3549,10 @@ For instructions, please refer to this section of documentation and our
 	
 	/**
 	 * 
-	 * @param type $UserId
-	 * @param type $Content
-	 * @param type $FileName
-	 * @return type
+	 * @param int $UserId
+	 * @param string $Content
+	 * @param string $FileName
+	 * @return array|bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
 	public function SaveContentAsTempFile($UserId, $Content, $FileName)
