@@ -109,7 +109,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'GetDefaultGlobalTenant',
 			'UpdateTenantObject',
 			'GetUserUnchecked',
-			'UpdateTokensValidFromTimestamp'
+			'UpdateTokensValidFromTimestamp',
+			'GetAccountUsedToAuthorize',
+			'GetDigestHash'
 		]);
 	}
 	
@@ -2003,6 +2005,42 @@ For instructions, please refer to this section of documentation and our
 				new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
 			);
 		}
+
+		return $mResult;
+	}
+
+	public function GetDigestHash($Login, $Realm, $Type)
+	{
+		$mResult = null;
+
+		$aArgs = array (
+			'Login' => $Login,
+			'Realm' => $Realm,
+			'Type' => $Type
+		);
+
+		$this->broadcastEvent(
+			'GetDigestHash', 
+			$aArgs,
+			$mResult
+		);
+
+		return $mResult;
+	}
+
+	public function GetAccountUsedToAuthorize($Login)
+	{
+		$mResult = null;
+
+		$aArgs = array (
+			'Login' => $Login
+		);
+
+		$this->broadcastEvent(
+			'GetAccountUsedToAuthorize', 
+			$aArgs,
+			$mResult
+		);
 
 		return $mResult;
 	}
