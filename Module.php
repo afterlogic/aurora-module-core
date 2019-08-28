@@ -122,28 +122,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 	private function getUploadData()
 	{
 		$mResult = false;
-		$sError = '';
-		$sInputName = 'jua-uploader';
-
-		$iError = UPLOAD_ERR_OK;
-		$_FILES = isset($_FILES) ? $_FILES : null;
-		if (isset($_FILES, 
-			$_FILES[$sInputName], 
-			$_FILES[$sInputName]['name'], 
-			$_FILES[$sInputName]['tmp_name'], 
-			$_FILES[$sInputName]['size'], 
-			$_FILES[$sInputName]['type']))
+		$oFile = null;
+		if (isset($_FILES) && count($_FILES) > 0)
 		{
-			$iError = (isset($_FILES[$sInputName]['error'])) ? 
-					(int) $_FILES[$sInputName]['error'] : UPLOAD_ERR_OK;
-			if (UPLOAD_ERR_OK === $iError)
-			{
-				$mResult = $_FILES[$sInputName];
-			}
-			else
-			{
-				$sError = 'unknown';
-			}
+			$oFile = current($_FILES);
+		}
+		if (isset($oFile, $oFile['name'], $oFile['tmp_name'], $oFile['size'], $oFile['type']))
+		{
+			$iError = (isset($oFile['error'])) ? (int) $oFile['error'] : UPLOAD_ERR_OK;
+			$mResult = (UPLOAD_ERR_OK === $iError) ? $oFile : false;
 		}
 		
 		return $mResult;
