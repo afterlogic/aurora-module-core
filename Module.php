@@ -580,7 +580,8 @@ For instructions, please refer to this section of documentation and our
 			{
 				try
 				{
-					\Aurora\System\Api::Log('API: ' . $sModule . '::' . $sMethod);
+					\Aurora\System\Api::Log(" ");
+					\Aurora\System\Api::Log(" ===== API: " . $sModule . '::' . $sMethod);
 					
 					$bIsEmptyAuthToken = !\Aurora\System\Api::getAuthTokenFromHeaders();
 
