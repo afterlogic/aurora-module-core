@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Core;
 
+use Aurora\System\Exceptions\ApiException;
+
 /**
  * System module that provides core functionality such as User management, Tenants management.
  * 
@@ -428,7 +430,8 @@ For instructions, please refer to this section of documentation and our
 
 	public function onBeforeRunEntry($aArgs, &$mResult)
 	{
-		$this->redirectToHttps();
+		return $this->redirectToHttps($aArgs['EntryName'], $mResult);
+
 		\Aurora\Api::removeOldLogs();
 	}
 
@@ -515,7 +518,7 @@ For instructions, please refer to this section of documentation and our
 		return $bResult;
 	}
 
-	protected function redirectToHttps()
+	protected function redirectToHttps($sEntryName, $mResult)
 	{
 		$oSettings =& \Aurora\Api::GetSettings();
 		if ($oSettings)
@@ -526,7 +529,17 @@ For instructions, please refer to this section of documentation and our
 					(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == "443"));
 			if ($bRedirectToHttps && !$bHttps) 
 			{
-				\header("Location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+				if (\strtolower($sEntryName) !== 'api')
+				{
+					\header("Location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+				}
+				else
+				{
+					$mResult = [
+						'ErrorCode' => 110
+					];
+					return true;
+				}
 			}
 		}
 	}
@@ -3527,11 +3540,14 @@ For instructions, please refer to this section of documentation and our
 
 				if ($sContentType === 'text/plain') 
 				{
-					echo(stream_get_contents($mResult));
+					$sLogData = stream_get_contents($mResult);	
+					echo(\MailSo\Base\HtmlUtils::ClearTags($sLogData));
 				} 
 				else 
 				{
-					\MailSo\Base\Utils::FpassthruWithTimeLimitReset($mResult);
+					\MailSo\Base\Utils::FpassthruWithTimeLimitReset($mResult, 8192, function ($sData) {
+						return \MailSo\Base\HtmlUtils::ClearTags($sData);
+					});
 				}
 
 				@fclose($mResult);
@@ -3552,7 +3568,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			$iOffset = filesize($sFileName) - $PartSize;
 			$iOffset = $iOffset < 0 ? 0 : $iOffset;
-			$logData = file_get_contents($sFileName, false, null, $iOffset, $PartSize);
+			$logData = \MailSo\Base\HtmlUtils::ClearTags(file_get_contents($sFileName, false, null, $iOffset, $PartSize));
 		}
 		
 		return $logData;
