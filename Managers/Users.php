@@ -214,6 +214,13 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				{
 //					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 					$oUser->DateCreated = date('Y-m-d H:i:s');
+
+					$oTenant = $oUser->getTenant();
+					if ($oTenant)
+					{
+						$oUser->ParentUUID = $oTenant->UUID;
+						$oUser->ParentModuleName = $this->GetModule()->GetName();
+					}
 					
 					if (!$this->oEavManager->saveEntity($oUser))
 					{

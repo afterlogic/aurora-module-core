@@ -55,6 +55,7 @@ class User extends \Aurora\System\EAV\Entity
 	 */
 	public function __construct($sModule)
 	{
+		$this->ParentType = \Aurora\Modules\Core\Classes\Tenant::class;
 		$oModuleManager = \Aurora\System\Api::GetModuleManager();
 		
 		$this->aStaticMap = array(
@@ -205,5 +206,10 @@ class User extends \Aurora\System\EAV\Entity
 		}
 
 		return true;
+	}
+
+	public function getTenant()
+	{
+		return \Aurora\Api::GetModuleDecorator($this->getModule())->GetTenantUnchecked($this->IdTenant);
 	}
 }
