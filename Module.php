@@ -91,7 +91,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			]
 		);
 
-		\Aurora\System\EventEmitter::getInstance()->onArray(
+		\Aurora\System\EventEmitter::getInstance()->onAny(
 			[
 				['CreateAccount', [$this, 'onCreateAccount'], 100],
 				['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
