@@ -85,13 +85,9 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				$aFilters = ['$AND' => $aFilters];
 			}
 		}
-		// TODO: use getEntitiesCount when it will be fixed
-		return count($this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\User::class,
-				array('PublicId'),
-				0,
-				0,
-				$aFilters
-				));
+		return $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\User::class,
+			$aFilters
+		);
 	}
 	
 	/**
