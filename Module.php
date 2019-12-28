@@ -430,9 +430,9 @@ For instructions, please refer to this section of documentation and our
 
 	public function onBeforeRunEntry($aArgs, &$mResult)
 	{
-		return $this->redirectToHttps($aArgs['EntryName'], $mResult);
-
 		\Aurora\Api::removeOldLogs();
+
+		return $this->redirectToHttps($aArgs['EntryName'], $mResult);
 	}
 
 	/**
