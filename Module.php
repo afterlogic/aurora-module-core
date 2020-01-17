@@ -1240,7 +1240,7 @@ For instructions, please refer to this section of documentation and our
 	 * @api {post} ?/Api/ Ping
 	 * @apiName Ping
 	 * @apiGroup Core
-	 * @apiDescription Method is used for checking internet connection.
+	 * @apiDescription Method is used for checking Internet connection.
 	 * 
 	 * @apiParam {string=Core} Module Module name.
 	 * @apiParam {string=Ping} Method Method name.
@@ -1265,7 +1265,7 @@ For instructions, please refer to this section of documentation and our
 	 * }
 	 */
 	/**
-	 * Method is used for checking internet connection.
+	 * Method is used for checking Internet connection.
 	 * 
 	 * @return 'Pong'
 	 */
@@ -1275,6 +1275,52 @@ For instructions, please refer to this section of documentation and our
 		
 		return 'Pong';
 	}	
+	
+	/**
+	 * @api {post} ?/Api/ GetAppData
+	 * @apiName GetAppData
+	 * @apiGroup Core
+	 * @apiDescription Obtains a list of settings for each module for the current user.
+	 * 
+	 * @apiParam {string=Core} Module Module name.
+	 * @apiParam {string=GetAppData} Method Method name.
+	 * 
+	 * @apiParamExample {json} Request-Example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAppData'
+	 * }
+	 * 
+	 * @apiSuccess {object[]} Result Array of response objects.
+	 * @apiSuccess {string} Result.Module Module name.
+	 * @apiSuccess {string} Result.Method Method name.
+	 * @apiSuccess {string} Result.Result List of settings for each module for the current user.
+	 * @apiSuccess {int} [Result.ErrorCode] Error code.
+	 * 
+	 * @apiSuccessExample {json} Success response example:
+	 * {
+	 *	Module: 'Core',
+	 *	Method: 'GetAppData',
+	 *	Result: {
+	 *				User: {Id: 0, Role: 4, Name: "", PublicId: ""},
+	 *				Core: { ... },
+	 *				Contacts: { ... },
+	 *				 ...
+	 *				CoreWebclient: { ... },
+	 *				 ...
+	 *			}
+	 * }
+	 */
+	/**
+	 * Obtains a list of settings for each module for the current user.
+	 * 
+	 * @return array
+	 */
+	public function GetAppData()
+	{
+		$oApiIntegrator = $this->getIntegratorManager();
+		return $oApiIntegrator->appData();
+	}
 	
 	/**
 	 * @api {post} ?/Api/ GetSettings
