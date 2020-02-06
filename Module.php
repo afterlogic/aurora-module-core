@@ -2571,7 +2571,15 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetTenant($Id)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $Id)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
 		
 		return $this->GetTenantUnchecked($Id);
 	}
@@ -3127,11 +3135,27 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function GetUser($Id = '')
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
-		
 		$oUser = $this->getUsersManager()->getUser($Id);
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 		
-		return $oUser ? $oUser : null;
+		if (!empty($oUser) && !empty($oAuthenticatedUser)) {
+			if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oAuthenticatedUser->EntityId === $oUser->EntityId)
+			{
+				\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+			}
+			else if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant)
+			{
+				\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+			}
+			else
+			{
+				\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+			}
+
+			return $oUser;
+		}
+
+		return null;
 	}
 	
 	public function TurnOffSeparateLogs()
