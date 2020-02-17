@@ -2344,6 +2344,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
+		$Login = \trim($Login);
 		if ($Login !== '')
 		{
 			$oChannel = new Classes\Channel(self::GetName());
@@ -2385,11 +2386,12 @@ For instructions, please refer to this section of documentation and our
 			
 			if ($oChannel)
 			{
-				if ($Login)
+				$Login = \trim($Login);
+				if (!empty($Login))
 				{
 					$oChannel->Login = $Login;
 				}
-				if ($Description)
+				if (!empty($Description))
 				{
 					$oChannel->Description = $Description;
 				}
@@ -2675,7 +2677,7 @@ For instructions, please refer to this section of documentation and our
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->EntityId : 0;
 		}
-		$Name = \Aurora\System\Utils::getSanitizedFilename($Name);
+		$Name = \trim(\Aurora\System\Utils::getSanitizedFilename($Name));
 		if ($Name !== '' && $ChannelId > 0)
 		{
 			$aTenants = $this->getTenantsManager()->getTenantsByChannelId($ChannelId);
@@ -3314,6 +3316,7 @@ For instructions, please refer to this section of documentation and our
 			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
 		}
 		
+		$PublicId = \trim($PublicId);
 		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
@@ -3421,6 +3424,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null)
 	{
+		$PublicId = \trim($PublicId);
 		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
