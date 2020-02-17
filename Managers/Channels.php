@@ -95,7 +95,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iChannelId
 	 *
-	 * @return Aurora\Modules\Core\Classes\Channel
+	 * @return \Aurora\Modules\Core\Classes\Channel
 	 */
 	public function getChannelById($iChannelId)
 	{

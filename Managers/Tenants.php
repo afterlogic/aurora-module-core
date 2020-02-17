@@ -129,7 +129,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param mixed $mTenantId
 	 *
-	 * @return Aurora\Modules\Core\Classes\Tenant|null
+	 * @return \Aurora\Modules\Core\Classes\Tenant|null
 	 */
 	public function getTenantById($mTenantId)
 	{

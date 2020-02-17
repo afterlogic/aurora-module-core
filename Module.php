@@ -113,7 +113,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'GetUserUnchecked',
 			'UpdateTokensValidFromTimestamp',
 			'GetAccountUsedToAuthorize',
-			'GetDigestHash'
+			'GetDigestHash',
+			'VerifyPassword'
 		]);
 	}
 	
@@ -551,13 +552,13 @@ For instructions, please refer to this section of documentation and our
 	 * @ignore
 	 * @return bool
 	 */
-	public static function deleteTree($dir)
+	private function deleteTree($dir)
 	{
 		$files = array_diff(scandir($dir), array('.','..'));
 			
 		foreach ($files as $file)
 		{
-			(is_dir("$dir/$file")) ? self::deleteTree("$dir/$file") : unlink("$dir/$file");
+			(is_dir("$dir/$file")) ? $this->deleteTree("$dir/$file") : unlink("$dir/$file");
 		}
 		
 		return rmdir($dir);
@@ -1787,13 +1788,15 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function UpdateConfig()
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+
 		$bResult = true;
 		try
 		{
 			\Aurora\System\Api::Init();
 			\Aurora\System\Api::GetModuleManager()->SyncModulesConfigs();
 		}
-		catch (Exception $e)
+		catch (\Exception $e)
 		{
 			$bResult = false;
 		}
@@ -2056,8 +2059,18 @@ For instructions, please refer to this section of documentation and our
 		return $mResult;
 	}
 
+	/**
+	 *
+	 * @param [type] $Login
+	 * @param [type] $Realm
+	 * @param [type] $Type
+	 * @return void
+	 */
 	public function GetDigestHash($Login, $Realm, $Type)
 	{
+	
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
 		$mResult = null;
 
 		$aArgs = array (
@@ -2077,6 +2090,9 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetAccountUsedToAuthorize($Login)
 	{
+
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
 		$mResult = null;
 
 		$aArgs = array (
@@ -2099,6 +2115,9 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function VerifyPassword($Password)
 	{
+
+		/** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		$mResult = false;
 		$bResult = false;
@@ -2852,6 +2871,8 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function DeleteTenants($IdList)
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+
 		$bResult = true;
 		
 		foreach ($IdList as $sId)
@@ -3027,6 +3048,21 @@ For instructions, please refer to this section of documentation and our
 	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
+
+		$aResult = [
+			'Items' => [],
+			'Count' => 0,
+		];
 		
 		if ($TenantId !== 0)
 		{
@@ -3043,23 +3079,19 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 		
-		$aResults = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
-		$aUsers = [];
-		foreach($aResults as $oUser)
+		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
+		foreach($aUsers as $oUser)
 		{
-			$aUsers[] = array(
+			$aResult['Items'][] = [
 				'Id' => $oUser->EntityId,
 				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId
-			);
+			];
 		}
-		$aUsersCount = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
-		
-		return array(
-			'Items' => $aUsers,
-			'Count' => $aUsersCount,
-		);
+		$aResult['Count'] = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
+
+		return $aResult;
 	}
 	
 	/**
@@ -3072,6 +3104,8 @@ For instructions, please refer to this section of documentation and our
 	
 	public function GetTotalUsersCount()
 	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+
 		return $this->getUsersManager()->getTotalUsersCount();
 	}
 
@@ -3259,10 +3293,21 @@ For instructions, please refer to this section of documentation and our
 		
 		if ($TenantId === 0)
 		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '', '');
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
 		}
 		
+		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+		if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId)
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+		}
+		else
+		{
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		}
+
 		$oTenant = $this->getTenantsManager()->getTenantById($TenantId);
 		if (!$oTenant)
 		{
@@ -3670,6 +3715,7 @@ For instructions, please refer to this section of documentation and our
 	public function SaveContentAsTempFile($UserId, $Content, $FileName)
 	{
 		$mResult = false;
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		
 		$sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
 		try
