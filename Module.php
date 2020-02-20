@@ -114,7 +114,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'UpdateTokensValidFromTimestamp',
 			'GetAccountUsedToAuthorize',
 			'GetDigestHash',
-			'VerifyPassword'
+			'VerifyPassword',
+			'SetAuthDataAndGetAuthToken'
 		]);
 	}
 	
@@ -1937,6 +1938,81 @@ For instructions, please refer to this section of documentation and our
 		}
 		return $aResult;
 	}
+
+	/**
+	 * 
+	 */
+	public function Authenticate($Login, $Password, $SignMe = false)
+	{
+		$mResult = false;
+
+		$aArgs = array (
+			'Login' => $Login,
+			'Password' => $Password,
+			'SignMe' => $SignMe
+		);
+
+		try
+		{
+			$this->broadcastEvent(
+				'Login', 
+				$aArgs,
+				$mResult
+			);
+		}
+		catch (\Exception $oException)
+		{
+			\Aurora\System\Api::GetModuleManager()->SetLastException($oException);
+		}
+
+		return $mResult;
+	}
+
+	public function SetAuthDataAndGetAuthToken($aAuthData, $Language = '', $SignMe = false)
+	{
+		$mResult = false;
+		if ($aAuthData && is_array($aAuthData))
+		{
+			$mResult = $aAuthData;
+			if (isset($aAuthData['token']) && $aAuthData['token'] === 'auth')
+			{
+				$iTime = $SignMe ? 0 : time();
+				$sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime);
+				
+				//this will store user data in static variable of Api class for later usage
+				$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+				
+				if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
+				{
+					// If User is super admin don't try to detect tenant. It will try to connect to DB.
+					// Super admin should be able to log in without connecting to DB.
+					$oTenant = \Aurora\System\Api::getTenantByWebDomain();
+					if ($oTenant && $oUser->IdTenant !== $oTenant->EntityId)
+					{
+						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+					}
+				}
+				
+				if ($Language !== '' && $oUser && $oUser->Language !== $Language)
+				{
+					$oUser->Language = $Language;
+					$this->getUsersManager()->updateUser($oUser);
+				}
+				
+				$mResult = [
+					'AuthToken' => $sAuthToken
+				];
+			}
+		}
+		else
+		{
+			\Aurora\System\Api::GetModuleManager()->SetLastException(
+				new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
+			);
+		}
+
+		return $mResult;
+	}
 	
 	/**
 	 * @api {post} ?/Api/ Login
@@ -1996,67 +2072,9 @@ For instructions, please refer to this section of documentation and our
 	public function Login($Login, $Password, $Language = '', $SignMe = false)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-		$mResult = false;
 		
-		$aArgs = array (
-			'Login' => $Login,
-			'Password' => $Password,
-			'SignMe' => $SignMe
-		);
-
-
-		try
-		{
-			$this->broadcastEvent(
-				'Login', 
-				$aArgs,
-				$mResult
-			);
-		}
-		catch (\Exception $oException)
-		{
-			\Aurora\System\Api::GetModuleManager()->SetLastException($oException);
-		}
-
-		if (is_array($mResult))
-		{
-			$iTime = $SignMe ? 0 : time();
-			$sAuthToken = \Aurora\System\Api::UserSession()->Set($mResult, $iTime);
-			
-			//this will store user data in static variable of Api class for later usage
-			$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
-			
-			if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
-			{
-				// If User is super admin don't try to detect tenant. It will try to connect to DB.
-				// Super admin should be able to log in without connecting to DB.
-				$oTenant = \Aurora\System\Api::getTenantByWebDomain();
-				if ($oTenant && $oUser->IdTenant !== $oTenant->EntityId)
-				{
-					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
-				}
-			}
-			
-			if ($Language !== '' && $oUser && $oUser->Language !== $Language)
-			{
-				$oUser->Language = $Language;
-				$this->getUsersManager()->updateUser($oUser);
-			}
-			
-			\Aurora\System\Api::LogEvent('login-success: ' . $Login, self::GetName());
-			$mResult = [
-				'AuthToken' => $sAuthToken
-			];
-		}
-		else
-		{
-			\Aurora\System\Api::LogEvent('login-failed: ' . $Login, self::GetName());
-			\Aurora\System\Api::GetModuleManager()->SetLastException(
-				new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
-			);
-		}
-
-		return $mResult;
+		$aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
+		return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language = '', $SignMe = false);
 	}
 
 	/**
