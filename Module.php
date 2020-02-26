@@ -1974,7 +1974,7 @@ For instructions, please refer to this section of documentation and our
 		if ($aAuthData && is_array($aAuthData))
 		{
 			$mResult = $aAuthData;
-			if (isset($aAuthData['token']) && $aAuthData['token'] === 'auth')
+			if (isset($aAuthData['token']))
 			{
 				$iTime = $SignMe ? 0 : time();
 				$sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime);
