@@ -2074,7 +2074,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 		
 		$aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
-		return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language = '', $SignMe = false);
+		return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
 	}
 
 	/**
