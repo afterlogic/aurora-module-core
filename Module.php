@@ -2817,11 +2817,11 @@ For instructions, please refer to this section of documentation and our
 				{
 					$oTenant->Description = $Description;
 				}
-				if ($WebDomain !== null)
+				if ($WebDomain !== null && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 				{
 					$oTenant->WebDomain = $WebDomain;
 				}
-				if (!empty($ChannelId))
+				if (!empty($ChannelId) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 				{
 					$oTenant->IdChannel = $ChannelId;
 				}
