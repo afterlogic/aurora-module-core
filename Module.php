@@ -1418,21 +1418,21 @@ For instructions, please refer to this section of documentation and our
 			'SiteName' => $this->getConfig('SiteName'),
 			'SocialName' => '',
 			'TenantName' => \Aurora\System\Api::getTenantName(),
-			'EnableMultiTenant' => $oSettings->GetConf('EnableMultiTenant', false),
+			'EnableMultiTenant' => $oSettings && $oSettings->GetConf('EnableMultiTenant', false),
 			'TimeFormat' => $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) &&
 				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
 			'Version' => \Aurora\System\Api::VersionFull(),
 			'ProductName' => $this->getConfig('ProductName'),
-			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
-			'PasswordMustBeComplex' => $oSettings->GetConf('PasswordMustBeComplex', false),
+			'PasswordMinLength' => $oSettings && $oSettings->GetConf('PasswordMinLength', 0),
+			'PasswordMustBeComplex' => $oSettings && $oSettings->GetConf('PasswordMustBeComplex', false),
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
 		);
 
-		if (!empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
+		if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
 			$sAdminPassword = $oSettings->GetConf('AdminPassword');
 
