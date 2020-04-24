@@ -1997,8 +1997,12 @@ For instructions, please refer to this section of documentation and our
 				if ($Language !== '' && $oUser && $oUser->Language !== $Language)
 				{
 					$oUser->Language = $Language;
-					$this->getUsersManager()->updateUser($oUser);
 				}
+
+				$oUser->LastLogin = date('Y-m-d H:i:s');
+				$oUser->LoginsCount =  $oUser->LoginsCount + 1;
+
+				$this->getUsersManager()->updateUser($oUser);
 
 				$mResult = [
 					'AuthToken' => $sAuthToken

@@ -282,7 +282,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 
-			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId);
+			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId, \Aurora\Modules\Core\Classes\Channel::class);
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{

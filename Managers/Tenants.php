@@ -430,7 +430,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			if ($oTenant)
 			{
-				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId);
+				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId, \Aurora\Modules\Core\Classes\Tenant::class);
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)

@@ -281,7 +281,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 //			if ($oUser->validate())
 //			{
-				if (!$this->oEavManager->deleteEntity($oUser->EntityId))
+				if (!$this->oEavManager->deleteEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class))
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 				}
