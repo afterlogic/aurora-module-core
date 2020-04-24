@@ -2003,7 +2003,7 @@ For instructions, please refer to this section of documentation and our
 				$oUser->LoginsCount =  $oUser->LoginsCount + 1;
 
 				$this->getUsersManager()->updateUser($oUser);
-
+				\Aurora\System\Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
 				$mResult = [
 					'AuthToken' => $sAuthToken
 				];
@@ -2011,6 +2011,7 @@ For instructions, please refer to this section of documentation and our
 		}
 		else
 		{
+			\Aurora\System\Api::LogEvent('login-failed', self::GetName());
 			\Aurora\System\Api::GetModuleManager()->SetLastException(
 				new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
 			);
