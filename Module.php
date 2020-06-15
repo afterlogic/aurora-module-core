@@ -83,7 +83,6 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'api' => [$this, 'EntryApi'],
 				'ping' => [$this, 'EntryPing'],
 				'pull' => [$this, 'EntryPull'],
-				'plugins' => [$this, 'EntryPlugins'],
 				'mobile' => [$this, 'EntryMobile'],
 				'sso' => [$this, 'EntrySso'],
 				'postlogin' => [$this, 'EntryPostlogin'],
