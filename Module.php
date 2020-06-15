@@ -2703,8 +2703,8 @@ For instructions, please refer to this section of documentation and our
 		$Name = \trim(\Aurora\System\Utils::getSanitizedFilename($Name));
 		if ($Name !== '' && $ChannelId > 0)
 		{
-			$aTenants = $this->getTenantsManager()->getTenantsByChannelId($ChannelId);
-			if ($oSettings->GetConf('EnableMultiTenant') || is_array($aTenants) && count($aTenants) === 0)
+			$iTenantsCount = $this->getTenantsManager()->getTenantsByChannelIdCount($ChannelId);
+			if ($oSettings->GetConf('EnableMultiTenant') || $iTenantsCount === 0)
 			{
 				$oTenant = new Classes\Tenant(self::GetName());
 

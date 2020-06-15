@@ -393,6 +393,19 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @param int $iChannelId
 	 *
+	 * @return array
+	 */
+	public function getTenantsByChannelIdCount($iChannelId)
+	{
+		return $this->oEavManager->getEntitiesCount(
+			\Aurora\Modules\Core\Classes\Tenant::class,
+			['IdChannel' => $iChannelId]
+		);
+	}
+
+	/**
+	 * @param int $iChannelId
+	 *
 	 * @return bool
 	 */
 	public function deleteTenantsByChannelId($iChannelId)
