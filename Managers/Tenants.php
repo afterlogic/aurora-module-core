@@ -194,7 +194,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 					$oFilterBy
 				);
 
-				if (($aResultTenants[0]) && $aResultTenants[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
+				if (isset($aResultTenants[0]) && $aResultTenants[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
 				{
 					$oTenant = $aResultTenants[0];
 				}
