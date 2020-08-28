@@ -527,8 +527,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			$bRedirectToHttps = $oSettings->RedirectToHttps;
 
-			$bHttps = ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== "off") ||
-					(isset($_SERVER['SERVER_PORT']) && $_SERVER['SERVER_PORT'] == "443"));
+			$bHttps = \Aurora\Api::isHttps();
 			if ($bRedirectToHttps && !$bHttps)
 			{
 				if (\strtolower($sEntryName) !== 'api')
