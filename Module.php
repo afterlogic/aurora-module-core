@@ -743,6 +743,14 @@ For instructions, please refer to this section of documentation and our
 							\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure()
 						);
 					}
+					else
+					{
+						@\setcookie(
+							\Aurora\System\Application::AUTH_TOKEN_KEY,
+							null,
+							-1
+						);
+					}
 				}
 			}
 			else
