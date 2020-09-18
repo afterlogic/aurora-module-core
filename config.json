@@ -81,5 +81,17 @@
 	"AuthTokenCookieExpireTime": [
 		30,
 		"int"
+	],
+	"EnableFailedLoginBlock": [
+		false,
+		"bool"
+	],
+	"LoginBlockAvailableTriesCount": [
+		3,
+		"int"
+	],
+	"LoginBlockDurationMinutes": [
+		30,
+		"int"
 	]
 }

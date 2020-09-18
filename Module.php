@@ -115,7 +115,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'GetDigestHash',
 			'VerifyPassword',
 			'SetAuthDataAndGetAuthToken',
-			'IsModuleDisabledForObject'
+			'IsModuleDisabledForObject',
+			'GetBlockedUser',
+			'BlockUser',
+			'CheckIsBlockedUser'
 		]);
 	}
 
@@ -1946,6 +1949,69 @@ For instructions, please refer to this section of documentation and our
 		return $aResult;
 	}
 
+	public function CheckIsBlockedUser($sEmail, $sIp)
+	{
+		$bEnableFailedLoginBlock = $this->getConfig('EnableFailedLoginBlock', false);
+		$iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
+		$iLoginBlockDurationMinutes = $this->getConfig('LoginBlockDurationMinutes', 30);
+
+		$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
+		if ($oBlockedUser)
+		{
+			if ($oBlockedUser->ErrorLoginsCount >= $iLoginBlockAvailableTriesCount)
+			{
+				$iBlockTime = (int) ((time() - $oBlockedUser->Time) / 60);
+				if ($iBlockTime > $iLoginBlockDurationMinutes)
+				{
+					$oBlockedUser->ErrorLoginsCount = 0;
+					$oBlockedUser->Save();
+				}
+				else
+				{
+
+					throw new \Aurora\System\Exceptions\ApiException(
+						1000,
+						null,
+						$this->i18N("BLOCKED_USER_MESSAGE_ERROR", ["N" => $iLoginBlockAvailableTriesCount, "M" => ($iLoginBlockDurationMinutes - $iBlockTime)])
+					);
+				}
+			}
+		}
+
+	}
+
+	public function GetBlockedUser($sEmail, $sIp)
+	{
+		return (new \Aurora\System\EAV\Query())
+		->select()
+		->whereType(Classes\UserBlock::class)
+		->where(
+			[
+				'$AND' => [
+					'Email' => [$sEmail, '='],
+					'IpAddress' => [$sIp, '='],
+				]
+			]
+		)
+		->one()
+		->exec();
+	}
+
+	public function BlockUser($sEmail, $sIp)
+	{
+		$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
+		if (!$oBlockedUser)
+		{
+			$oBlockedUser = new Classes\UserBlock();
+			$oBlockedUser->Email = $sEmail;
+			$oBlockedUser->IpAddress = $sIp;
+		}
+		$oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
+		$oBlockedUser->Time = time();
+
+		$oBlockedUser->Save();
+	}
+
 	/**
 	 *
 	 */
@@ -2085,7 +2151,16 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
+		$sIp = \Aurora\System\Utils::getClientIp();
+		$this->CheckIsBlockedUser($Login, $sIp);
+
 		$aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
+
+		if (!$aAuthData)
+		{
+			$this->BlockUser($Login, $sIp);
+		}
+
 		return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
 	}
 
