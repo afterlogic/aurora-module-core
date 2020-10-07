@@ -734,7 +734,7 @@ For instructions, please refer to this section of documentation and our
 
 				if (isset($aData['Password'], $aData['Email']))
 				{
-					$aResult = self::Decorator()->Login($aData['Email'], $aData['Password']);
+					$aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], isset($aData['Language']) ? $aData['Language'] : null);
 
 					if (is_array($aResult) && isset($aResult['AuthToken']))
 					{
