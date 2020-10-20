@@ -1807,6 +1807,8 @@ For instructions, please refer to this section of documentation and our
 		{
 			\Aurora\System\Api::Init();
 			\Aurora\System\Api::GetModuleManager()->SyncModulesConfigs();
+
+			\Aurora\System\Api::GetSettings()->SyncConfigs();
 		}
 		catch (\Exception $e)
 		{
