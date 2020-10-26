@@ -3298,7 +3298,7 @@ For instructions, please refer to this section of documentation and our
 		$oUser = $this->getUsersManager()->getUser($Id);
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 
-		if (!empty($oUser) && !empty($oAuthenticatedUser)) {
+		if (!empty($oUser)) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
 			if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oAuthenticatedUser->EntityId === $oUser->EntityId)
 			{
 				\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
