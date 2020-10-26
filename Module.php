@@ -1958,34 +1958,37 @@ For instructions, please refer to this section of documentation and our
 		$iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
 		$iLoginBlockDurationMinutes = $this->getConfig('LoginBlockDurationMinutes', 30);
 
-		try
+		if ($bEnableFailedLoginBlock)
 		{
-			$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
-			if ($oBlockedUser)
+			try
 			{
-				if ($oBlockedUser->ErrorLoginsCount >= $iLoginBlockAvailableTriesCount)
+				$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
+				if ($oBlockedUser)
 				{
-					$iBlockTime = (int) ((time() - $oBlockedUser->Time) / 60);
-					if ($iBlockTime > $iLoginBlockDurationMinutes)
+					if ($oBlockedUser->ErrorLoginsCount >= $iLoginBlockAvailableTriesCount)
 					{
-						$oBlockedUser->ErrorLoginsCount = 0;
-						$oBlockedUser->Save();
-					}
-					else
-					{
+						$iBlockTime = (int) ((time() - $oBlockedUser->Time) / 60);
+						if ($iBlockTime > $iLoginBlockDurationMinutes)
+						{
+							$oBlockedUser->ErrorLoginsCount = 0;
+							$oBlockedUser->Save();
+						}
+						else
+						{
 
-						throw new \Aurora\System\Exceptions\ApiException(
-							1000,
-							null,
-							$this->i18N("BLOCKED_USER_MESSAGE_ERROR", ["N" => $iLoginBlockAvailableTriesCount, "M" => ($iLoginBlockDurationMinutes - $iBlockTime)])
-						);
+							throw new \Aurora\System\Exceptions\ApiException(
+								1000,
+								null,
+								$this->i18N("BLOCKED_USER_MESSAGE_ERROR", ["N" => $iLoginBlockAvailableTriesCount, "M" => ($iLoginBlockDurationMinutes - $iBlockTime)])
+							);
+						}
 					}
 				}
 			}
-		}
-		catch (\Aurora\System\Exceptions\DbException $oEx)
-		{
-			\Aurora\System\Api::LogException($oEx);
+			catch (\Aurora\System\Exceptions\DbException $oEx)
+			{
+				\Aurora\System\Api::LogException($oEx);
+			}
 		}
 	}
 
