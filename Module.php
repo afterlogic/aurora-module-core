@@ -1435,7 +1435,7 @@ For instructions, please refer to this section of documentation and our
 				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
 			'Version' => \Aurora\System\Api::VersionFull(),
 			'ProductName' => $this->getConfig('ProductName'),
-			'PasswordMinLength' => $oSettings && $oSettings->GetConf('PasswordMinLength', 0),
+			'PasswordMinLength' => $oSettings->GetConf('PasswordMinLength', 0),
 			'PasswordMustBeComplex' => $oSettings && $oSettings->GetConf('PasswordMustBeComplex', false),
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
