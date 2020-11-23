@@ -2069,7 +2069,14 @@ For instructions, please refer to this section of documentation and our
 			if (isset($aAuthData['token']))
 			{
 				$iTime = $SignMe ? 0 : time();
-				$sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime);
+				$iAuthTokenExpirationLifetime = \Aurora\Api::GetSettings()->GetConf('AuthTokenExpirationLifetime', 0);
+				$iExpire = 0;
+				if ($iAuthTokenExpirationLifetime > 0)
+				{
+					$iExpire = time() + ($iAuthTokenExpirationLifetime * 24 * 60 * 60);
+				}
+
+				$sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
 
 				//this will store user data in static variable of Api class for later usage
 				$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
@@ -3906,6 +3913,29 @@ For instructions, please refer to this section of documentation and our
 	public function IsModuleDisabledForObject($oObject, $sModuleName)
 	{
 		return ($oObject instanceof \Aurora\System\EAV\Entity) ? $oObject->isModuleDisabled($sModuleName) : false;
+	}
+
+	public function GetUserSessions()
+	{
+		$aResult = [];
+		if (\Aurora\Api::GetSettings()->GetValue('StoreAuthTokenInDB', false))
+		{
+			$oUser = \Aurora\System\Api::getAuthenticatedUser();
+			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->EntityId);
+			foreach($aUserSessions as $oUserSession)
+			{
+				$aTokenInfo = \Aurora\System\Api::DecodeKeyValues($oUserSession->Token);
+
+				if ($aTokenInfo !== false && isset($aTokenInfo['id']))
+				{
+					$aResult[] = [
+						'LastUsageDateTime' => $oUserSession->LastUsageDateTime,
+						'ExpireDateTime' => (int) isset($aTokenInfo['@expire']) ? $aTokenInfo['@expire'] : 0,
+					];
+				}
+			}
+		}
+		return $aResult;
 	}
 	/***** public functions might be called with web API *****/
 }
