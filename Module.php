@@ -1440,6 +1440,7 @@ For instructions, please refer to this section of documentation and our
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
+			'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
 		);
 
 		if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
@@ -1450,7 +1451,6 @@ For instructions, please refer to this section of documentation and our
 				'DBHost' => $oSettings->GetConf('DBHost'),
 				'DBName' => $oSettings->GetConf('DBName'),
 				'DBLogin' => $oSettings->GetConf('DBLogin'),
-				'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
 				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
 				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
