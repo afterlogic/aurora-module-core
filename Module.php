@@ -1218,17 +1218,17 @@ For instructions, please refer to this section of documentation and our
 				}
 			}
 
-			if (\Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
-			{
-				$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
-				if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
-				{
-					if ($oCacher->SetTimer('Cache/ClearHelpdeskUsers'))
-					{
-						$bDoHepdeskClear = true;
-					}
-				}
-			}
+			// if (\Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
+			// {
+			// 	$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
+			// 	if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
+			// 	{
+			// 		if ($oCacher->SetTimer('Cache/ClearHelpdeskUsers'))
+			// 		{
+			// 			$bDoHepdeskClear = true;
+			// 		}
+			// 	}
+			// }
 		}
 
 		if ($bDoGC)
@@ -1240,11 +1240,11 @@ For instructions, please refer to this section of documentation and our
 			\Aurora\System\Api::Log('GC: FileCache / End');
 		}
 
-		if ($bDoHepdeskClear && \Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
-		{
-			\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
-			\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearAllOnline');
-		}
+		// if ($bDoHepdeskClear && \Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
+		// {
+		// 	\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
+		// 	\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearAllOnline');
+		// }
 
 		return $result;
 	}
@@ -3082,9 +3082,9 @@ For instructions, please refer to this section of documentation and our
 			{
 				// Tenant users should be deleted here in case if other modules (MailDomains for example) are turned off.
 				$aUsers = self::Decorator()->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['IdTenant' => $oTenant->EntityId]);
-				foreach ($aUsers as $oUser)
+				foreach ($aUsers as $aUser)
 				{
-					self::Decorator()->DeleteUser($oUser->EntityId);
+					self::Decorator()->DeleteUser($aUser['EntityId']);
 				}
 
 				// Delete tenant config files.
@@ -3213,13 +3213,13 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
-		foreach($aUsers as $oUser)
+		foreach($aUsers as $aUser)
 		{
 			$aResult['Items'][] = [
-				'Id' => $oUser->EntityId,
-				'UUID' => $oUser->UUID,
-				'Name' => $oUser->Name,
-				'PublicId' => $oUser->PublicId
+				'Id' => $aUser['EntityId'],
+				'UUID' => $aUser['UUID'],
+				'Name' => $aUser['Name'],
+				'PublicId' => $aUser['PublicId']
 			];
 		}
 		$aResult['Count'] = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
@@ -3330,9 +3330,15 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
 		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
-		foreach($aResults as $oUser)
+		foreach($aResults as $aUser)
 		{
-			$oUser->WriteSeparateLog = false;
+			$oUser = self::Decorator()->GetUser($aUser['EntityId']);
+			if ($oUser)
+			{
+				$oUser->WriteSeparateLog = false;
+				$oUser->saveAttribute('WriteSeparateLog');
+			}
+
 			$this->UpdateUserObject($oUser);
 		}
 
@@ -3354,9 +3360,9 @@ For instructions, please refer to this section of documentation and our
 
 		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
 		$aUsers = [];
-		foreach($aResults as $oUser)
+		foreach($aResults as $aUser)
 		{
-			$aUsers[] = $oUser->PublicId;
+			$aUsers[] = $aUser['PublicId'];
 		}
 		return $aUsers;
 	}

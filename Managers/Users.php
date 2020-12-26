@@ -114,7 +114,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				}
 			}
 				
-			$aResult = $this->oEavManager->getEntities(
+			$aResult = $this->oEavManager->getEntitiesAsArray(
 				\Aurora\Modules\Core\Classes\User::class,
 				array(
 					'PublicId', 'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
