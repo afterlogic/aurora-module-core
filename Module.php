@@ -2069,11 +2069,11 @@ For instructions, please refer to this section of documentation and our
 			if (isset($aAuthData['token']))
 			{
 				$iTime = $SignMe ? 0 : time();
-				$iAuthTokenExpirationLifetime = \Aurora\Api::GetSettings()->GetConf('AuthTokenExpirationLifetime', 0);
+				$iAuthTokenExpirationLifetimeDays = \Aurora\Api::GetSettings()->GetConf('AuthTokenExpirationLifetimeDays', 0);
 				$iExpire = 0;
-				if ($iAuthTokenExpirationLifetime > 0)
+				if ($iAuthTokenExpirationLifetimeDays > 0)
 				{
-					$iExpire = time() + ($iAuthTokenExpirationLifetime * 24 * 60 * 60);
+					$iExpire = time() + ($iAuthTokenExpirationLifetimeDays * 24 * 60 * 60);
 				}
 
 				$sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
