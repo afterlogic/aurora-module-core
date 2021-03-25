@@ -1970,12 +1970,10 @@ For instructions, please refer to this section of documentation and our
 						$iBlockTime = (int) ((time() - $oBlockedUser->Time) / 60);
 						if ($iBlockTime > $iLoginBlockDurationMinutes)
 						{
-							$oBlockedUser->ErrorLoginsCount = 0;
-							$oBlockedUser->Save();
+							$oBlockedUser->Delete();
 						}
 						else
 						{
-
 							throw new \Aurora\System\Exceptions\ApiException(
 								1000,
 								null,
