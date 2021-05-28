@@ -2,12 +2,9 @@
 
 namespace Aurora\Modules\Core\Models;
 
-use \Illuminate\Database\Eloquent\Model as Eloquent;
-
-class User extends Eloquent
+use \Aurora\System\Classes\Model;
+class User extends Model
 {
-    use \Aurora\System\ModelTrait;
-
     protected $primaryKey = 'Id';
 
     /**
