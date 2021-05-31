@@ -4,7 +4,7 @@ require "../../../system/bootstrap.php";
 
 use \Illuminate\Database\Capsule\Manager as Capsule;
 
-if (!Capsule::schema()->hasTable($table)) {
+if (!Capsule::schema()->hasTable('users')) {
 
     Capsule::schema()->create('users', function ($table) {
 
@@ -21,7 +21,7 @@ if (!Capsule::schema()->hasTable($table)) {
         $table->string('LastLoginNow')->default('');
         $table->integer('LoginsCount')->default(0);
 
-        $table->string('Language')->default(0);
+        $table->string('Language')->default('');
 
         $table->integer('TimeFormat')->default(1);
         $table->string('DateFormat')->default('');

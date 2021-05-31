@@ -3,6 +3,7 @@
 namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
+
 class User extends Model
 {
     protected $primaryKey = 'Id';
@@ -12,7 +13,6 @@ class User extends Model
      *
      * @var array
      */
-
     protected $fillable = [
         'Name',
         'PublicId',
@@ -51,11 +51,13 @@ class User extends Model
     *
     * @var array
     */
-
     protected $hidden = [
     ];
 
     protected $casts = [
         'Properties' => 'array',
+    ];
+
+    protected $attributes = [
     ];
 }
