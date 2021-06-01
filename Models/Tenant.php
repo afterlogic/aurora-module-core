@@ -6,7 +6,14 @@ use \Aurora\System\Classes\Model;
 
 class Tenant extends Model
 {
-    protected $primaryKey = 'Id';
+    protected $moduleName = 'Core';
+
+    protected $parentType = \Aurora\System\Module\Settings::class;
+
+    protected $parentInheritedAttributes = [
+        'Files::UserSpaceLimitMb'
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

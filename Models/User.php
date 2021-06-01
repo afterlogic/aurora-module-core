@@ -3,10 +3,19 @@
 namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
-
 class User extends Model
 {
+    protected $moduleName = 'Core';
+
     protected $primaryKey = 'Id';
+
+    protected $parentType = Tenant::class;
+
+    protected $parentKey = 'IdTenant';
+
+    protected $parentInheritedAttributes = [
+        'Files::UserSpaceLimitMb'
+    ];
 
     /**
      * The attributes that are mass assignable.
