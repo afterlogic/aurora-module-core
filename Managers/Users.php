@@ -7,6 +7,10 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use \Aurora\Modules\Core\Models\User;
+use Illuminate\Database\Eloquent\Builder;
+use \Aurora\System\Enums\SortOrder;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -17,26 +21,19 @@ namespace Aurora\Modules\Core\Managers;
 class Users extends \Aurora\System\Managers\AbstractManager
 {
 	/**
-	 * @var \Aurora\System\Managers\Eav
-	 */
-	public $oEavManager = null;
-	
-	/**
-	 * 
+	 *
 	 * @param \Aurora\System\Module\AbstractModule $oModule
 	 */
 	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
 	{
 		parent::__construct($oModule);
-		
-		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
 	}
 
 	/**
-	 * Retrieves information on particular WebMail Pro user. 
-	 * 
+	 * Retrieves information on particular WebMail Pro user.
+	 *
 	 * @param int|string $mUserId User identifier or UUID.
-	 * 
+	 *
 	 * @return User | false
 	 */
 	public function getUser($mUserId)
@@ -44,7 +41,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$oUser = false;
 		try
 		{
-			$oUser = $this->oEavManager->getEntity($mUserId, \Aurora\Modules\Core\Classes\User::class);
+			$oUser = User::findOrFail($mUserId);
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -57,39 +54,31 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	public function getUserByPublicId($UserPublicId)
 	{
 		$sUserPublicId = trim((string)$UserPublicId);
-		
+
 		if ($sUserPublicId)
 		{
-			$aUsers = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\User::class, [], 0, 0, ['PublicId' => [$sUserPublicId, '=']], 'Name', \Aurora\System\Enums\SortOrder::ASC);
-			if (count($aUsers) > 0)
-			{
-				return $aUsers[0];
-			}
+			return User::firstWhere('PublicId', $sUserPublicId);
 		}
 		return null;
 	}
 
 	/**
-	 * 
+	 *
 	 * @param string $sSearchDesc
-	 * @param array $aFilters
+	 * @param Builder $oFilters
 	 * @return int
 	 */
-	public function getUsersCount($sSearchDesc = '', $aFilters = [])
+	public function getUsersCount($sSearchDesc = '', Builder $oFilters = null)
 	{
-		if ($sSearchDesc !== '')
-		{
-			$aFilters['PublicId'] = ['%'.$sSearchDesc.'%', 'LIKE'];
-			if (count($aFilters) > 1)
-			{
-				$aFilters = ['$AND' => $aFilters];
-			}
+		$query = isset($oFilters) ? $oFilters : User::query();
+
+		if ($sSearchDesc !== '') {
+			$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
 		}
-		return $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\User::class,
-			$aFilters
-		);
+
+		return $query->count();
 	}
-	
+
 	/**
 	 * Obtains list of information about users.
 	 * @param int $iOffset
@@ -100,32 +89,24 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 * @param array $aFilters = []
 	 * @return array | false
 	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = \Aurora\System\Enums\SortOrder::ASC, $sSearchDesc = '', $aFilters = [])
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null)
 	{
 		$aResult = false;
 		try
 		{
-			if ($sSearchDesc !== '')
-			{
-				$aFilters['PublicId'] = ['%'.$sSearchDesc.'%', 'LIKE'];
-				if (count($aFilters) > 1)
-				{
-					$aFilters = ['$AND' => $aFilters];
-				}
-			}
-				
-			$aResult = $this->oEavManager->getEntitiesAsArray(
-				\Aurora\Modules\Core\Classes\User::class,
-				array(
-					'PublicId', 'IsDisabled', 'LastLogin', 'Name', 'IdTenant'
-				),
-				$iOffset,
-				$iLimit,
-				$aFilters,
-				$sOrderBy,
-				$iOrderType
-			);
+			$query = isset($oFilters) ? $oFilters : User::query();
 
+			if ($sSearchDesc !== '') {
+				$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
+			}
+			if ($iOffset > 0) {
+				$query = $query->offset($iOffset);
+			}
+			if ($iLimit > 0) {
+				$query = $query->limit($iLimit);
+			}
+
+			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -137,9 +118,9 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Determines how many users are in particular tenant. Tenant identifier is used for look up.
-	 * 
+	 *
 	 * @param int $iTenantId Tenant identifier.
-	 * 
+	 *
 	 * @return int | false
 	 */
 	public function getUsersCountForTenant($iTenantId)
@@ -147,7 +128,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$mResult = false;
 		try
 		{
-			$mResult = $this->oStorage->getUsersCountForTenant($iTenantId);
+			$mResult = User::where('IdTenent', $iTenantId)->count();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -158,7 +139,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 	/**
 	 * Calculates total number of users registered in WebMail Pro.
-	 * 
+	 *
 	 * @return int
 	 */
 	public function getTotalUsersCount()
@@ -166,7 +147,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		$iResult = 0;
 		try
 		{
-			$iResult = $this->oEavManager->getEntitiesCount(\Aurora\Modules\Core\Classes\User::class);
+			$iResult = User::count();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -174,18 +155,18 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		}
 		return $iResult;
 	}
-	
+
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oUser
+	 * @param User $oUser
 	 *
 	 * @return bool
 	 */
-	public function isExists(\Aurora\Modules\Core\Classes\User $oUser)
+	public function isExists(User $oUser)
 	{
 		$bResult = false;
 
-		$oResult = $this->oEavManager->getEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class);
-		
+		$oResult = User::find($oUser->Id);
+
 		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
 		{
 			$bResult = true;
@@ -193,13 +174,13 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 		return $bResult;
 	}
-	
+
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param User $oUser
 	 *
 	 * @return bool
 	 */
-	public function createUser (\Aurora\Modules\Core\Classes\User &$oUser)
+	public function createUser(User &$oUser)
 	{
 		$bResult = false;
 		try
@@ -208,17 +189,9 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$this->isExists($oUser))
 				{
-//					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 					$oUser->DateCreated = date('Y-m-d H:i:s');
 
-					$oTenant = $oUser->getTenant();
-					if ($oTenant)
-					{
-						$oUser->ParentUUID = $oTenant->UUID;
-						$oUser->ParentModuleName = $this->GetModule()->GetName();
-					}
-					
-					if (!$this->oEavManager->saveEntity($oUser))
+					if (!$oUser->save())
 					{
 						throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
 					}
@@ -239,20 +212,20 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 		return $bResult;
 	}
-	
+
 	/**
 	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function updateUser (\Aurora\Modules\Core\Classes\User &$oUser)
+	public function updateUser(User &$oUser)
 	{
 		$bResult = false;
 		try
 		{
 			if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
 			{
-				if (!$this->oEavManager->updateEntity($oUser))
+				if (!$oUser->update())
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
 				}
@@ -268,20 +241,20 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 		return $bResult;
 	}
-	
+
 	/**
 	 * @param User $oUser
 	 *
 	 * @return bool
 	 */
-	public function deleteUser (\Aurora\Modules\Core\Classes\User &$oUser)
+	public function deleteUser(User &$oUser)
 	{
 		$bResult = false;
 		try
 		{
 //			if ($oUser->validate())
 //			{
-				if (!$this->oEavManager->deleteEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class))
+				if (!$oUser->delete())
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 				}

@@ -7,14 +7,11 @@ class User extends Model
 {
     protected $moduleName = 'Core';
 
-    protected $primaryKey = 'Id';
-
     protected $parentType = Tenant::class;
 
     protected $parentKey = 'IdTenant';
 
     protected $parentInheritedAttributes = [
-        'Files::UserSpaceLimitMb'
     ];
 
     /**
@@ -69,4 +66,14 @@ class User extends Model
 
     protected $attributes = [
     ];
+
+    public function isAdmin()
+	{
+		return $this->Id === -1;
+	}
+
+	public function isNormalOrTenant()
+	{
+		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
+	}
 }
