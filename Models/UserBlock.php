@@ -35,9 +35,4 @@ class UserBlock extends Model
 
     protected $attributes = [
     ];
-
-		// 'Email'	=> array('string', ''),
-        // 'IpAddress'	=> array('string', ''),
-        // 'ErrorLoginsCount' 	=> array('int', 0),
-        // 'Time' 	=> array('int', 0),
 }

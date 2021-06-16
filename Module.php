@@ -153,7 +153,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
-	 * @param \Aurora\Modules\Core\Classes\User $oResult
+	 * @param \Aurora\Modules\Core\Models\User $oResult
 	 */
 	public function onCreateAccount(&$Args, &$Result)
 	{
@@ -420,13 +420,13 @@ For instructions, please refer to this section of documentation and our
 		if ($mResult && $mResult instanceof \Aurora\System\Classes\AbstractAccount && $mResult->UseToAuthorize)
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User &&
+			if ($oUser instanceof \Aurora\Modules\Core\Models\User &&
 				(($oUser->isNormalOrTenant() && $oUser->EntityId === $mResult->IdUser) ||
 				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 			)
 			{
 				$oUser = self::Decorator()->GetUserUnchecked($mResult->IdUser);
-				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+				if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 				{
 					$this->UpdateTokensValidFromTimestamp($oUser);
 				}
@@ -914,7 +914,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Updates user by object.
 	 *
-	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @param \Aurora\Modules\Core\Models\User $oUser
 	 * returns bool
 	 */
 	public function UpdateUserObject($oUser)
@@ -931,7 +931,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int|string $UserId User identifier or UUID.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserUnchecked($UserId = '')
 	{
@@ -951,7 +951,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int $UUID User uuid identifier.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserByUUID($UUID)
 	{
@@ -971,7 +971,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param string $PublicId User public identifier.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
@@ -988,7 +988,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Creates and returns user with super administrator role.
 	 *
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetAdminUser()
 	{
@@ -1007,7 +1007,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns tenant object by identifier.
 	 *
 	 * @param int $Id Tenant identifier.
-	 * @return \Aurora\Modules\Core\Classes\Tenant|null
+	 * @return \Aurora\Modules\Core\Models\Tenant|null
 	 */
 	public function GetTenantUnchecked($Id)
 	{
@@ -1093,7 +1093,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Returns default global tenant.
 	 *
-	 * @return \Aurora\Modules\Core\Classes\Tenant
+	 * @return \Aurora\Modules\Core\Models\Tenant
 	 */
 	public function GetDefaultGlobalTenant()
 	{
@@ -1110,7 +1110,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Updates tenant.
 	 *
-	 * @param Classes\Tenant $oTenant
+	 * @param Models\Tenant $oTenant
 	 * @return void
 	 */
 	public function UpdateTenantObject($oTenant)
@@ -1124,7 +1124,7 @@ For instructions, please refer to this section of documentation and our
 	 * !Not public
 	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
 	 *
-	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @param \Aurora\Modules\Core\Models\User $oUser
 	 * @return int
 	 */
 	public function UpdateTokensValidFromTimestamp($oUser)
@@ -2706,7 +2706,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns tenant object by identifier.
 	 *
 	 * @param int $Id Tenant identifier.
-	 * @return \Aurora\Modules\Core\Classes\Tenant|null
+	 * @return \Aurora\Modules\Core\Models\Tenant|null
 	 */
 	public function GetTenant($Id)
 	{
@@ -3272,7 +3272,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int|string $Id User identifier or UUID.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUser($Id = '')
 	{
@@ -3431,7 +3431,7 @@ For instructions, please refer to this section of documentation and our
 		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+			if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 			{
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
 			}
@@ -3703,7 +3703,7 @@ For instructions, please refer to this section of documentation and our
 
 		$oUser = self::Decorator()->GetUserUnchecked($UserId);
 
-		if ($oUser instanceof \Aurora\Modules\Core\Classes\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
+		if ($oUser instanceof \Aurora\Modules\Core\Models\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		}
