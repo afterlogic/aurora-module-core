@@ -1441,6 +1441,8 @@ For instructions, please refer to this section of documentation and our
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
 			'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
+			'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
+			'AvailableBackendModules' => $oApiIntegrator->GetBackendModules(),
 		);
 
 		if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
