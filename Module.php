@@ -188,9 +188,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$oUser = $this->getUsersManager()->getUser($iUserId);
 			}
 
-			if (isset($oUser) && isset($oUser->EntityId))
+			if (isset($oUser) && isset($oUser->Id))
 			{
-				$Args['UserId'] = $oUser->EntityId;
+				$Args['UserId'] = $oUser->Id;
 			}
 		}
 
@@ -421,7 +421,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
 			if ($oUser instanceof \Aurora\Modules\Core\Models\User &&
-				(($oUser->isNormalOrTenant() && $oUser->EntityId === $mResult->IdUser) ||
+				(($oUser->isNormalOrTenant() && $oUser->Id === $mResult->IdUser) ||
 				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 			)
 			{
@@ -1768,7 +1768,7 @@ For instructions, please refer to this section of documentation and our
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			if (is_array($aChannels) && count($aChannels) > 0)
 			{
-				$iChannelId = $aChannels[0]->EntityId;
+				$iChannelId = $aChannels[0]->Id;
 			}
 			else
 			{
@@ -3186,17 +3186,17 @@ For instructions, please refer to this section of documentation and our
 			$Filters = $Filters->where('IdTenant', $TenantId);
 		}
 
+		$aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters);
 		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
 		foreach($aUsers as $oUser)
 		{
 			$aResult['Items'][] = [
 				'Id' => $oUser->Id,
-				'UUID' => '', // TODO
+				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId
 			];
 		}
-		$aResult['Count'] = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
 
 		return $aResult;
 	}
@@ -3408,7 +3408,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '', '');
-			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
+			$TenantId = count($aTenants) === 1 ? $aTenants[0]->Id : 0;
 		}
 
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
@@ -3901,7 +3901,7 @@ For instructions, please refer to this section of documentation and our
 		if (\Aurora\Api::GetSettings()->GetValue('StoreAuthTokenInDB', false))
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
-			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->EntityId);
+			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->Id);
 			foreach($aUserSessions as $oUserSession)
 			{
 				$aTokenInfo = \Aurora\System\Api::DecodeKeyValues($oUserSession->Token);

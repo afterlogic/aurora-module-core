@@ -43,7 +43,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$oUser = User::findOrFail($mUserId);
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\Eloquent\ModelNotFoundException $oException)
 		{
 			$oUser = false;
 			$this->setLastException($oException);
@@ -190,6 +190,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				if (!$this->isExists($oUser))
 				{
 					$oUser->DateCreated = date('Y-m-d H:i:s');
+					$oUser->UUID = $oUser->generateUUID();
 
 					if (!$oUser->save())
 					{
