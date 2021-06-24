@@ -53,4 +53,13 @@ class Tenant extends Model
 
     protected $attributes = [
     ];
+
+    protected $appends = [
+        'EntityId'
+    ];
+
+    public function getEntityIdAttribute()
+    {
+        return $this->Id;
+    }
 }

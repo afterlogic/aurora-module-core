@@ -27,7 +27,7 @@ class CreateUsersTable extends Migration
             $table->string('LastLoginNow')->default('');
             $table->integer('LoginsCount')->default(0);
 
-            $table->string('Language')->default(0);
+            $table->string('Language')->default('');
 
             $table->integer('TimeFormat')->default(1);
             $table->string('DateFormat')->default('');

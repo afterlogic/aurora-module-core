@@ -2796,6 +2796,7 @@ For instructions, please refer to this section of documentation and our
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->Id : 0;
 		}
 		$Name = \trim(\Aurora\System\Utils::getSanitizedFilename($Name));
+
 		if ($Name !== '' && $ChannelId > 0)
 		{
 			$iTenantsCount = $this->getTenantsManager()->getTenantsByChannelIdCount($ChannelId);
