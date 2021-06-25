@@ -29,7 +29,7 @@ class CreateUsersTable extends Migration
 
             $table->string('Language')->default('');
 
-            $table->integer('TimeFormat')->default(1);
+            $table->integer('TimeFormat')->nullable()->default(1);
             $table->string('DateFormat')->default('');
 
             $table->string('Question1')->default('');
