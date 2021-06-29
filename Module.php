@@ -1766,9 +1766,9 @@ For instructions, please refer to this section of documentation and our
 		{
 			$iChannelId = 0;
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
-			if (is_array($aChannels) && count($aChannels) > 0)
+			if ($aChannels)
 			{
-				$iChannelId = $aChannels[0]->Id;
+				$iChannelId = $aChannels->first()->Id;
 			}
 			else
 			{
@@ -1777,7 +1777,7 @@ For instructions, please refer to this section of documentation and our
 			if ($iChannelId !== 0)
 			{
 				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
-				if (is_array($aTenants) && count($aTenants) > 0)
+				if ($aTenants->count() > 0)
 				{
 					$bResult = true;
 				}
