@@ -113,18 +113,12 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		$iChannelId = 0;
 		try
 		{
-			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\Channel::class,
-				array(
-					'Login'
-				),
-				0,
-				1,
-				array('Login' => $sChannelLogin)
-			);
+			$oChannel = Channel::firstWhere('Login', $sChannelLogin);
 
-			if (isset($aResultChannels[0]) && $aResultChannels[0] instanceOf \Aurora\Modules\Core\Classes\Channel)
+
+			if ($oChannel instanceOf Channel)
 			{
-				$iChannelId = $aResultChannels[0]->EntityId;
+				$iChannelId = $oChannel->Id;
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -136,47 +130,32 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function isExists(\Aurora\Modules\Core\Classes\Channel $oChannel)
+	public function isExists(Channel $oChannel)
 	{
 		$bResult = false;
-		try
-		{
-			$aResultChannels = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\Channel::class,
-				array('Login'),
-				0,
-				0,
-				array('Login' => $oChannel->Login)
-			);
+		$oChannels = Channel::where('Login', $oChannel->Login)->get();
 
-			if ($aResultChannels)
-			{
-				foreach($aResultChannels as $oObject)
-				{
-					if ($oObject->EntityId !== $oChannel->EntityId)
-					{
-						$bResult = true;
-						break;
-					}
-				}
-			}
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		foreach($oChannels as $oObject)
 		{
-			$this->setLastException($oException);
+			if ($oObject->Id !== $oChannel->Id)
+			{
+				$bResult = true;
+				break;
+			}
 		}
 		return $bResult;
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function createChannel(\Aurora\Modules\Core\Classes\Channel &$oChannel)
+	public function createChannel(Channel &$oChannel)
 	{
 		$bResult = false;
 		try
@@ -187,14 +166,14 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 				{
 					$oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
 
-					if (!$this->oEavManager->saveEntity($oChannel))
+					if (!$oChannel->save())
 					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelCreateFailed);
 					}
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelAlreadyExists);
+					throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelAlreadyExists);
 				}
 			}
 
@@ -210,11 +189,11 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @return bool
 	 */
-	public function updateChannel(\Aurora\Modules\Core\Classes\Channel $oChannel)
+	public function updateChannel(Channel $oChannel)
 	{
 		$bResult = false;
 		try
@@ -223,14 +202,14 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$this->isExists($oChannel))
 				{
-					if (!$this->oEavManager->saveEntity($oChannel))
+					if (!$oChannel->save())
 					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelUpdateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelUpdateFailed);
 					}
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+					throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelDoesNotExist);
 				}
 			}
 
@@ -245,21 +224,21 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
+	 * @param Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @throws $oException
 	 *
 	 * @return bool
 	 */
-	public function deleteChannel(\Aurora\Modules\Core\Classes\Channel $oChannel)
+	public function deleteChannel(\Aurora\Modules\Core\Models\Channel $oChannel)
 	{
 		$bResult = false;
 		try
 		{
 			/* @var $oTenantsManager CApiTenantsManager */
-			$oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants\Manager();
+			$oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants($this->oModule);
 
-			if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oChannel->EntityId, true))
+			if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oChannel->Id, true))
 			{
 				$oException = $oTenantsManager->GetLastException();
 				if ($oException)
@@ -267,8 +246,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 					throw $oException;
 				}
 			}
-
-			$bResult = $this->oEavManager->deleteEntity($oChannel->EntityId, \Aurora\Modules\Core\Classes\Channel::class);
+			$oChannel->delete();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
