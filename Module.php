@@ -7,8 +7,9 @@
 
 namespace Aurora\Modules\Core;
 
-use Aurora\System\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -1761,36 +1762,21 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		$bResult = false;
-		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
-		if ($oEavManager->createTablesFromFile())
-		{
-			$iChannelId = 0;
-			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
-			if (is_array($aChannels) && count($aChannels) > 0)
-			{
-				$iChannelId = $aChannels[0]->Id;
-			}
-			else
-			{
-				$iChannelId = self::Decorator()->CreateChannel('Default', '');
-			}
-			if ($iChannelId !== 0)
-			{
-				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
-				if (is_array($aTenants) && count($aTenants) > 0)
-				{
-					$bResult = true;
-				}
-				else
-				{
-					$mTenantId = self::Decorator()->CreateTenant($iChannelId, 'Default');
-					if (is_int($mTenantId))
-					{
-						$bResult = true;
-					}
-				}
-			}
-		}
+
+        try {
+            $container = \Aurora\Api::GetContainer();
+            $container['console']->setAutoExit(false);
+
+            $container['console']->find('migrate')
+                ->run(new ArrayInput([
+                    '--force' => true,
+                    '--seed' => true
+                ]), new NullOutput());
+
+            $bResult = true;
+        } catch (\Exception $oEx) {
+            \Aurora\System\Api::LogException($oEx);
+        }
 
 		return $bResult;
 	}
