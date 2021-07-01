@@ -7,7 +7,9 @@
 
 namespace Aurora\Modules\Core;
 
-use Aurora\System\Exceptions\ApiException;
+use Illuminate\Database\Eloquent\Builder;
+use Symfony\Component\Console\Input\ArrayInput;
+use Symfony\Component\Console\Output\NullOutput;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -152,7 +154,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 *		*int* **TenantId** Identifier of tenant for creating new user in it.
 	 *		*int* **$PublicId** New user name.
 	 * }
-	 * @param \Aurora\Modules\Core\Classes\User $oResult
+	 * @param \Aurora\Modules\Core\Models\User $oResult
 	 */
 	public function onCreateAccount(&$Args, &$Result)
 	{
@@ -187,9 +189,9 @@ class Module extends \Aurora\System\Module\AbstractModule
 				$oUser = $this->getUsersManager()->getUser($iUserId);
 			}
 
-			if (isset($oUser) && isset($oUser->EntityId))
+			if (isset($oUser) && isset($oUser->Id))
 			{
-				$Args['UserId'] = $oUser->EntityId;
+				$Args['UserId'] = $oUser->Id;
 			}
 		}
 
@@ -419,13 +421,13 @@ For instructions, please refer to this section of documentation and our
 		if ($mResult && $mResult instanceof \Aurora\System\Classes\AbstractAccount && $mResult->UseToAuthorize)
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User &&
-				(($oUser->isNormalOrTenant() && $oUser->EntityId === $mResult->IdUser) ||
+			if ($oUser instanceof \Aurora\Modules\Core\Models\User &&
+				(($oUser->isNormalOrTenant() && $oUser->Id === $mResult->IdUser) ||
 				$oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 			)
 			{
 				$oUser = self::Decorator()->GetUserUnchecked($mResult->IdUser);
-				if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+				if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 				{
 					$this->UpdateTokensValidFromTimestamp($oUser);
 				}
@@ -913,7 +915,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Updates user by object.
 	 *
-	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @param \Aurora\Modules\Core\Models\User $oUser
 	 * returns bool
 	 */
 	public function UpdateUserObject($oUser)
@@ -930,7 +932,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int|string $UserId User identifier or UUID.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserUnchecked($UserId = '')
 	{
@@ -950,7 +952,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int $UUID User uuid identifier.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserByUUID($UUID)
 	{
@@ -970,7 +972,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param string $PublicId User public identifier.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUserByPublicId($PublicId)
 	{
@@ -987,7 +989,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Creates and returns user with super administrator role.
 	 *
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetAdminUser()
 	{
@@ -1006,7 +1008,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns tenant object by identifier.
 	 *
 	 * @param int $Id Tenant identifier.
-	 * @return \Aurora\Modules\Core\Classes\Tenant|null
+	 * @return \Aurora\Modules\Core\Models\Tenant|null
 	 */
 	public function GetTenantUnchecked($Id)
 	{
@@ -1092,7 +1094,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Returns default global tenant.
 	 *
-	 * @return \Aurora\Modules\Core\Classes\Tenant
+	 * @return \Aurora\Modules\Core\Models\Tenant
 	 */
 	public function GetDefaultGlobalTenant()
 	{
@@ -1109,7 +1111,7 @@ For instructions, please refer to this section of documentation and our
 	 *
 	 * Updates tenant.
 	 *
-	 * @param Classes\Tenant $oTenant
+	 * @param Models\Tenant $oTenant
 	 * @return void
 	 */
 	public function UpdateTenantObject($oTenant)
@@ -1123,7 +1125,7 @@ For instructions, please refer to this section of documentation and our
 	 * !Not public
 	 * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
 	 *
-	 * @param \Aurora\Modules\Core\Classes\User $oUser
+	 * @param \Aurora\Modules\Core\Models\User $oUser
 	 * @return int
 	 */
 	public function UpdateTokensValidFromTimestamp($oUser)
@@ -1762,36 +1764,21 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		$bResult = false;
-		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
-		if ($oEavManager->createTablesFromFile())
-		{
-			$iChannelId = 0;
-			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
-			if (is_array($aChannels) && count($aChannels) > 0)
-			{
-				$iChannelId = $aChannels[0]->EntityId;
-			}
-			else
-			{
-				$iChannelId = self::Decorator()->CreateChannel('Default', '');
-			}
-			if ($iChannelId !== 0)
-			{
-				$aTenants = $this->getTenantsManager()->getTenantsByChannelId($iChannelId);
-				if (is_array($aTenants) && count($aTenants) > 0)
-				{
-					$bResult = true;
-				}
-				else
-				{
-					$mTenantId = self::Decorator()->CreateTenant($iChannelId, 'Default');
-					if (is_int($mTenantId))
-					{
-						$bResult = true;
-					}
-				}
-			}
-		}
+
+        try {
+            $container = \Aurora\Api::GetContainer();
+            $container['console']->setAutoExit(false);
+
+            $container['console']->find('migrate')
+                ->run(new ArrayInput([
+                    '--force' => true,
+                    '--seed' => true
+                ]), new NullOutput());
+
+            $bResult = true;
+        } catch (\Exception $oEx) {
+            \Aurora\System\Api::LogException($oEx);
+        }
 
 		return $bResult;
 	}
@@ -1994,19 +1981,7 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetBlockedUser($sEmail, $sIp)
 	{
-		return (new \Aurora\System\EAV\Query())
-		->select()
-		->whereType(Classes\UserBlock::class)
-		->where(
-			[
-				'$AND' => [
-					'Email' => [$sEmail, '='],
-					'IpAddress' => [$sIp, '='],
-				]
-			]
-		)
-		->one()
-		->exec();
+		return Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();
 	}
 
 	public function BlockUser($sEmail, $sIp)
@@ -2016,14 +1991,14 @@ For instructions, please refer to this section of documentation and our
 			$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
 			if (!$oBlockedUser)
 			{
-				$oBlockedUser = new Classes\UserBlock();
+				$oBlockedUser = new Models\UserBlock();
 				$oBlockedUser->Email = $sEmail;
 				$oBlockedUser->IpAddress = $sIp;
 			}
 			$oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
 			$oBlockedUser->Time = time();
 
-			$oBlockedUser->Save();
+			$oBlockedUser->save();
 		}
 		catch (\Aurora\System\Exceptions\DbException $oEx)
 		{
@@ -2086,7 +2061,7 @@ For instructions, please refer to this section of documentation and our
 					// If User is super admin don't try to detect tenant. It will try to connect to DB.
 					// Super admin should be able to log in without connecting to DB.
 					$oTenant = \Aurora\System\Api::getTenantByWebDomain();
-					if ($oTenant && $oUser->IdTenant !== $oTenant->EntityId)
+					if ($oTenant && $oUser->IdTenant !== $oTenant->Id)
 					{
 						throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
 					}
@@ -2478,7 +2453,7 @@ For instructions, please refer to this section of documentation and our
 		$Login = \trim($Login);
 		if ($Login !== '')
 		{
-			$oChannel = new Classes\Channel(self::GetName());
+			$oChannel = new Models\Channel();
 
 			$oChannel->Login = $Login;
 
@@ -2489,7 +2464,7 @@ For instructions, please refer to this section of documentation and our
 
 			if ($this->getChannelsManager()->createChannel($oChannel))
 			{
-				return $oChannel->EntityId;
+				return $oChannel->Id;
 			}
 		}
 		else
@@ -2643,10 +2618,10 @@ For instructions, please refer to this section of documentation and our
 
 		foreach ($aTenantsFromDb as $oTenant)
 		{
-			if (!$bTenant || $oTenant->EntityId === $oAuthenticatedUser->IdTenant)
+			if (!$bTenant || $oTenant->Id === $oAuthenticatedUser->IdTenant)
 			{
 				$aTenants[] = [
-					'Id' => $oTenant->EntityId,
+					'Id' => $oTenant->Id,
 					'Name' => $oTenant->Name,
 					'SiteName' => $oSettings->GetTenantValue($oTenant->Name, 'SiteName', '')
 				];
@@ -2719,7 +2694,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns tenant object by identifier.
 	 *
 	 * @param int $Id Tenant identifier.
-	 * @return \Aurora\Modules\Core\Classes\Tenant|null
+	 * @return \Aurora\Modules\Core\Models\Tenant|null
 	 */
 	public function GetTenant($Id)
 	{
@@ -2806,15 +2781,16 @@ For instructions, please refer to this section of documentation and our
 		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
 		{
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
-			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->EntityId : 0;
+			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->Id : 0;
 		}
 		$Name = \trim(\Aurora\System\Utils::getSanitizedFilename($Name));
+
 		if ($Name !== '' && $ChannelId > 0)
 		{
 			$iTenantsCount = $this->getTenantsManager()->getTenantsByChannelIdCount($ChannelId);
 			if ($oSettings->GetConf('EnableMultiTenant') || $iTenantsCount === 0)
 			{
-				$oTenant = new Classes\Tenant(self::GetName());
+				$oTenant = new Models\Tenant();
 
 				$oTenant->Name = $Name;
 				$oTenant->Description = $Description;
@@ -2829,7 +2805,7 @@ For instructions, please refer to this section of documentation and our
 						$oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);
 						$oSettings->SaveTenantSettings($oTenant->Name);
 					}
-					return $oTenant->EntityId;
+					return $oTenant->Id;
 				}
 			}
 		}
@@ -3081,11 +3057,7 @@ For instructions, please refer to this section of documentation and our
 			if ($oTenant)
 			{
 				// Tenant users should be deleted here in case if other modules (MailDomains for example) are turned off.
-				$aUsers = self::Decorator()->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['IdTenant' => $oTenant->EntityId]);
-				foreach ($aUsers as $aUser)
-				{
-					self::Decorator()->DeleteUser($aUser['EntityId']);
-				}
+				Models\User::where('IdTenant', $oTenant->Id)->delete();
 
 				// Delete tenant config files.
 				$sTenantSpacePath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
@@ -3178,7 +3150,7 @@ For instructions, please refer to this section of documentation and our
 	 *		*int* **Count** Users count.
 	 * }
 	 */
-	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
+	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
@@ -3197,32 +3169,23 @@ For instructions, please refer to this section of documentation and our
 			'Count' => 0,
 		];
 
+		$Filters = ($Filters instanceof Builder) ? $Filters : Models\User::query();
 		if ($TenantId !== 0)
 		{
-			if (isset($Filters) && is_array($Filters) && count($Filters) > 0)
-			{
-				$Filters['IdTenant'] = [$TenantId, '='];
-				$Filters = [
-					'$AND' => $Filters
-				];
-			}
-			else
-			{
-				$Filters = ['IdTenant' => [$TenantId, '=']];
-			}
+			$Filters = $Filters->where('IdTenant', $TenantId);
 		}
 
+		$aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters);
 		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
-		foreach($aUsers as $aUser)
+		foreach($aUsers as $oUser)
 		{
 			$aResult['Items'][] = [
-				'Id' => $aUser['EntityId'],
-				'UUID' => $aUser['UUID'],
-				'Name' => $aUser['Name'],
-				'PublicId' => $aUser['PublicId']
+				'Id' => $oUser->Id,
+				'UUID' => $oUser->UUID,
+				'Name' => $oUser->Name,
+				'PublicId' => $oUser->PublicId
 			];
 		}
-		$aResult['Count'] = $Limit > 0 ? $this->getUsersManager()->getUsersCount($Search, $Filters) : count($aUsers);
 
 		return $aResult;
 	}
@@ -3298,7 +3261,7 @@ For instructions, please refer to this section of documentation and our
 	 * Returns user object.
 	 *
 	 * @param int|string $Id User identifier or UUID.
-	 * @return \Aurora\Modules\Core\Classes\User
+	 * @return \Aurora\Modules\Core\Models\User
 	 */
 	public function GetUser($Id = '')
 	{
@@ -3306,7 +3269,7 @@ For instructions, please refer to this section of documentation and our
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 
 		if (!empty($oUser)) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
-			if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oAuthenticatedUser->EntityId === $oUser->EntityId)
+			if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id)
 			{
 				\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 			}
@@ -3358,7 +3321,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
-		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', Models\User::where('WriteSeparateLog' , true));
 		$aUsers = [];
 		foreach($aResults as $aUser)
 		{
@@ -3434,7 +3397,7 @@ For instructions, please refer to this section of documentation and our
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '', '');
-			$TenantId = count($aTenants) === 1 ? $aTenants[0]->EntityId : 0;
+			$TenantId = count($aTenants) === 1 ? $aTenants[0]->Id : 0;
 		}
 
 		$oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
@@ -3457,7 +3420,7 @@ For instructions, please refer to this section of documentation and our
 		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
-			if ($oUser instanceof \Aurora\Modules\Core\Classes\User)
+			if ($oUser instanceof \Aurora\Modules\Core\Models\User)
 			{
 				throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
 			}
@@ -3474,7 +3437,7 @@ For instructions, please refer to this section of documentation and our
 				}
 			}
 
-			$oUser = new Classes\User(self::GetName());
+			$oUser = new Models\User();
 
 			$oUser->PublicId = $PublicId;
 			$oUser->IdTenant = $TenantId;
@@ -3487,7 +3450,7 @@ For instructions, please refer to this section of documentation and our
 
 			if ($this->getUsersManager()->createUser($oUser))
 			{
-				return $oUser->EntityId;
+				return $oUser->Id;
 			}
 		}
 		else
@@ -3729,7 +3692,7 @@ For instructions, please refer to this section of documentation and our
 
 		$oUser = self::Decorator()->GetUserUnchecked($UserId);
 
-		if ($oUser instanceof \Aurora\Modules\Core\Classes\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
+		if ($oUser instanceof \Aurora\Modules\Core\Models\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant)
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		}
@@ -3927,7 +3890,7 @@ For instructions, please refer to this section of documentation and our
 		if (\Aurora\Api::GetSettings()->GetValue('StoreAuthTokenInDB', false))
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
-			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->EntityId);
+			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->Id);
 			foreach($aUserSessions as $oUserSession)
 			{
 				$aTokenInfo = \Aurora\System\Api::DecodeKeyValues($oUserSession->Token);

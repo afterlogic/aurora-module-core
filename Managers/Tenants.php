@@ -7,9 +7,12 @@
 
 namespace Aurora\Modules\Core\Managers;
 
-use Aurora\System\Exceptions\Errs;
+use \Aurora\Modules\Core\Module as CoreModule;
+use \Aurora\System\Exceptions\Errs;
 use Aurora\System\Exceptions\ErrorCodes;
-
+use \Aurora\Modules\Core\Models\Tenant;
+use \Aurora\Modules\Core\Models\Сhannel;
+use \Aurora\System\Enums\SortOrder;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -22,32 +25,12 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	/**
 	 * @var array
 	 */
-	static $aTenantNameCache = array();
+	static $aTenantNameCache = [];
 
 	/**
-	 * @var \Aurora\System\Managers\Eav
-	 */
-	public $oEavManager = null;
-
-	public $oChannelsManager = null;
-
-	/**
-	 * @var Aurora\Modules\Core\Classes\Tenant
+	 * @var Tenant
 	 */
 	static $oDefaultTenant = null;
-
-	/**
-	 * Creates a new instance of the object.
-	 *
-	 */
-	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
-	{
-		parent::__construct($oModule);
-
-		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
-
-		$this->oChannelsManager = new Channels($oModule);
-	}
 
 	/**
 	 * @param int $iOffset Offset of list.
@@ -55,26 +38,23 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 * @param string $sSearch Search string.
 	 * @return array|false
 	 */
-	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '', $sOrderBy = 'Name')
+	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '', $sOrderBy = 'Name', $iOrderType = SortOrder::ASC)
 	{
-		$aFilters = [
-			'Name' => ['%' . $sSearch . '%', 'LIKE'],
-		];
-		$iOrderType = \Aurora\System\Enums\SortOrder::ASC;
-
-		return $this->oEavManager->getEntities(
-			\Aurora\Modules\Core\Classes\Tenant::class,
-			array(
-				'Name',
-				'Description',
-				'IdChannel'
-			),
-			$iOffset,
-			$iLimit,
-			$aFilters,
-			$sOrderBy,
-			$iOrderType
-		);
+		if (!empty($sSearch))
+		{
+			$query = Tenant::where('Name', 'like', '%'.$sSearch.'%');
+		}
+		else
+		{
+			$query = Tenant::query();
+		}
+		if ($iOffset > 0) {
+			$query = $query->offset($iOffset);
+		}
+		if ($iLimit > 0) {
+			$query = $query->limit($iLimit);
+		}
+		return $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 	}
 
 	/**
@@ -83,14 +63,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantsCount($sSearch = '')
 	{
-		$aFilters = [
-			'Name' => ['%' . $sSearch . '%', 'LIKE'],
-		];
-
-		return $this->oEavManager->getEntitiesCount(
-			\Aurora\Modules\Core\Classes\Tenant::class,
-			$aFilters
-		);
+		return Tenant::where('Name', 'like', '%'.$sSearch.'%')->count();
 	}
 
 	/**
@@ -102,30 +75,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			try
 			{
-				$mResult = $this->oEavManager->getEntities(
-					\Aurora\Modules\Core\Classes\Tenant::class,
-					array(
-						'IsDefault'
-					),
-					0,
-					1,
-					array('IsDefault' => true)
-				);
-
-				if (is_array($mResult) && count($mResult) === 0)
-				{
-					$mResult = $this->oEavManager->getEntities(
-						\Aurora\Modules\Core\Classes\Tenant::class,
-						array(),
-						0,
-						1
-					);
-				}
-
-				if (is_array($mResult) && count($mResult) > 0 && $mResult[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
-				{
-					self::$oDefaultTenant = $mResult[0];
-				}
+				self::$oDefaultTenant = Tenant::firstWhere('IsDefault', true);
 			}
 			catch (\Aurora\System\Exceptions\BaseException $oException)
 			{
@@ -146,9 +96,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		$oTenant = null;
 		try
 		{
-			$oResult = $this->oEavManager->getEntity($mTenantId, \Aurora\Modules\Core\Classes\Tenant::class);
+			$oResult = Tenant::find($mTenantId);
 
-			if (!empty($oResult))
+			if ($oResult)
 			{
 				$oTenant = $oResult;
 			}
@@ -167,37 +117,13 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return
 	 */
-	public function getTenantByName($sTenantName
-)	{
+	public function getTenantByName($sTenantName)	{
 		$oTenant = null;
 		try
 		{
 			if (!empty($sTenantName))
 			{
-				$oFilterBy = array('Name' => $sTenantName);
-//				if (null !== $sTenantPassword)
-//				{
-//					$oFilterBy['PasswordHash'] = Aurora\Modules\Core\Classes\Tenant::hashPassword($sTenantPassword);
-
-					//TODO why we shoud filter by these fields?
-					$oFilterBy['IsDisabled'] = false;
-//					$oFilterBy['IsEnableAdminPanelLogin'] = true;
-//				}
-
-				$aResultTenants = $this->oEavManager->getEntities(
-					\Aurora\Modules\Core\Classes\Tenant::class,
-					array(
-						'Name'
-					),
-					0,
-					1,
-					$oFilterBy
-				);
-
-				if (isset($aResultTenants[0]) && $aResultTenants[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
-				{
-					$oTenant = $aResultTenants[0];
-				}
+				$oTenant = Tenant::where('Name', $sTenantName)->where('IsDisabled', false)->first();
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -214,7 +140,6 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantIdByName($sTenantName)
 	{
-		//TODO
 		$iResult = 0;
 
 		if (0 === strlen($sTenantName))
@@ -226,7 +151,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			$oTenant = $this->getTenantByName($sTenantName);
 			if ($oTenant)
 			{
-				$iResult = $oTenant->EntityId;
+				$iResult = $oTenant->Id;
 			}
 		}
 
@@ -234,37 +159,17 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
+	 * @param Tenant $oTenant
 	 *
 	 * @return bool
 	 */
-	public function isTenantExists(\Aurora\Modules\Core\Classes\Tenant $oTenant)
+	public function isTenantExists(Tenant $oTenant)
 	{
-		//TODO
-//		$bResult = $oTenant->IsDefault;
-
 		$bResult = false;
 
 		try
 		{
-			$aResultTenants = $this->oEavManager->getEntities(\Aurora\Modules\Core\Classes\Tenant::class,
-				array('Name'),
-				0,
-				0,
-				array('Name' => $oTenant->Name)
-			);
-
-			if ($aResultTenants)
-			{
-				foreach($aResultTenants as $oObject)
-				{
-					if ($oObject->EntityId !== $oTenant->EntityId)
-					{
-						$bResult = true;
-						break;
-					}
-				}
-			}
+			$bResult = Tenant::where('Name', $oTenant->Name)->where('Id', '!=', $oTenant->Id)->exists();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -274,11 +179,11 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
+	 * @param Tenant $oTenant
 	 *
 	 * @return bool
 	 */
-	public function createTenant(\Aurora\Modules\Core\Classes\Tenant &$oTenant)
+	public function createTenant(Tenant &$oTenant)
 	{
 		$bResult = false;
 		try
@@ -291,10 +196,11 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 					{
 						/* @var $oChannelsApi CApiChannelsManager */
 
-						if ($this->oChannelsManager)
+						$oChannelsManager = CoreModule::getInstance()->getChannelsManager();
+						if ($oChannelsManager)
 						{
-							/* @var $oChannel Aurora\Modules\Core\Classes\Channel */
-							$oChannel = $this->oChannelsManager->getChannelById($oTenant->IdChannel);
+							/* @var $oChannel Сhannel */
+							$oChannel = $oChannelsManager->getChannelById($oTenant->IdChannel);
 							if (!$oChannel)
 							{
 								throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
@@ -310,15 +216,15 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 						$oTenant->IdChannel = 0;
 					}
 
-					if (!$this->oEavManager->saveEntity($oTenant))
+					if (!$oTenant->save())
 					{
 						throw new \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantCreateFailed);
 					}
 
-					if ($oTenant->EntityId)
-					{
-						$this->oEavManager->saveEntity($oTenant);
-					}
+					// if ($oTenant->EntityId)
+					// {
+					// 	$this->oEavManager->saveEntity($oTenant);
+					// }
 				}
 				else
 				{
@@ -346,14 +252,14 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateTenant(\Aurora\Modules\Core\Classes\Tenant $oTenant)
+	public function updateTenant(Tenant $oTenant)
 	{
 		$bResult = false;
 		try
 		{
-			if ($oTenant->validate() && $oTenant->EntityId !== 0)
+			if ($oTenant->validate() && $oTenant->Id !== 0)
 			{
-				$bResult = $this->oEavManager->saveEntity($oTenant);
+				$bResult = $oTenant->save();
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -385,13 +291,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		$aResult = false;
 		try
 		{
-			$aResult = $this->oEavManager->getEntities(
-				\Aurora\Modules\Core\Classes\Tenant::class,
-				array('IsDefault', 'IdChannel'),
-				0,
-				0,
-				array('IdChannel' => $iChannelId)
-			);
+			$aResult = Tenant::where('IdChannel', $iChannelId)->get();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -407,10 +307,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantsByChannelIdCount($iChannelId)
 	{
-		return $this->oEavManager->getEntitiesCount(
-			\Aurora\Modules\Core\Classes\Tenant::class,
-			['IdChannel' => $iChannelId]
-		);
+		return Tenant::where('IdChannel', $iChannelId)->count();
 	}
 
 	/**
@@ -420,21 +317,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function deleteTenantsByChannelId($iChannelId)
 	{
-		$iResult = 1;
-		$aTenants = $this->getTenantsByChannelId($iChannelId);
-
-		if (is_array($aTenants))
-		{
-			foreach ($aTenants as $oTenant)
-			{
-				if (!$oTenant->IsDefault && 0 < $oTenant->EntityId)
-				{
-					$iResult &= $this->deleteTenant($oTenant);
-				}
-			}
-		}
-
-		return (bool) $iResult;
+		return Tenant::where('IdChannel', $iChannelId)->delete();
 	}
 
 	/**
@@ -446,14 +329,14 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteTenant(\Aurora\Modules\Core\Classes\Tenant $oTenant)
+	public function deleteTenant(Tenant $oTenant)
 	{
 		$bResult = false;
 		try
 		{
 			if ($oTenant)
 			{
-				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId, \Aurora\Modules\Core\Classes\Tenant::class);
+				$bResult = $oTenant->delete();
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
