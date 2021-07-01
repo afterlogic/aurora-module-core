@@ -15,6 +15,7 @@ class CreateUsersTable extends Migration
     {
         Capsule::schema()->create('users', function (Blueprint $table) {
             $table->increments('Id');
+            $table->string('UUID');
             $table->string('Name')->default('');
             $table->string('PublicId')->unique();
             $table->integer('IdTenant')->default(0);
@@ -55,6 +56,8 @@ class CreateUsersTable extends Migration
             $table->boolean('WriteSeparateLog')->default(false);
 
             $table->integer('TokensValidFromTimestamp')->default(0);
+
+            $table->string('DefaultTimeZone')->default('');
 
             $table->json('Properties')->nullable();
 

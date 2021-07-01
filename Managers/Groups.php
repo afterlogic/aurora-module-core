@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use Aurora\Modules\Core\Models\UserGroup;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -15,19 +17,12 @@ namespace Aurora\Modules\Core\Managers;
 class Groups extends \Aurora\System\Managers\AbstractManager
 {
 	/**
-	 * @var \Aurora\System\Managers\Eav
-	 */
-	public $oEavManager = null;
-	
-	/**
-	 * 
+	 *
 	 * @param \Aurora\System\Module\AbstractModule $oModule
 	 */
 	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
 	{
 		parent::__construct($oModule);
-		
-		$this->oEavManager = \Aurora\System\Managers\Eav::getInstance();
 	}
 
 	/**
@@ -44,21 +39,15 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		$aResult = false;
 		try
 		{
-			$aResultGroups = $this->oEavManager->getObjects(
-				'Aurora\Modules\Core\Classes\UserGroup', 
-				array('UrlIdentifier', 'IdTenant'),
-				$iPage,
-				$iItemsPerPage,
-				array(
-					'UrlIdentifier' => '%'.$sSearchDesc.'%'
-				),
-				$sOrderBy,
-				$iOrderType
-			);
-			
+			$aResultGroups = UserGroup::where('UrlIdentifier', '%'.$sSearchDesc.'%')
+				->orderBy($sOrderBy, $iOrderType === \Aurora\System\Enums\SortOrder::ASC ? 'asc' : 'desc')
+				->offset($iPage)
+				->limit($iItemsPerPage)->get()
+			;
+
 			foreach($aResultGroups as $oUserGroup)
 			{
-				$aResult[$oUserGroup->EntityId] = array(
+				$aResult[$oUserGroup->Id] = array(
 					$oUserGroup->UrlIdentifier,
 					$oUserGroup->IdTenant
 				);
@@ -81,14 +70,8 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		$iResult = false;
 		try
 		{
-			$aResults = $this->oEavManager->getObjectsCount(
-				'Aurora\Modules\Core\Classes\UserGroup', 
-				array(
-					'UrlIdentifier' => '%'.$sSearchDesc.'%'
-				)
-			);
-			
-			$iResult = count($aResults);
+			$iResult = UserGroup::where('UrlIdentifier', '%'.$sSearchDesc.'%')->count();
+		;
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{
@@ -107,9 +90,9 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 		$oGroup = null;
 		try
 		{
-			$oResult = $this->oEavManager->getObjectById($iGroupId);
-			
-			if ($oResult instanceOf \Aurora\Modules\Core\Classes\Channel)
+			$oResult = UserGroup::find($iGroupId);
+
+			if ($oResult instanceOf UserGroup)
 			{
 				$oGroup = $oResult;
 			}
@@ -128,36 +111,9 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function isExists(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
+	public function isExists(UserGroup $oGroup)
 	{
-		$bResult = false;
-		try
-		{
-//			$aResultChannels = $this->oEavManager->getObjects(
-//				'Aurora\Modules\Core\Classes\UserGroup',
-//				array('Login'),
-//				0,
-//				0,
-//				array('Login' => $oGroup->Login)
-//			);
-//
-//			if ($aResultChannels)
-//			{
-//				foreach($aResultChannels as $oObject)
-//				{
-//					if ($oObject->EntityId !== $oGroup->EntityId)
-//					{
-//						$bResult = true;
-//						break;
-//					}
-//				}
-//			}
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$this->setLastException($oException);
-		}
-		return $bResult;
+		return false;
 	}
 
 	/**
@@ -165,7 +121,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function saveUserGroup(\Aurora\Modules\Core\Classes\UserGroup &$oGroup)
+	public function saveUserGroup(UserGroup &$oGroup)
 	{
 		$bResult = false;
 		try
@@ -174,14 +130,14 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$this->isExists($oGroup))
 				{
-					if (!$this->oEavManager->saveObject($oGroup))
+					if (!$oGroup->save())
 					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(0);
 					}
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupAlreadyExists);
+					throw new \Aurora\System\Exceptions\ManagerException(0);
 				}
 			}
 
@@ -201,7 +157,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function updateUserGroup(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
+	public function updateUserGroup(UserGroup $oGroup)
 	{
 		$bResult = false;
 		try
@@ -210,14 +166,14 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$this->isExists($oGroup))
 				{
-					if (!$this->oEavManager->saveObject($oGroup))
+					if (!$oGroup->save())
 					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(0);
 					}
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::UserGroupsManager_UserGroupDoesNotExist);
+					throw new \Aurora\System\Exceptions\ManagerException(0);
 				}
 			}
 
@@ -239,13 +195,13 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 	 *
 	 * @return bool
 	 */
-	public function deleteUserGroup(\Aurora\Modules\Core\Classes\UserGroup $oGroup)
+	public function deleteUserGroup(UserGroup $oGroup)
 	{
 		$bResult = false;
 		try
 		{
 //			$oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants\Manager();
-//			
+//
 //			if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oGroup->EntityId, true))
 //			{
 //				$oException = $oTenantsManager->GetLastException();
@@ -255,7 +211,7 @@ class Groups extends \Aurora\System\Managers\AbstractManager
 //				}
 //			}
 
-//			$bResult = $this->oEavManager->deleteObject($oGroup->EntityId);
+			$bResult = $oGroup->delete();
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
 		{

@@ -4,7 +4,7 @@ namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
 
-class UserBlock extends Model
+class UserGroup extends Model
 {
     protected $moduleName = 'Core';
 
