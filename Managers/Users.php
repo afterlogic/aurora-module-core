@@ -43,7 +43,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$oUser = User::findOrFail($mUserId);
 		}
-		catch (\Illuminate\Database\Eloquent\ModelNotFoundException $oException)
+		catch (\Exception $oException)
 		{
 			$oUser = false;
 			$this->setLastException($oException);
@@ -149,7 +149,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$iResult = User::count();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Exception $oException)
 		{
 			$this->setLastException($oException);
 		}
