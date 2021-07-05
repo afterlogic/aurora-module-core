@@ -1981,7 +1981,13 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetBlockedUser($sEmail, $sIp)
 	{
-		return Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();
+		$mResult = false;
+		try {
+			$mResult = Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();		
+		} catch (\Exception $oEx) {
+			$mResult = false;
+		}
+		return $mResult;
 	}
 
 	public function BlockUser($sEmail, $sIp)
@@ -2000,7 +2006,7 @@ For instructions, please refer to this section of documentation and our
 
 			$oBlockedUser->save();
 		}
-		catch (\Aurora\System\Exceptions\DbException $oEx)
+		catch (\Exception $oEx)
 		{
 			\Aurora\System\Api::LogException($oEx);
 		}
