@@ -2239,8 +2239,11 @@ For instructions, please refer to this section of documentation and our
 		$aUserInfo = $oApiIntegrator->getAuthenticatedUserInfo($sAuthToken);
 		if (isset($aUserInfo['account']) && isset($aUserInfo['accountType']))
 		{
-			$oAccount = \Aurora\System\Managers\Eav::getInstance()->getEntity($aUserInfo['account'], $aUserInfo['accountType']);
-			if ($oAccount instanceof \Aurora\System\Classes\AbstractAccount)
+			$r = new \ReflectionClass($aUserInfo['accountType']);
+			$oQuery = $r->getMethod('query')->invoke(null);
+
+			$oAccount = $oQuery->find($aUserInfo['account']);
+			if ($oAccount)
 			{
 
 				$aArgs = array (
