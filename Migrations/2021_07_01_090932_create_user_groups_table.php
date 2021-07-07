@@ -18,7 +18,8 @@ class CreateUserGroupsTable extends Migration
             $table->string('UrlIdentifier')->default('');
             $table->integer('IdTenant')->default(0);
             $table->json('Properties')->nullable();
-            $table->timestamps();
+            $table->timestamp(\Aurora\System\Classes\Model::CREATED_AT)->nullable();
+            $table->timestamp(\Aurora\System\Classes\Model::UPDATED_AT)->nullable();
         });
     }
 
