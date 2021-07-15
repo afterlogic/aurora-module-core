@@ -39,6 +39,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getChannelList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Login', $iOrderType = SortOrder::ASC, $sSearchDesc = '')
 	{
+		$aResult = [];
 		if (!empty($sSearchDesc))
 		{
 			$query = Channel::where('Login', 'like', '%'.$sSearchDesc.'%');
@@ -57,9 +58,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		{
 			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $aResult;
 	}
@@ -76,9 +77,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		{
 			$iResult = Channel::where('Login', 'like', '%'.$sSearchDesc.'%')->where('Description', 'like', '%'.$sSearchDesc.'%')->count();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $iResult;
 	}
@@ -95,9 +96,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		{
 			$oChannel = Channel::find($iChannelId);
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $oChannel;
@@ -115,15 +116,14 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 		{
 			$oChannel = Channel::firstWhere('Login', $sChannelLogin);
 
-
 			if ($oChannel instanceOf Channel)
 			{
 				$iChannelId = $oChannel->Id;
 			}
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $iChannelId;
@@ -137,15 +137,21 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	public function isExists(Channel $oChannel)
 	{
 		$bResult = false;
-		$oChannels = Channel::where('Login', $oChannel->Login)->get();
+		try {
+			$oChannels = Channel::where('Login', $oChannel->Login)->get();
 
-		foreach($oChannels as $oObject)
-		{
-			if ($oObject->Id !== $oChannel->Id)
+			foreach($oChannels as $oObject)
 			{
-				$bResult = true;
-				break;
+				if ($oObject->Id !== $oChannel->Id)
+				{
+					$bResult = true;
+					break;
+				}
 			}
+		}
+		catch (\Illuminate\Database\QueryException $oException)
+		{
+			\Aurora\Api::LogException($oException);
 		}
 		return $bResult;
 	}
@@ -179,10 +185,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 
 			$bResult = true;
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
 			$bResult = false;
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $bResult;
@@ -215,10 +221,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 
 			$bResult = true;
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
 			$bResult = false;
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $bResult;
 	}
@@ -246,11 +252,12 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 					throw $oException;
 				}
 			}
-			$oChannel->delete();
+			$bResult = !!$oChannel->delete();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oException)
 		{
-			$this->setLastException($oException);
+			$bResult = false;
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $bResult;

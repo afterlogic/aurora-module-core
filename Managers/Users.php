@@ -53,13 +53,18 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 	public function getUserByPublicId($UserPublicId)
 	{
+		$oUser = null;
 		$sUserPublicId = trim((string)$UserPublicId);
 
 		if ($sUserPublicId)
 		{
-			return User::firstWhere('PublicId', $sUserPublicId);
+			try {
+				$oUser = User::firstWhere('PublicId', $sUserPublicId);
+			} catch (\Illuminate\Database\QueryException $oEx) {
+				\Aurora\Api::LogException($oEx);
+			}
 		}
-		return null;
+		return $oUser;
 	}
 
 	/**
@@ -70,13 +75,20 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getUsersCount($sSearchDesc = '', Builder $oFilters = null)
 	{
+		$iResult = 0;
 		$query = isset($oFilters) ? $oFilters : User::query();
 
 		if ($sSearchDesc !== '') {
 			$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
 		}
 
-		return $query->count();
+		try {
+			$iResult = $query->count();
+		} catch (\Illuminate\Database\QueryException $oEx) {
+			\Aurora\Api::LogException($oEx);
+		}
+
+		return $iResult;
 	}
 
 	/**
@@ -91,7 +103,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null)
 	{
-		$aResult = false;
+		$aResult = [];
 		try
 		{
 			$query = isset($oFilters) ? $oFilters : User::query();
@@ -108,10 +120,10 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oEx)
 		{
-			$aResult = false;
-			$this->setLastException($oException);
+			$aResult = [];
+			\Aurora\Api::LogException($oEx);
 		}
 		return $aResult;
 	}
@@ -125,14 +137,15 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getUsersCountForTenant($iTenantId)
 	{
-		$mResult = false;
+		$mResult = 0;
 		try
 		{
 			$mResult = User::where('IdTenent', $iTenantId)->count();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch (\Illuminate\Database\QueryException $oEx)
 		{
-			$this->setLastException($oException);
+			$mResult = 0;
+			\Aurora\Api::LogException($oEx);
 		}
 		return $mResult;
 	}
@@ -149,9 +162,10 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$iResult = User::count();
 		}
-		catch (\Exception $oException)
+		catch (\Illuminate\Database\QueryException $oEx)
 		{
-			$this->setLastException($oException);
+			$iResult = 0;
+			\Aurora\Api::LogException($oEx);
 		}
 		return $iResult;
 	}
@@ -164,9 +178,13 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	public function isExists(User $oUser)
 	{
 		$bResult = false;
+		$oResult = null;
 
-		$oResult = User::find($oUser->Id);
-
+		try {
+			$oResult = User::find($oUser->Id);
+		} catch (\Illuminate\Database\QueryException $oEx) {
+			\Aurora\Api::LogException($oEx);
+		}
 		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
 		{
 			$bResult = true;

@@ -40,6 +40,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '', $sOrderBy = 'Name', $iOrderType = SortOrder::ASC)
 	{
+		$oResult = false;
 		if (!empty($sSearch))
 		{
 			$query = Tenant::where('Name', 'like', '%'.$sSearch.'%');
@@ -54,7 +55,12 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		if ($iLimit > 0) {
 			$query = $query->limit($iLimit);
 		}
-		return $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
+		try {
+			$oResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
+		} catch(\Illuminate\Database\QueryException $oException) {
+			$oResult = null;
+			\Aurora\Api::LogException($oException);
+		}
 	}
 
 	/**
@@ -62,8 +68,14 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 * @return int|false
 	 */
 	public function getTenantsCount($sSearch = '')
-	{
-		return Tenant::where('Name', 'like', '%'.$sSearch.'%')->count();
+	{ 
+		$iResult = 0;
+		try {
+			$iResult = Tenant::where('Name', 'like', '%'.$sSearch.'%')->count();
+		} catch(\Illuminate\Database\QueryException $oException) {
+			$iResult = 0;
+			\Aurora\Api::LogException($oException);
+		}
 	}
 
 	/**
@@ -77,9 +89,8 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			{
 				self::$oDefaultTenant = Tenant::firstWhere('IsDefault', true);
 			}
-			catch (\Aurora\System\Exceptions\BaseException $oException)
-			{
-				$this->setLastException($oException);
+			catch(\Illuminate\Database\QueryException $oException) {
+				\Aurora\Api::LogException($oException);
 			}
 		}
 
@@ -103,9 +114,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$oTenant = $oResult;
 			}
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $oTenant;
@@ -126,9 +137,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$oTenant = Tenant::where('Name', $sTenantName)->where('IsDisabled', false)->first();
 			}
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $oTenant;
 	}
@@ -171,9 +182,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			$bResult = Tenant::where('Name', $oTenant->Name)->where('Id', '!=', $oTenant->Id)->exists();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $bResult;
 	}
@@ -234,10 +245,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 
 			$bResult = true;
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$bResult = false;
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $bResult;
@@ -262,10 +272,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$bResult = $oTenant->save();
 			}
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$bResult = false;
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $bResult;
 	}
@@ -293,9 +302,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			$aResult = Tenant::where('IdChannel', $iChannelId)->get();
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 		return $aResult;
 	}
@@ -307,7 +316,17 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantsByChannelIdCount($iChannelId)
 	{
-		return Tenant::where('IdChannel', $iChannelId)->count();
+		$iCount = 0;
+		try 
+		{
+			$iCount = Tenant::where('IdChannel', $iChannelId)->count();
+		}
+		catch(\Illuminate\Database\QueryException $oException) 
+		{
+			\Aurora\Api::LogException($oException);
+		}
+
+		return $iCount;
 	}
 
 	/**
@@ -339,9 +358,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				$bResult = $oTenant->delete();
 			}
 		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
+		catch(\Illuminate\Database\QueryException $oException) 
 		{
-			$this->setLastException($oException);
+			\Aurora\Api::LogException($oException);
 		}
 
 		return $bResult;
