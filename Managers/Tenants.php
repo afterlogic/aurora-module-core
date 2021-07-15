@@ -40,7 +40,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantList($iOffset = 0, $iLimit = 0, $sSearch = '', $sOrderBy = 'Name', $iOrderType = SortOrder::ASC)
 	{
-		$oResult = false;
+		$oResult = collect();
 		if (!empty($sSearch))
 		{
 			$query = Tenant::where('Name', 'like', '%'.$sSearch.'%');
@@ -58,9 +58,10 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		try {
 			$oResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		} catch(\Illuminate\Database\QueryException $oException) {
-			$oResult = null;
 			\Aurora\Api::LogException($oException);
 		}
+
+		return $oResult;
 	}
 
 	/**
@@ -76,6 +77,8 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			$iResult = 0;
 			\Aurora\Api::LogException($oException);
 		}
+
+		return $iResult;
 	}
 
 	/**
