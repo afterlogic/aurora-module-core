@@ -3405,7 +3405,7 @@ For instructions, please refer to this section of documentation and our
 		if ($TenantId === 0)
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '', '');
+			$aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
 			$TenantId = count($aTenants) === 1 ? $aTenants[0]->Id : 0;
 		}
 
