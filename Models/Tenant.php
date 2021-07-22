@@ -20,6 +20,7 @@ class Tenant extends Model
      * @var array
      */
     protected $fillable = [
+        'Id',
         'IdChannel',
         'IsDisabled',
         'IsDefault',

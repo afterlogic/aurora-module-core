@@ -20,6 +20,11 @@ class Channel extends Model
         'Properties'
     ];
 
+    public $timestamps = [
+        'UpdatedAt',
+        'CreatedAt',
+    ];
+
     /**
     * The attributes that should be hidden for arrays.
     *
