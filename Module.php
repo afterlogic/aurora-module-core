@@ -418,7 +418,7 @@ For instructions, please refer to this section of documentation and our
 
 	public function onAfterChangePassword($aArgs, &$mResult)
 	{
-		if ($mResult && $mResult instanceof \Aurora\System\Classes\AbstractAccount && $mResult->UseToAuthorize)
+		if ($mResult && $mResult->UseToAuthorize)
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
 			if ($oUser instanceof \Aurora\Modules\Core\Models\User &&
