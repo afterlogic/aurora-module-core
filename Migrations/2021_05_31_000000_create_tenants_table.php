@@ -29,7 +29,7 @@ class CreateTenantsTable extends Migration
             $table->integer('Expared')->default(0);
             $table->string('PayUrl')->default('');
             $table->boolean('IsTrial')->default(false);
-            $table->string('LogUrl')->default('');
+            $table->string('LogoUrl')->default('');
             $table->string('CalendarNotificationEmailAccount')->default('');
             $table->string('InviteNotificationEmailAccount')->default('');
 
