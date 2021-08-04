@@ -3890,7 +3890,7 @@ For instructions, please refer to this section of documentation and our
 
 	public function IsModuleDisabledForObject($oObject, $sModuleName)
 	{
-		return ($oObject instanceof \Aurora\System\EAV\Entity) ? $oObject->isModuleDisabled($sModuleName) : false;
+		return ($oObject instanceof \Aurora\System\Classes\Model) ? $oObject->isModuleDisabled($sModuleName) : false;
 	}
 
 	public function GetUserSessions()
