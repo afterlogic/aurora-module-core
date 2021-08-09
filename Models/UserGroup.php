@@ -6,6 +6,7 @@ use \Aurora\System\Classes\Model;
 
 class UserGroup extends Model
 {
+    protected $table = 'core_user_groups_legacy';
     protected $moduleName = 'Core';
 
     /**
@@ -35,8 +36,3 @@ class UserGroup extends Model
     protected $attributes = [
     ];
 }
-
-
-
-		// 'UrlIdentifier'	=> array('string', ''),
-		// 'IdTenant'	=> array('string', '')

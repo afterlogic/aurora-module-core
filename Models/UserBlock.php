@@ -6,6 +6,7 @@ use \Aurora\System\Classes\Model;
 
 class UserBlock extends Model
 {
+    protected $table = 'core_user_blocks';
     protected $moduleName = 'Core';
 
     /**

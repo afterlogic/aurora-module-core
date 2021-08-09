@@ -13,7 +13,7 @@ class CreateTenantsTable extends Migration
      */
     public function up()
     {
-        Capsule::schema()->create('tenants', function (Blueprint $table) {
+        Capsule::schema()->create('core_tenants', function (Blueprint $table) {
 
             $table->increments('Id');
             $table->integer('IdChannel')->default(0);
@@ -49,6 +49,6 @@ class CreateTenantsTable extends Migration
      */
     public function down()
     {
-        Capsule::schema()->dropIfExists('tenants');
+        Capsule::schema()->dropIfExists('core_tenants');
     }
 }

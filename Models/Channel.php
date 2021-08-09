@@ -6,6 +6,7 @@ use \Aurora\System\Classes\Model;
 
 class Channel extends Model
 {
+    protected $table = 'core_channels';
     protected $moduleName = 'Core';
 
     /**

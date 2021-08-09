@@ -13,7 +13,7 @@ class CreateChannelsTable extends Migration
      */
     public function up()
     {
-        Capsule::schema()->create('channels', function (Blueprint $table) {
+        Capsule::schema()->create('core_channels', function (Blueprint $table) {
             $table->increments('Id');
             $table->string('Login')->default('');
             $table->string('Password')->default('');
@@ -32,6 +32,6 @@ class CreateChannelsTable extends Migration
      */
     public function down()
     {
-        Capsule::schema()->dropIfExists('channels');
+        Capsule::schema()->dropIfExists('core_channels');
     }
 }

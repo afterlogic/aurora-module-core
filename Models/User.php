@@ -5,6 +5,8 @@ namespace Aurora\Modules\Core\Models;
 use \Aurora\System\Classes\Model;
 class User extends Model
 {
+    protected $table = 'core_users';
+
     protected $moduleName = 'Core';
 
     protected $parentType = Tenant::class;

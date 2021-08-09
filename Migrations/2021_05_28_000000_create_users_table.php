@@ -13,7 +13,7 @@ class CreateUsersTable extends Migration
      */
     public function up()
     {
-        Capsule::schema()->create('users', function (Blueprint $table) {
+        Capsule::schema()->create('core_users', function (Blueprint $table) {
             $table->increments('Id');
             $table->string('UUID');
             $table->string('Name')->default('');
@@ -73,6 +73,6 @@ class CreateUsersTable extends Migration
      */
     public function down()
     {
-        Capsule::schema()->dropIfExists('users');
+        Capsule::schema()->dropIfExists('core_users');
     }
 }

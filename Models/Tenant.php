@@ -6,6 +6,7 @@ use \Aurora\System\Classes\Model;
 
 class Tenant extends Model
 {
+    protected $table = 'core_tenants';
     protected $moduleName = 'Core';
 
     protected $parentType = \Aurora\System\Module\Settings::class;

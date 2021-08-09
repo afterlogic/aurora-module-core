@@ -13,7 +13,7 @@ class CreateUserBlocksTable extends Migration
      */
     public function up()
     {
-        Capsule::schema()->create('user_blocks', function (Blueprint $table) {
+        Capsule::schema()->create('core_user_blocks', function (Blueprint $table) {
             $table->increments('Id');
             $table->string('Email')->default('');
             $table->string('IpAddress')->default('');
@@ -31,6 +31,6 @@ class CreateUserBlocksTable extends Migration
      */
     public function down()
     {
-        Capsule::schema()->dropIfExists('user_blocks');
+        Capsule::schema()->dropIfExists('core_user_blocks');
     }
 }
