@@ -66,6 +66,11 @@ class User extends Model
 
     protected $casts = [
         'Properties' => 'array',
+        'IsDisabled' => 'boolean',
+        'SipEnable' => 'boolean',
+        'DesktopNotifications' => 'boolean',
+        'FilesEnable' => 'boolean',
+        'WriteSeparateLog' => 'boolean'
     ];
 
     protected $attributes = [

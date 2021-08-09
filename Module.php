@@ -3308,10 +3308,8 @@ For instructions, please refer to this section of documentation and our
 			if ($oUser)
 			{
 				$oUser->WriteSeparateLog = false;
-				$oUser->saveAttribute('WriteSeparateLog');
+				$this->UpdateUserObject($oUser);
 			}
-
-			$this->UpdateUserObject($oUser);
 		}
 
 		return true;

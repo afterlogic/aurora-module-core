@@ -51,6 +51,12 @@ class Tenant extends Model
 
     protected $casts = [
         'Properties' => 'array',
+
+        'IsDisabled' => 'boolean',
+        'IsDefault' => 'boolean',
+        'AllowChangeAdminEmail' => 'boolean',
+        'AllowChangeAdminPassword' => 'boolean',
+        'IsTrial' => 'boolean'
     ];
 
     protected $attributes = [
