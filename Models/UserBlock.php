@@ -14,6 +14,7 @@ class UserBlock extends Model
      * @var array
      */
     protected $fillable = [
+        'Id',
         'Email',
         'IpAddress',
         'ErrorLoginsCount',

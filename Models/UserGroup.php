@@ -14,6 +14,7 @@ class UserGroup extends Model
      * @var array
      */
     protected $fillable = [
+        'Id',
         'UrlIdentifier',
         'IdTenant',
         'Properties'
