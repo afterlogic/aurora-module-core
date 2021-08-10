@@ -7,6 +7,7 @@
 
 namespace Aurora\Modules\Core;
 
+use Aurora\Modules\Core\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -3301,7 +3302,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
-		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', ['WriteSeparateLog' => [true, '=']]);
+		$aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', User::where('WriteSeparateLog', true));
 		foreach($aResults as $aUser)
 		{
 			$oUser = self::Decorator()->GetUser($aUser['EntityId']);
