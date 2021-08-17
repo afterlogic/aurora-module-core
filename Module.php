@@ -7,7 +7,9 @@
 
 namespace Aurora\Modules\Core;
 
+use Aurora\Api;
 use Aurora\Modules\Core\Models\User;
+use Aurora\System\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -1772,7 +1774,11 @@ For instructions, please refer to this section of documentation and our
 	public function CreateTables()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-
+		
+		if (function_exists('mysqli_fetch_all')) {
+			throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
+		}
+		
 		$bResult = false;
 
         try {
@@ -1879,19 +1885,26 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-
-		$oSettings =&\Aurora\System\Api::GetSettings();
-		$oSettings->DBLogin = $DbLogin;
-		if ($DbPassword !== null)
-		{
-			$oSettings->DBPassword = $DbPassword;
+		Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		if (!function_exists('mysqli_fetch_all')) {
+			throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
 		}
-		$oSettings->DBName = $DbName;
-		$oSettings->DBHost = $DbHost;
+		$oPdo = null;
+		$oSettings = &Api::GetSettings();
+        if ($oSettings) {
+            $capsule = new \Illuminate\Database\Capsule\Manager();
+            $capsule->addConnection(Api::GetDbConfig(
+				$oSettings->DBType, 
+				$DbHost,
+				$DbName,
+				$oSettings->DBPrefix,
+				$DbLogin,
+				$DbPassword
+			));
+			$oPdo = $capsule->getConnection()->getPdo();
+		}
 
-		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
-		return $oEavManager->testStorageConnection();
+		return isset($oPdo);
 	}
 
 	/**
