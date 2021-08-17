@@ -1893,7 +1893,7 @@ For instructions, please refer to this section of documentation and our
 		$oSettings = &Api::GetSettings();
         if ($oSettings) {
 			if ($DbPassword === null){
-				$DbPassword = $oSettings->DbPassword;
+				$DbPassword = $oSettings->DBPassword;
 			}
             $capsule = new \Illuminate\Database\Capsule\Manager();
             $capsule->addConnection(Api::GetDbConfig(
