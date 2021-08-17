@@ -1775,7 +1775,7 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
-		if (function_exists('mysqli_fetch_all')) {
+		if (!function_exists('mysqli_fetch_all')) {
 			throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
 		}
 		
