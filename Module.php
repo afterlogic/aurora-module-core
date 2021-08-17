@@ -217,6 +217,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aCompatibility['mysql.valid'] = (int) extension_loaded('mysql');
 		$aCompatibility['pdo.valid'] = (int)
 			((bool) extension_loaded('pdo') && (bool) extension_loaded('pdo_mysql'));
+		$aCompatibility['mysqlnd.valid'] = (int) function_exists('mysqli_fetch_all');
 
 		$aCompatibility['socket.valid'] = (int) function_exists('fsockopen');
 		$aCompatibility['iconv.valid'] = (int) function_exists('iconv');
@@ -284,6 +285,14 @@ or contact your hosting provider and ask to do this.']
 				'Value' => ($aCompatibility['pdo.valid'])
 				? 'OK'
 				: ['Error, PHP PDO MySQL extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'MySQL Native Driver (mysqlnd)',
+				'Result' => !$aCompatibility['mysqlnd.valid'],
+				'Value' => !($aCompatibility['mysqlnd.valid'])
+				? 'OK'
+				: ['Error, MySQL Native Driver not found.',
 'You need to install this PHP extension or enable it in php.ini file.']
 			],
 			[
