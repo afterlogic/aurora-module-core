@@ -209,7 +209,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function onAfterGetCompatibilities($aArgs, &$mResult)
 	{
 		$aCompatibility['php.version'] = phpversion();
-		$aCompatibility['php.version.valid'] = (int) (version_compare($aCompatibility['php.version'], '5.3.0') > -1);
+		$aCompatibility['php.version.valid'] = (int) (version_compare($aCompatibility['php.version'], '7.2.5') > -1);
 
 		$aCompatibility['safe-mode'] = @ini_get('safe_mode');
 		$aCompatibility['safe-mode.valid'] = is_numeric($aCompatibility['safe-mode'])
@@ -266,7 +266,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'Result' => $aCompatibility['php.version.valid'],
 				'Value' => $aCompatibility['php.version.valid']
 				? 'OK'
-				: [$aCompatibility['php.version'].' detected, 5.3.0 or above required.',
+				: [$aCompatibility['php.version'].' detected, 7.2.5 or above required.',
 'You need to upgrade PHP engine installed on your server.
 If it\'s a dedicated or your local server, you can download the latest version of PHP from its
 <a href="http://php.net/downloads.php" target="_blank">official site</a> and install it yourself.
