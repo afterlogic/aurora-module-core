@@ -289,8 +289,8 @@ or contact your hosting provider and ask to do this.']
 			],
 			[
 				'Name' => 'MySQL Native Driver (mysqlnd)',
-				'Result' => !$aCompatibility['mysqlnd.valid'],
-				'Value' => !($aCompatibility['mysqlnd.valid'])
+				'Result' => $aCompatibility['mysqlnd.valid'],
+				'Value' => ($aCompatibility['mysqlnd.valid'])
 				? 'OK'
 				: ['Error, MySQL Native Driver not found.',
 'You need to install this PHP extension or enable it in php.ini file.']
