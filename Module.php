@@ -1604,7 +1604,7 @@ For instructions, please refer to this section of documentation and our
 				}
 				if ($TimeFormat !== null)
 				{
-					$this->setConfig('TimeFormat', $TimeFormat);
+					$this->setConfig('TimeFormat', (int) $TimeFormat);
 				}
 				$this->saveModuleConfig();
 			}
