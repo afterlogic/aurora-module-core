@@ -8,6 +8,9 @@ class UserGroup extends Model
 {
     protected $table = 'core_user_groups_legacy';
     protected $moduleName = 'Core';
+    
+    protected $foreignModel = 'Aurora\Modules\Core\Models\Tenant';
+	protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.

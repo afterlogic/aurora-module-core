@@ -9,6 +9,9 @@ class Tenant extends Model
     protected $table = 'core_tenants';
     protected $moduleName = 'Core';
 
+    protected $foreignModel = 'Aurora\Modules\Core\Models\Channel';
+	protected $foreignModelIdColumn = 'IdChannel'; // Column that refers to an external table
+
     protected $parentType = \Aurora\System\Module\Settings::class;
 
     protected $parentInheritedAttributes = [

@@ -11,6 +11,7 @@ use Aurora\Modules\Core\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
+use Symfony\Component\Console\Output\BufferedOutput;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -1777,6 +1778,29 @@ For instructions, please refer to this section of documentation and our
                 ]), new NullOutput());
 
             $bResult = true;
+        } catch (\Exception $oEx) {
+            \Aurora\System\Api::LogException($oEx);
+        }
+
+		return $bResult;
+	}
+
+	public function GetOrphans()
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+
+		$bResult = false;
+
+        try {
+            $container = \Aurora\Api::GetContainer();
+            $container['console']->setAutoExit(false);
+
+			$output = new BufferedOutput();
+			$container['console']->find('get-orphans')
+			->run(new ArrayInput([]), $output);
+
+			$content = array_filter(explode(PHP_EOL, $output->fetch()));
+            $bResult = $content;
         } catch (\Exception $oEx) {
             \Aurora\System\Api::LogException($oEx);
         }
