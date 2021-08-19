@@ -7,7 +7,9 @@
 
 namespace Aurora\Modules\Core;
 
+use Aurora\Api;
 use Aurora\Modules\Core\Models\User;
+use Aurora\System\Exceptions\ApiException;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -208,7 +210,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function onAfterGetCompatibilities($aArgs, &$mResult)
 	{
 		$aCompatibility['php.version'] = phpversion();
-		$aCompatibility['php.version.valid'] = (int) (version_compare($aCompatibility['php.version'], '5.3.0') > -1);
+		$aCompatibility['php.version.valid'] = (int) (version_compare($aCompatibility['php.version'], '7.2.5') > -1);
 
 		$aCompatibility['safe-mode'] = @ini_get('safe_mode');
 		$aCompatibility['safe-mode.valid'] = is_numeric($aCompatibility['safe-mode'])
@@ -218,6 +220,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aCompatibility['mysql.valid'] = (int) extension_loaded('mysql');
 		$aCompatibility['pdo.valid'] = (int)
 			((bool) extension_loaded('pdo') && (bool) extension_loaded('pdo_mysql'));
+		$aCompatibility['mysqlnd.valid'] = (int) function_exists('mysqli_fetch_all');
 
 		$aCompatibility['socket.valid'] = (int) function_exists('fsockopen');
 		$aCompatibility['iconv.valid'] = (int) function_exists('iconv');
@@ -264,7 +267,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 				'Result' => $aCompatibility['php.version.valid'],
 				'Value' => $aCompatibility['php.version.valid']
 				? 'OK'
-				: [$aCompatibility['php.version'].' detected, 5.3.0 or above required.',
+				: [$aCompatibility['php.version'].' detected, 7.2.5 or above required.',
 'You need to upgrade PHP engine installed on your server.
 If it\'s a dedicated or your local server, you can download the latest version of PHP from its
 <a href="http://php.net/downloads.php" target="_blank">official site</a> and install it yourself.
@@ -285,6 +288,14 @@ or contact your hosting provider and ask to do this.']
 				'Value' => ($aCompatibility['pdo.valid'])
 				? 'OK'
 				: ['Error, PHP PDO MySQL extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'MySQL Native Driver (mysqlnd)',
+				'Result' => $aCompatibility['mysqlnd.valid'],
+				'Value' => ($aCompatibility['mysqlnd.valid'])
+				? 'OK'
+				: ['Error, MySQL Native Driver not found.',
 'You need to install this PHP extension or enable it in php.ini file.']
 			],
 			[
@@ -1594,7 +1605,7 @@ For instructions, please refer to this section of documentation and our
 				}
 				if ($TimeFormat !== null)
 				{
-					$this->setConfig('TimeFormat', $TimeFormat);
+					$this->setConfig('TimeFormat', (int) $TimeFormat);
 				}
 				$this->saveModuleConfig();
 			}
@@ -1764,7 +1775,11 @@ For instructions, please refer to this section of documentation and our
 	public function CreateTables()
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-
+		
+		if (!function_exists('mysqli_fetch_all')) {
+			throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
+		}
+		
 		$bResult = false;
 
         try {
@@ -1894,19 +1909,29 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
 	{
-		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
-
-		$oSettings =&\Aurora\System\Api::GetSettings();
-		$oSettings->DBLogin = $DbLogin;
-		if ($DbPassword !== null)
-		{
-			$oSettings->DBPassword = $DbPassword;
+		Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		if (!function_exists('mysqli_fetch_all')) {
+			throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
 		}
-		$oSettings->DBName = $DbName;
-		$oSettings->DBHost = $DbHost;
+		$oPdo = null;
+		$oSettings = &Api::GetSettings();
+        if ($oSettings) {
+			if ($DbPassword === null){
+				$DbPassword = $oSettings->DBPassword;
+			}
+            $capsule = new \Illuminate\Database\Capsule\Manager();
+            $capsule->addConnection(Api::GetDbConfig(
+				$oSettings->DBType, 
+				$DbHost,
+				$DbName,
+				$oSettings->DBPrefix,
+				$DbLogin,
+				$DbPassword
+			));
+			$oPdo = $capsule->getConnection()->getPdo();
+		}
 
-		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
-		return $oEavManager->testStorageConnection();
+		return isset($oPdo);
 	}
 
 	/**

@@ -10,6 +10,7 @@ namespace Aurora\Modules\Core\Managers;
 use \Aurora\Modules\Core\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use \Aurora\System\Enums\SortOrder;
+use Aurora\System\Managers\Integrator;
 
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
@@ -39,14 +40,21 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	public function getUser($mUserId)
 	{
 		$oUser = false;
-		try
+		if ($mUserId !== -1)
 		{
-			$oUser = User::findOrFail($mUserId);
+			try
+			{
+				$oUser = User::findOrFail($mUserId);
+			}
+			catch (\Exception $oException)
+			{
+				$oUser = false;
+				$this->setLastException($oException);
+			}
 		}
-		catch (\Exception $oException)
+		else
 		{
-			$oUser = false;
-			$this->setLastException($oException);
+			$oUser = Integrator::GetAdminUser();
 		}
 		return $oUser;
 	}
