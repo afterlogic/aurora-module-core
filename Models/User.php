@@ -3,6 +3,8 @@
 namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
+use Aurora\Modules\Core\Models\Tenant;
+
 class User extends Model
 {
     protected $table = 'core_users';
@@ -16,7 +18,7 @@ class User extends Model
     protected $parentInheritedAttributes = [
     ];
 
-    protected $foreignModel = 'Aurora\Modules\Core\Models\Tenant';
+    protected $foreignModel = Tenant::class;
 	protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
 
     /**

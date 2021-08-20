@@ -3,13 +3,14 @@
 namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
+use Aurora\Modules\Core\Models\Channel;
 
 class Tenant extends Model
 {
     protected $table = 'core_tenants';
     protected $moduleName = 'Core';
 
-    protected $foreignModel = 'Aurora\Modules\Core\Models\Channel';
+    protected $foreignModel = Channel::class;
 	protected $foreignModelIdColumn = 'IdChannel'; // Column that refers to an external table
 
     protected $parentType = \Aurora\System\Module\Settings::class;
