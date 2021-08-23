@@ -82,7 +82,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @return Aurora\Modules\Core\Classes\Tenant
+	 * @return Aurora\Modules\Core\Models\Tenant
 	 */
 	public function getDefaultGlobalTenant()
 	{
@@ -91,6 +91,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			try
 			{
 				self::$oDefaultTenant = Tenant::firstWhere('IsDefault', true);
+				if (!self::$oDefaultTenant) {
+					self::$oDefaultTenant = Tenant::first();
+				}
 			}
 			catch(\Illuminate\Database\QueryException $oException) {
 				\Aurora\Api::LogException($oException);
