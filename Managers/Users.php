@@ -49,7 +49,6 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			catch (\Exception $oException)
 			{
 				$oUser = false;
-				$this->setLastException($oException);
 			}
 		}
 		else
