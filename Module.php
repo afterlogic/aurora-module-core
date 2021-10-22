@@ -758,7 +758,7 @@ For instructions, please refer to this section of documentation and our
 						@\setcookie(
 							\Aurora\System\Application::AUTH_TOKEN_KEY,
 							$aResult['AuthToken'],
-							\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
+							($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
 							\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure()
 						);
 					}
@@ -815,7 +815,7 @@ For instructions, please refer to this section of documentation and our
 				@\setcookie(
 					\Aurora\System\Application::AUTH_TOKEN_KEY,
 					$aResult['AuthToken'],
-					\strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
+					($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
 					\Aurora\System\Api::getCookiePath(), null, \Aurora\System\Api::getCookieSecure()
 				);
 			}
