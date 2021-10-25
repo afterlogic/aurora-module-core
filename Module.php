@@ -3474,6 +3474,10 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		$PublicId = \trim($PublicId);
+		if (substr_count($PublicId, '@') > 1) {
+			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+		}
+		
 		if (!empty($TenantId) && !empty($PublicId))
 		{
 			$oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
