@@ -229,6 +229,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		$aCompatibility['openssl.valid'] = (int) extension_loaded('openssl');
 		$aCompatibility['xml.valid'] = (int) (class_exists('DOMDocument') && function_exists('xml_parser_create'));
 		$aCompatibility['json.valid'] = (int) function_exists('json_decode');
+		$aCompatibility['gd.valid'] = (int) extension_loaded('gd');
 
 		$aCompatibility['ini-get.valid'] = (int) function_exists('ini_get');
 		$aCompatibility['ini-set.valid'] = (int) function_exists('ini_set');
@@ -336,6 +337,14 @@ or contact your hosting provider and ask to do this.']
 				'Value' => ($aCompatibility['xml.valid'])
 				? 'OK'
 				: ['Error, xml (DOM) extension not detected.',
+'You need to install this PHP extension or enable it in php.ini file.']
+			],
+			[
+				'Name' => 'GD Extension',
+				'Result' => $aCompatibility['gd.valid'],
+				'Value' => ($aCompatibility['gd.valid'])
+				? 'OK'
+				: ['Error, GD extension not detected.',
 'You need to install this PHP extension or enable it in php.ini file.']
 			],
 			[
