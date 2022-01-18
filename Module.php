@@ -2121,7 +2121,7 @@ For instructions, please refer to this section of documentation and our
 				//this will store user data in static variable of Api class for later usage
 				$oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
 
-				if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
+				if ($oUser && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
 				{
 					// If User is super admin don't try to detect tenant. It will try to connect to DB.
 					// Super admin should be able to log in without connecting to DB.
