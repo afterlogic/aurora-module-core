@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Core;
 
+use Aurora\System\Api;
+use Aurora\System\Enums\LogLevel;
 use Aurora\System\Exceptions\ApiException;
 
 /**
@@ -576,6 +578,12 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function EntryApi()
 	{
+		Api::Log(
+			"REQUEST: \n\n" . urldecode($this->oHttp->GetRawBody()), 
+			LogLevel::Full, 
+			'informatik-'
+		);
+
 		@ob_start();
 
 		if (!is_writable(\Aurora\System\Api::DataPath()))
@@ -705,7 +713,15 @@ For instructions, please refer to this section of documentation and our
 			unset($aResponseItem['Parameters']);
 		}
 
-		return \Aurora\System\Managers\Response::GetJsonFromObject($sFormat, $aResponseItem);
+		$sResponse = \Aurora\System\Managers\Response::GetJsonFromObject($sFormat, $aResponseItem);
+		
+		Api::Log(
+			"RESPONSE: \n\n" . \json_encode(\json_decode($sResponse),  JSON_PRETTY_PRINT),
+			LogLevel::Full, 
+			'informatik-'
+		);
+
+		return $sResponse;
 	}
 
 	/**
