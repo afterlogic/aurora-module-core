@@ -296,4 +296,9 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 		return $bResult;
 	}
+
+	public function deleteUserById($id)
+	{
+		return User::find($id)->delete();
+	}
 }

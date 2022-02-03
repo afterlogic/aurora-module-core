@@ -3770,12 +3770,7 @@ For instructions, please refer to this section of documentation and our
 
 		if (!empty($UserId) && is_int($UserId))
 		{
-			$oUser = $this->getUsersManager()->getUser($UserId);
-
-			if ($oUser)
-			{
-				$bResult = $this->getUsersManager()->deleteUser($oUser);
-			}
+			$bResult = $this->getUsersManager()->deleteUserById($UserId);
 		}
 		else
 		{
