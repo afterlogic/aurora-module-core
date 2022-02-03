@@ -1952,13 +1952,8 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
-		$oAccount = null;
-		$oEavManager = \Aurora\System\Managers\Eav::getInstance();
 		$aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
-		if (isset($aUserInfo['account']))
-		{
-			$oAccount = $oEavManager->getEntity((int)$aUserInfo['account'], $aUserInfo['accountType']);
-		}
+		$oAccount = call_user_func_array([$aUserInfo['accountType'], 'find'], [(int)$aUserInfo['account']]);
 
 		return $oAccount;
 	}
