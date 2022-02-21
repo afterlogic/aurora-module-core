@@ -3119,9 +3119,6 @@ For instructions, please refer to this section of documentation and our
 
 			if ($oTenant)
 			{
-				// Tenant users should be deleted here in case if other modules (MailDomains for example) are turned off.
-				Models\User::where('IdTenant', $oTenant->Id)->delete();
-
 				// Delete tenant config files.
 				$sTenantSpacePath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
 				if (@is_dir($sTenantSpacePath))
