@@ -8,8 +8,11 @@
 namespace Aurora\Modules\Core;
 
 use Aurora\Api;
+use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
+use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
+use Aurora\System\Notifications;
 use Illuminate\Database\Eloquent\Builder;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
@@ -3962,6 +3965,176 @@ For instructions, please refer to this section of documentation and our
 			}
 		}
 		return $aResult;
+	}
+
+	public function CreateGroup($Name, $TenantId)
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		
+		$oUser = Api::getAuthenticatedUser();
+		if ($oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
+			throw new ApiException(Notifications::AccessDenied);
+		}
+
+		$oGroup = Group::firstWhere([
+			'TenantId' => $TenantId,
+			'Name' => $Name
+		]);
+
+		if ($oGroup) {
+			throw new ApiException(0);
+		} else {
+			$mResult = !!Group::create([
+				'TenantId' => $TenantId,
+				'Name' => $Name
+			]);
+		}
+
+		return $mResult;
+	}
+
+	public function GetGroup($TenantId, $GroupId) 
+	{
+		$mResult = false;
+		
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		
+		$oUser = Api::getAuthenticatedUser();
+		if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
+			throw new ApiException(Notifications::AccessDenied);
+		}
+
+		$mResult = Group::firstWhere([
+			'TenantId' => $TenantId,
+			'Id' => $GroupId
+		]);
+
+		return $mResult;
+	}
+
+	public function GetGroups($TenantId) 
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		
+		$oUser = Api::getAuthenticatedUser();
+		if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
+			throw new ApiException(Notifications::AccessDenied);
+		}
+
+		$mResult = Group::where('TenantId', $TenantId)->get();
+
+		return $mResult;
+	}
+
+	public function UpdateGroup($GroupId, $Name)
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		
+		$oGroup = Group::find($GroupId);
+		if ($oGroup) {
+			$oUser = Api::getAuthenticatedUser();
+			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
+				throw new ApiException(Notifications::AccessDenied);
+			}
+			
+			if(Group::where(['TenantId' => $oGroup->TenantId, 'Name' => $Name])->count() > 0) {
+				throw new ApiException(0);
+			} else {
+				$oGroup->Name = $Name;
+				$mResult = !!$oGroup->save();
+			}
+		}
+
+		return $mResult;
+	}
+
+	public function DeleteGroup($GroupId)
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		
+		$oGroup = Group::find($GroupId);
+		if ($oGroup) {
+			$oUser = Api::getAuthenticatedUser();
+			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
+				throw new ApiException(Notifications::AccessDenied);
+			}
+
+			$mResult = $oGroup->delete();
+		}
+
+		return $mResult;
+	}
+
+	public function GetGroupUsers($GroupId)
+	{
+		$mResult = [];
+
+		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+
+		$oGroup = Group::find($GroupId);
+		if ($oGroup) {
+			$oUser = Api::getAuthenticatedUser();
+			if ($oUser && ($oUser->Role === UserRole::NormalUser || $oUser->Role === UserRole::TenantAdmin) && $oGroup->TenantId !== $oUser->IdTenant) {
+				throw new ApiException(Notifications::AccessDenied);
+			}
+
+			$mResult = $oGroup->Users()->get()->map(function($oUser){
+				return [
+					'UserId' => $oUser->Id,
+					'Name' => $oUser->Name,
+					'PublicId' => $oUser->PublicId
+				];
+			})->toArray();
+		}
+
+		return $mResult;
+	}
+	
+	public function AddUsersToGroup($GroupId, $UserIds) 
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+
+		$oGroup = Group::find($GroupId);
+		if ($oGroup) {
+			$oUser = Api::getAuthenticatedUser();
+			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
+				throw new ApiException(Notifications::AccessDenied);
+			}
+			
+			$oGroup->Users()->syncWithoutDetaching($UserIds);
+			$mResult = true;
+		}
+		
+		return $mResult;
+	}
+
+	public function RemoveUsersFromGroup($GroupId, $UserIds) 
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+
+		$oGroup = Group::find($GroupId);
+		if ($oGroup) {
+			$oUser = Api::getAuthenticatedUser();
+			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
+				throw new ApiException(Notifications::AccessDenied);
+			}
+
+			$oGroup->Users()->detach($UserIds);
+		}
+
+		return $mResult;
 	}
 	/***** public functions might be called with web API *****/
 }
