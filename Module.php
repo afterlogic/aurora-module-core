@@ -3999,10 +3999,10 @@ For instructions, please refer to this section of documentation and our
 	{
 		$mResult = false;
 		
-		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 		
 		$oUser = Api::getAuthenticatedUser();
-		if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
+		if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
 			throw new ApiException(Notifications::AccessDenied);
 		}
 
@@ -4014,20 +4014,21 @@ For instructions, please refer to this section of documentation and our
 		return $mResult;
 	}
 
-	public function GetGroups($TenantId) 
+	public function GetGroups($TenantId, $Search = '') 
 	{
-		$mResult = false;
-
-		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 		
 		$oUser = Api::getAuthenticatedUser();
 		if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
 			throw new ApiException(Notifications::AccessDenied);
 		}
 
-		$mResult = Group::where('TenantId', $TenantId)->get();
+		$query = Group::where('TenantId', $TenantId);
+		if (!empty($Search)) {
+			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
+		}
 
-		return $mResult;
+		return $query->get();
 	}
 
 	public function UpdateGroup($GroupId, $Name)
