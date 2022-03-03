@@ -4074,13 +4074,13 @@ For instructions, please refer to this section of documentation and our
 		return $mResult;
 	}
 
-	public function GetGroupUsers($GroupId)
+	public function GetGroupUsers($TenantId, $GroupId)
 	{
 		$mResult = [];
 
 		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
-		$oGroup = Group::find($GroupId);
+		$oGroup = Group::where('TenantId', $TenantId)->where('Id', $GroupId)->first();
 		if ($oGroup) {
 			$oUser = Api::getAuthenticatedUser();
 			if ($oUser && ($oUser->Role === UserRole::NormalUser || $oUser->Role === UserRole::TenantAdmin) && $oGroup->TenantId !== $oUser->IdTenant) {
