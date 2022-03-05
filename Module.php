@@ -23,7 +23,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
  *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2019, Afterlogic Corp.
+ * @copyright Copyright (c) 2022, Afterlogic Corp.
  *
  * @package Modules
  */
@@ -86,6 +86,10 @@ class Module extends \Aurora\System\Module\AbstractModule
 	 */
 	public function init()
 	{
+		$this->aErrors = [
+			Enums\ErrorCodes::GroupAlreadyExists => $this->i18N('ERROR_GROUP_ALREADY_EXISTS'),
+		];
+
 		\Aurora\System\Router::getInstance()->registerArray(
 			self::GetName(),
 			[
@@ -3967,12 +3971,10 @@ For instructions, please refer to this section of documentation and our
 		return $aResult;
 	}
 
-	public function CreateGroup($Name, $TenantId)
+	public function CreateGroup($TenantId, $Name)
 	{
-		$mResult = false;
-
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-		
+
 		$oUser = Api::getAuthenticatedUser();
 		if ($oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
 			throw new ApiException(Notifications::AccessDenied);
@@ -3984,15 +3986,17 @@ For instructions, please refer to this section of documentation and our
 		]);
 
 		if ($oGroup) {
-			throw new ApiException(0);
+			throw new \Aurora\Modules\Core\Exceptions\Exception(Enums\ErrorCodes::GroupAlreadyExists);
 		} else {
-			$mResult = !!Group::create([
-				'TenantId' => $TenantId,
-				'Name' => $Name
-			]);
+			$oGroup = new Models\Group();
+			$oGroup->Name = $Name;
+			$oGroup->TenantId = $TenantId;
+			if ($oGroup->save()) {
+				return $oGroup->Id;
+			} else {
+				return false;
+			}
 		}
-
-		return $mResult;
 	}
 
 	public function GetGroup($TenantId, $GroupId) 
@@ -4028,7 +4032,11 @@ For instructions, please refer to this section of documentation and our
 			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
 		}
 
-		return $query->get();
+		$aGroups = $query->get()->toArray();
+		return [
+			'Items' => $aGroups,
+			'Count' => count($aGroups)
+		];
 	}
 
 	public function UpdateGroup($GroupId, $Name)
@@ -4053,6 +4061,25 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		return $mResult;
+	}
+
+	/**
+	 * Deletes groups specified by a list of identifiers.
+	 * @param array $IdList List of groups identifiers.
+	 * @return bool
+	 */
+	public function DeleteGroups($IdList)
+	{
+		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+
+		$bResult = true;
+
+		foreach ($IdList as $iId)
+		{
+			$bResult = $bResult && self::Decorator()->DeleteGroup($iId);
+		}
+
+		return $bResult;
 	}
 
 	public function DeleteGroup($GroupId)
