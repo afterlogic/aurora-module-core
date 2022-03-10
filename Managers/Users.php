@@ -80,11 +80,15 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 * @param Builder $oFilters
 	 * @return int
 	 */
-	public function getUsersCount($sSearchDesc = '', Builder $oFilters = null)
+	public function getUsersCount($sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
 	{
 		$iResult = 0;
 		$query = isset($oFilters) ? $oFilters : User::query();
-
+		if ($iGroupId > 0) {
+			$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
+				$q->where('GroupId', $iGroupId);
+			});
+		}
 		if ($sSearchDesc !== '') {
 			$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
 		}
@@ -108,7 +112,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 * @param array $aFilters = []
 	 * @return array | false
 	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null)
+	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
 	{
 		$aResult = [];
 		try
@@ -124,7 +128,11 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			if ($iLimit > 0) {
 				$query = $query->limit($iLimit);
 			}
-
+			if ($iGroupId > 0) {
+				$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
+					$q->where('GroupId', $iGroupId);
+				});
+			}
 			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		}
 		catch (\Illuminate\Database\QueryException $oEx)

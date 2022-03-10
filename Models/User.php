@@ -90,4 +90,9 @@ class User extends Model
 	{
 		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
 	}
+
+    public function Groups()
+	{
+		return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
+	}
 }
