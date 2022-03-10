@@ -14,6 +14,7 @@ use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
 use Illuminate\Database\Eloquent\Builder;
+use stdClass;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -3217,7 +3218,7 @@ For instructions, please refer to this section of documentation and our
 	 *		*int* **Count** Users count.
 	 * }
 	 */
-	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null)
+	public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null, $GroupId = 0)
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
@@ -3242,15 +3243,24 @@ For instructions, please refer to this section of documentation and our
 			$Filters = $Filters->where('IdTenant', $TenantId);
 		}
 
-		$aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters);
-		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
+		$aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters, $GroupId);
+		$aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters, $GroupId);
 		foreach($aUsers as $oUser)
 		{
+			$aGroups = [];
+			foreach ($oUser->Groups as $oGroup) {
+				$aGroups[] = [
+					'Id' => $oGroup->Id,
+					'TenantId' => $oGroup->TenantId,
+					'Name' => $oGroup->Name
+				];
+			}
 			$aResult['Items'][] = [
 				'Id' => $oUser->Id,
 				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
-				'PublicId' => $oUser->PublicId
+				'PublicId' => $oUser->PublicId,
+				'Groups' => $aGroups
 			];
 		}
 
