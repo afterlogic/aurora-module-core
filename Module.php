@@ -4170,6 +4170,7 @@ For instructions, please refer to this section of documentation and our
 			}
 
 			$oGroup->Users()->detach($UserIds);
+			$mResult = true;
 		}
 
 		return $mResult;
