@@ -4193,9 +4193,7 @@ For instructions, please refer to this section of documentation and our
 			throw new ApiException(Notifications::AccessDenied);
 		}
 		if ($oUser) {
-			$oUser->Groups()->detach();
-			
-			$oUser->Groups()->syncWithoutDetaching($GroupIds);
+			$oUser->Groups()->sync($GroupIds);
 			$mResult = true;
 		}
 
