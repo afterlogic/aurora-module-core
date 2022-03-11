@@ -3601,7 +3601,7 @@ For instructions, please refer to this section of documentation and our
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null)
+	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = [])
 	{
 		$PublicId = \trim($PublicId);
 		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
@@ -3636,7 +3636,12 @@ For instructions, please refer to this section of documentation and our
 					$oUser->WriteSeparateLog = $WriteSeparateLog;
 				}
 
-				return $this->getUsersManager()->updateUser($oUser);
+				$mResult = $this->getUsersManager()->updateUser($oUser);
+				if ($mResult) {
+					self::Decorator()->UpdateUserGroups($UserId, $GroupIds);
+				}
+
+				return $mResult;
 			}
 		}
 		else
@@ -4170,6 +4175,27 @@ For instructions, please refer to this section of documentation and our
 			}
 
 			$oGroup->Users()->detach($UserIds);
+			$mResult = true;
+		}
+
+		return $mResult;
+	}
+
+	public function UpdateUserGroups($UserId, $GroupIds) 
+	{
+		$mResult = false;
+
+		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+		$oAuthUser = Api::getAuthenticatedUser();
+		$oUser = User::find($UserId);
+
+		if ($oAuthUser && $oAuthUser->Role === UserRole::TenantAdmin && $oAuthUser->TenantId !== $oUser->IdTenant) {
+			throw new ApiException(Notifications::AccessDenied);
+		}
+		if ($oUser) {
+			$oUser->Groups()->detach();
+			
+			$oUser->Groups()->syncWithoutDetaching($GroupIds);
 			$mResult = true;
 		}
 
