@@ -93,5 +93,9 @@
 	"LoginBlockDurationMinutes": [
 		30,
 		"int"
+	],
+	"AllowGroups": [
+		false,
+		"bool"
 	]
 }

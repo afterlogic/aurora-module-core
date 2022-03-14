@@ -1475,6 +1475,7 @@ For instructions, please refer to this section of documentation and our
 			'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
 			'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
 			'AvailableBackendModules' => $oApiIntegrator->GetBackendModules(),
+			'AllowGroups' => $this->getConfig('AllowGroups', false),
 		);
 
 		if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
@@ -3988,6 +3989,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function CreateGroup($TenantId, $Name)
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
 		$oUser = Api::getAuthenticatedUser();
@@ -4016,6 +4021,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetGroup($TenantId, $GroupId) 
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 		
 		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
@@ -4035,6 +4044,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetGroups($TenantId, $Search = '') 
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 		
 		$oUser = Api::getAuthenticatedUser();
@@ -4056,6 +4069,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function UpdateGroup($GroupId, $Name)
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
@@ -4085,6 +4102,10 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function DeleteGroups($IdList)
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		$bResult = true;
@@ -4099,6 +4120,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function DeleteGroup($GroupId)
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
@@ -4118,6 +4143,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function GetGroupUsers($TenantId, $GroupId)
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = [];
 
 		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
@@ -4143,6 +4172,10 @@ For instructions, please refer to this section of documentation and our
 	
 	public function AddUsersToGroup($GroupId, $UserIds) 
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
@@ -4163,6 +4196,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function RemoveUsersFromGroup($GroupId, $UserIds) 
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
@@ -4183,6 +4220,10 @@ For instructions, please refer to this section of documentation and our
 
 	public function UpdateUserGroups($UserId, $GroupIds) 
 	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			throw new ApiException(Notifications::MethodAccessDenied);
+		}
+
 		$mResult = false;
 
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
