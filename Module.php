@@ -4024,7 +4024,7 @@ For instructions, please refer to this section of documentation and our
 	public function GetGroup($TenantId, $GroupId) 
 	{
 		if (!$this->getConfig('AllowGroups', false)) {
-			throw new ApiException(Notifications::MethodAccessDenied);
+			return false;
 		}
 
 		$mResult = false;
