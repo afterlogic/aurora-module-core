@@ -88,7 +88,10 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
 				$q->where('GroupId', $iGroupId);
 			});
+		} elseif ($iGroupId === 0) {
+			$query = $query->doesnthave('Groups');
 		}
+		
 		if ($sSearchDesc !== '') {
 			$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
 		}
