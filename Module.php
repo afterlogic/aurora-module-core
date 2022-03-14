@@ -4047,7 +4047,7 @@ For instructions, please refer to this section of documentation and our
 	public function GetGroups($TenantId, $Search = '') 
 	{
 		if (!$this->getConfig('AllowGroups', false)) {
-			throw new ApiException(Notifications::MethodAccessDenied);
+			return [];
 		}
 
 		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
