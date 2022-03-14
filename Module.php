@@ -3249,12 +3249,14 @@ For instructions, please refer to this section of documentation and our
 		foreach($aUsers as $oUser)
 		{
 			$aGroups = [];
-			foreach ($oUser->Groups as $oGroup) {
-				$aGroups[] = [
-					'Id' => $oGroup->Id,
-					'TenantId' => $oGroup->TenantId,
-					'Name' => $oGroup->Name
-				];
+			if ($this->getConfig('AllowGroups', false)) {
+				foreach ($oUser->Groups as $oGroup) {
+					$aGroups[] = [
+						'Id' => $oGroup->Id,
+						'TenantId' => $oGroup->TenantId,
+						'Name' => $oGroup->Name
+					];
+				}
 			}
 			$aResult['Items'][] = [
 				'Id' => $oUser->Id,

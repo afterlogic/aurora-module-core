@@ -132,7 +132,10 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
 					$q->where('GroupId', $iGroupId);
 				});
+			} elseif ($iGroupId === 0) {
+				$query = $query->doesnthave('Groups');
 			}
+
 			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
 		}
 		catch (\Illuminate\Database\QueryException $oEx)
