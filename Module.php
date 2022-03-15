@@ -8,6 +8,7 @@
 namespace Aurora\Modules\Core;
 
 use Aurora\Api;
+use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
 use Aurora\System\Enums\UserRole;
@@ -4089,8 +4090,8 @@ For instructions, please refer to this section of documentation and our
 				throw new ApiException(Notifications::AccessDenied);
 			}
 			
-			if(Group::where(['TenantId' => $oGroup->TenantId, 'Name' => $Name])->count() > 0) {
-				throw new ApiException(0);
+			if($oGroup->Name !== $Name && Group::where(['TenantId' => $oGroup->TenantId, 'Name' => $Name])->count() > 0) {
+				throw new ApiException(ErrorCodes::GroupAlreadyExists);
 			} else {
 				$oGroup->Name = $Name;
 				$mResult = !!$oGroup->save();
