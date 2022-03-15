@@ -14,12 +14,16 @@ namespace Aurora\Modules\Core\Enums;
  */
 class ErrorCodes
 {
-	const GroupAlreadyExists = 1001;
+	const ChannelDoesNotExist = 1001;
+	const TenantAlreadyExists = 1002;
+	const GroupAlreadyExists = 1003;
 
 	/**
 	 * @var array
 	 */
 	protected $aConsts = [
+		'ChannelDoesNotExist' => self::ChannelDoesNotExist,
+		'TenantAlreadyExists' => self::TenantAlreadyExists,
 		'GroupAlreadyExists' => self::GroupAlreadyExists,
 	];
 }

@@ -16,7 +16,7 @@ use \Aurora\System\Enums\SortOrder;
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
- * @copyright Copyright (c) 2019, Afterlogic Corp.
+ * @copyright Copyright (c) 2022, Afterlogic Corp.
  *
  * @package Tenants
  */
@@ -202,7 +202,6 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function createTenant(Tenant &$oTenant)
 	{
-		$bResult = false;
 		try
 		{
 			if ($oTenant->validate() && !$oTenant->IsDefault)
@@ -220,7 +219,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 							$oChannel = $oChannelsManager->getChannelById($oTenant->IdChannel);
 							if (!$oChannel)
 							{
-								throw new \Aurora\System\Exceptions\ManagerException(Errs::ChannelsManager_ChannelDoesNotExist);
+								throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::ChannelDoesNotExist);
 							}
 						}
 						else
@@ -233,37 +232,25 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 						$oTenant->IdChannel = 0;
 					}
 
-					if (!$oTenant->save())
-					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantCreateFailed);
-					}
-
-					// if ($oTenant->EntityId)
-					// {
-					// 	$this->oEavManager->saveEntity($oTenant);
-					// }
+					return $oTenant->save();
 				}
 				else
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantAlreadyExists);
+					throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::TenantAlreadyExists);
 				}
 			}
-
-			$bResult = true;
 		}
 		catch(\Illuminate\Database\QueryException $oException) 
 		{
 			\Aurora\Api::LogException($oException);
 		}
 
-		return $bResult;
+		return false;
 	}
 
 	/**
 	 * @param Aurora\Modules\Core\Classes\Tenant $oTenant
 	 *
-	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_QuotaLimitExided) 1707
-	 * @throws \Aurora\System\Exceptions\ManagerException(Errs::TenantsManager_TenantUpdateFailed) 1703
 	 * @throws $oException
 	 *
 	 * @return bool

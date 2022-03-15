@@ -89,6 +89,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 	public function init()
 	{
 		$this->aErrors = [
+			Enums\ErrorCodes::ChannelDoesNotExist => $this->i18N('ERROR_CHANNEL_NOT_EXISTS'),
+			Enums\ErrorCodes::TenantAlreadyExists => $this->i18N('ERROR_TENANT_ALREADY_EXISTS'),
 			Enums\ErrorCodes::GroupAlreadyExists => $this->i18N('ERROR_GROUP_ALREADY_EXISTS'),
 		];
 
