@@ -8,6 +8,7 @@
 namespace Aurora\Modules\Core;
 
 use Aurora\Api;
+use Aurora\Modules\Contacts\Models\Contact;
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
@@ -4068,7 +4069,22 @@ For instructions, please refer to this section of documentation and our
 			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
 		}
 
-		$aGroups = $query->get()->toArray();
+		$aGroups = $query->get()->map(function ($oGroup) {
+			$aEmails = $oGroup->Users->map(function ($oUser) {
+				$oContact = Contact::where('IdUser', $oUser->Id)->where('Storage', 'team')->first();
+				if (!empty($oContact->FullName)) {
+					return '"' . $oContact->FullName .  '"' . '<' . $oUser->PublicId . '>';
+				} else {
+					return $oUser->PublicId;
+				}
+			})->toArray();
+			return [
+				'Id' => $oGroup->Id,
+				'Name' => $oGroup->Name,
+				'Emails' => implode(', ', $aEmails)
+			];
+		})->toArray();
+		
 		return [
 			'Items' => $aGroups,
 			'Count' => count($aGroups)
