@@ -22,6 +22,7 @@ class Group extends Model
         'Id',
         'TenantId',
         'Name',
+        'IsAll',
         'Properties'
     ];
 

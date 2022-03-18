@@ -3536,6 +3536,10 @@ For instructions, please refer to this section of documentation and our
 
 			if ($this->getUsersManager()->createUser($oUser))
 			{
+				$oGroup = $this->getAllGroup($TenantId);
+				if ($oGroup) {
+					self::Decorator()->AddUsersToGroup($oGroup->Id, [$oUser->Id]);
+				}
 				return $oUser->Id;
 			}
 		}
@@ -3796,6 +3800,12 @@ For instructions, please refer to this section of documentation and our
 
 		if (!empty($UserId) && is_int($UserId))
 		{
+			$oGroup = $this->getAllGroup($oUser->IdTenant);
+			if ($oGroup) {
+
+				self::Decorator()->RemoveUsersFromGroup($oGroup->Id, [$UserId]);
+			}
+
 			$bResult = $this->getUsersManager()->deleteUserById($UserId);
 		}
 		else
@@ -4048,6 +4058,48 @@ For instructions, please refer to this section of documentation and our
 		return $mResult;
 	}
 
+	protected function getAllGroup($TenantId) 
+	{
+		if (!$this->getConfig('AllowGroups', false)) {
+			return false;
+		}
+
+		$mResult = false;
+		
+		Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+		
+		$oUser = Api::getAuthenticatedUser();
+		if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
+			throw new ApiException(Notifications::AccessDenied);
+		}
+
+		$oGroup = Group::firstWhere([
+			'TenantId' => $TenantId,
+			'IsAll' => true
+		]);
+
+		if (!$oGroup) {
+
+			$oGroup = new Models\Group();
+			$oGroup->Name = 'All';
+			$oGroup->TenantId = $TenantId;
+			$oGroup->IsAll = true;
+
+			if ($oGroup->save()) {
+
+				$mResult = $oGroup;
+			} else {
+
+				$mResult = false;
+			}
+		} else {
+
+			$mResult = $oGroup;
+		}
+
+		return $mResult;
+	}
+
 	public function GetGroups($TenantId, $Search = '') 
 	{
 		if (!$this->getConfig('AllowGroups', false)) {
@@ -4080,11 +4132,11 @@ For instructions, please refer to this section of documentation and our
 			})->toArray();
 			return [
 				'Id' => $oGroup->Id,
-				'Name' => $oGroup->Name,
+				'Name' => ($oGroup->IsAll) ? $this->i18n('LABEL_ALL_USERS_GROUP') : $oGroup->Name,
 				'Emails' => implode(', ', $aEmails)
 			];
 		})->toArray();
-		
+
 		return [
 			'Items' => $aGroups,
 			'Count' => count($aGroups)
