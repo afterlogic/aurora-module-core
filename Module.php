@@ -4114,6 +4114,8 @@ For instructions, please refer to this section of documentation and our
 			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
 		}
 
+		$this->getAllGroup($TenantId);
+
 		$aGroups = $query->get()->map(function ($oGroup) {
 			if ($oGroup->IsAll) {
 				$aEmails = Contact::where('IdTenant', $oGroup->TenantId)
