@@ -8,6 +8,7 @@
 namespace Aurora\Modules\Core;
 
 use Aurora\Api;
+use Aurora\Modules\Contacts\Enums\StorageType;
 use Aurora\Modules\Contacts\Models\Contact;
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
@@ -3255,11 +3256,13 @@ For instructions, please refer to this section of documentation and our
 			$aGroups = [];
 			if ($this->getConfig('AllowGroups', false)) {
 				foreach ($oUser->Groups as $oGroup) {
-					$aGroups[] = [
-						'Id' => $oGroup->Id,
-						'TenantId' => $oGroup->TenantId,
-						'Name' => $oGroup->Name
-					];
+					if (!$oGroup->IsAll) {
+						$aGroups[] = [
+							'Id' => $oGroup->Id,
+							'TenantId' => $oGroup->TenantId,
+							'Name' => $oGroup->Name
+						];
+					}
 				}
 			}
 			$aResult['Items'][] = [
@@ -3536,10 +3539,6 @@ For instructions, please refer to this section of documentation and our
 
 			if ($this->getUsersManager()->createUser($oUser))
 			{
-				$oGroup = $this->getAllGroup($TenantId);
-				if ($oGroup) {
-					self::Decorator()->AddUsersToGroup($oGroup->Id, [$oUser->Id]);
-				}
 				return $oUser->Id;
 			}
 		}
@@ -3800,12 +3799,6 @@ For instructions, please refer to this section of documentation and our
 
 		if (!empty($UserId) && is_int($UserId))
 		{
-			$oGroup = $this->getAllGroup($oUser->IdTenant);
-			if ($oGroup) {
-
-				self::Decorator()->RemoveUsersFromGroup($oGroup->Id, [$UserId]);
-			}
-
 			$bResult = $this->getUsersManager()->deleteUserById($UserId);
 		}
 		else
@@ -4122,18 +4115,31 @@ For instructions, please refer to this section of documentation and our
 		}
 
 		$aGroups = $query->get()->map(function ($oGroup) {
-			$aEmails = $oGroup->Users->map(function ($oUser) {
-				$oContact = Contact::where('IdUser', $oUser->Id)->where('Storage', 'team')->first();
-				if (!empty($oContact->FullName)) {
-					return '"' . $oContact->FullName .  '"' . '<' . $oUser->PublicId . '>';
-				} else {
-					return $oUser->PublicId;
-				}
-			})->toArray();
+			if ($oGroup->IsAll) {
+				$aEmails = Contact::where('IdTenant', $oGroup->TenantId)
+					->where('Storage', StorageType::Team)->get()->map(function ($oContact) {
+						if (!empty($oContact->FullName)) {
+							return '"' . $oContact->FullName .  '"' . '<' . $oContact->ViewEmail . '>';
+						} else {
+							return $oContact->ViewEmail;
+						}
+					}
+				)->toArray();
+			} else {
+				$aEmails = $oGroup->Users->map(function ($oUser) {
+					$oContact = Contact::where('IdUser', $oUser->Id)->where('Storage', 'team')->first();
+					if (!empty($oContact->FullName)) {
+						return '"' . $oContact->FullName .  '"' . '<' . $oUser->PublicId . '>';
+					} else {
+						return $oUser->PublicId;
+					}
+				})->toArray();
+			}
 			return [
 				'Id' => $oGroup->Id,
 				'Name' => ($oGroup->IsAll) ? $this->i18n('LABEL_ALL_USERS_GROUP') : $oGroup->Name,
-				'Emails' => implode(', ', $aEmails)
+				'Emails' => implode(', ', $aEmails),
+				'IsAll' => !!$oGroup->IsAll
 			];
 		})->toArray();
 
@@ -4154,7 +4160,7 @@ For instructions, please refer to this section of documentation and our
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 		
 		$oGroup = Group::find($GroupId);
-		if ($oGroup) {
+		if ($oGroup && !$oGroup->IsAll) {
 			$oUser = Api::getAuthenticatedUser();
 			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
 				throw new ApiException(Notifications::AccessDenied);
@@ -4205,7 +4211,7 @@ For instructions, please refer to this section of documentation and our
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 		
 		$oGroup = Group::find($GroupId);
-		if ($oGroup) {
+		if ($oGroup && !$oGroup->IsAll) {
 			$oUser = Api::getAuthenticatedUser();
 			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
 				throw new ApiException(Notifications::AccessDenied);
@@ -4234,13 +4240,24 @@ For instructions, please refer to this section of documentation and our
 				throw new ApiException(Notifications::AccessDenied);
 			}
 
-			$mResult = $oGroup->Users()->get()->map(function($oUser){
-				return [
-					'UserId' => $oUser->Id,
-					'Name' => $oUser->Name,
-					'PublicId' => $oUser->PublicId
-				];
-			})->toArray();
+			if ($oGroup->IsAll) {
+				$mResult = Contact::where('IdTenant', $TenantId)
+					->where('Storage', StorageType::Team)->get()->map(function($oContact){
+					return [
+						'UserId' => $oContact->IdUser,
+						'Name' => $oContact->FullName,
+						'PublicId' => $oContact->ViewEmail
+					];
+				})->toArray();
+			} else {
+				$mResult = $oGroup->Users()->get()->map(function($oUser){
+					return [
+						'UserId' => $oUser->Id,
+						'Name' => $oUser->Name,
+						'PublicId' => $oUser->PublicId
+					];
+				})->toArray();
+			}
 		}
 
 		return $mResult;
@@ -4257,7 +4274,7 @@ For instructions, please refer to this section of documentation and our
 		Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
 		$oGroup = Group::find($GroupId);
-		if ($oGroup) {
+		if ($oGroup && !$oGroup->IsAll) {
 			$oUser = Api::getAuthenticatedUser();
 			if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
 				throw new ApiException(Notifications::AccessDenied);
@@ -4310,7 +4327,10 @@ For instructions, please refer to this section of documentation and our
 			throw new ApiException(Notifications::AccessDenied);
 		}
 		if ($oUser) {
-			$oUser->Groups()->sync($GroupIds);
+			$aGroupIds = Group::where('IsAll', false)->whereIn('Id', $GroupIds)->get(['Id'])->map(function ($oGroup) {
+				return $oGroup->Id;
+			});
+			$oUser->Groups()->sync($aGroupIds);
 			$mResult = true;
 		}
 

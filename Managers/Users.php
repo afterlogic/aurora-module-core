@@ -7,6 +7,7 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use Aurora\Modules\Core\Models\Group;
 use \Aurora\Modules\Core\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use \Aurora\System\Enums\SortOrder;
@@ -131,10 +132,16 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			if ($iLimit > 0) {
 				$query = $query->limit($iLimit);
 			}
+
 			if ($iGroupId > 0) {
-				$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
-					$q->where('GroupId', $iGroupId);
-				});
+				$oGroup = Group::find($iGroupId);
+				if ($oGroup->IsAll) {
+					$query = $query->where('IdTenant', $oGroup->TenantId);
+				} else {
+					$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
+						$q->where('GroupId', $iGroupId);
+					});					
+				}
 			} elseif ($iGroupId === 0) {
 				$query = $query->doesnthave('Groups');
 			}
