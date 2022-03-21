@@ -4,6 +4,7 @@ namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
 use Aurora\Modules\Core\Models\Tenant;
+use Aurora\Modules\Core\Module as CoreModule;
 
 class Group extends Model
 {
@@ -45,4 +46,9 @@ class Group extends Model
 	{
 		return $this->belongsToMany(User::class, 'core_group_user', 'GroupId', 'UserId');
 	}
+
+    public function getName()
+    {
+        return $this->IsAll ? CoreModule::getInstance()->i18N('LABEL_ALL_USERS_GROUP') : $this->Name;
+    }
 }

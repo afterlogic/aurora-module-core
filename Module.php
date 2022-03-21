@@ -4139,7 +4139,7 @@ For instructions, please refer to this section of documentation and our
 			}
 			return [
 				'Id' => $oGroup->Id,
-				'Name' => ($oGroup->IsAll) ? $this->i18n('LABEL_ALL_USERS_GROUP') : $oGroup->Name,
+				'Name' => $oGroup->getName(),
 				'Emails' => implode(', ', $aEmails),
 				'IsAll' => !!$oGroup->IsAll
 			];
