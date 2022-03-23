@@ -140,7 +140,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 					$query = $query->orWhere('IdTenant', $oGroup->TenantId);				
 				} else {
 					$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
-						$q->where('GroupId', $iGroupId)->where('IdTenant');
+						$q->where('GroupId', $iGroupId);
 					});					
 				}
 			} elseif ($iGroupId === 0) {
