@@ -94,6 +94,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 			Enums\ErrorCodes::ChannelDoesNotExist => $this->i18N('ERROR_CHANNEL_NOT_EXISTS'),
 			Enums\ErrorCodes::TenantAlreadyExists => $this->i18N('ERROR_TENANT_ALREADY_EXISTS'),
 			Enums\ErrorCodes::GroupAlreadyExists => $this->i18N('ERROR_GROUP_ALREADY_EXISTS'),
+			Enums\ErrorCodes::MySqlConfigError => 'Please make sure your PHP/MySQL environment meets the minimal system requirements.',
 		];
 
 		\Aurora\System\Router::getInstance()->registerArray(
@@ -1811,6 +1812,12 @@ For instructions, please refer to this section of documentation and our
 
         try {
             $container = \Aurora\Api::GetContainer();
+
+			$oPdo = $container['connection']->getPdo();
+			if ($oPdo && strpos($oPdo->getAttribute(\PDO::ATTR_CLIENT_VERSION), 'mysqlnd') === false) {
+				throw new ApiException(Enums\ErrorCodes::MySqlConfigError);
+			}
+
             $container['console']->setAutoExit(false);
 
             $container['console']->find('migrate')
@@ -1822,6 +1829,9 @@ For instructions, please refer to this section of documentation and our
             $bResult = true;
         } catch (\Exception $oEx) {
             \Aurora\System\Api::LogException($oEx);
+			if ($oEx instanceof ApiException) {
+				throw $oEx;
+			}
         }
 
 		return $bResult;
@@ -1956,6 +1966,10 @@ For instructions, please refer to this section of documentation and our
 				$DbPassword
 			));
 			$oPdo = $capsule->getConnection()->getPdo();
+
+			if ($oPdo && strpos($oPdo->getAttribute(\PDO::ATTR_CLIENT_VERSION), 'mysqlnd') === false) {
+				throw new ApiException(Enums\ErrorCodes::MySqlConfigError);
+			}
 		}
 
 		return isset($oPdo);

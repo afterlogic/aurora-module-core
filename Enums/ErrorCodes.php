@@ -17,6 +17,7 @@ class ErrorCodes
 	const ChannelDoesNotExist = 1001;
 	const TenantAlreadyExists = 1002;
 	const GroupAlreadyExists = 1003;
+	const MySqlConfigError = 1004;
 
 	/**
 	 * @var array
