@@ -236,8 +236,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 		
 		$aCompatibility['mysqlnd.valid'] = (int) (
 			function_exists('mysqli_fetch_all') &&
-			strpos(mysqli_get_client_info(),"mysqlnd") !== false &&
-			strpos(Api::GetPDO()->getAttribute(\PDO::ATTR_CLIENT_VERSION),"mysqlnd") !== false
+			strpos(mysqli_get_client_info(),"mysqlnd") !== false
 		);
 
 		$aCompatibility['socket.valid'] = (int) function_exists('fsockopen');
