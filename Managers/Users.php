@@ -275,7 +275,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			{
 				if (!$oUser->update())
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
+					throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
 				}
 			}
 

@@ -95,4 +95,11 @@ class User extends Model
 	{
 		return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
 	}
+
+    protected static function booting()
+    {
+        self::$validationRules = [
+            'TimeFormat' => 'required|in:0,1',
+        ];
+    }
 }
