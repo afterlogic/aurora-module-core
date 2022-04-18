@@ -62,7 +62,7 @@ class User extends Model
     ];
 
     protected $validationRules = [
-        'TimeFormat' => 'required|in:0,1',
+        'TimeFormat' => 'in:0,1',
     ];
 
     /**
