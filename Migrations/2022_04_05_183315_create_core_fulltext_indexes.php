@@ -13,6 +13,8 @@ class CreateCoreFulltextIndexes extends Migration
      */
     public function up()
     {
+        Capsule::connection()->beginTransaction();
+
         $prefix = Capsule::connection()->getTablePrefix();
         Capsule::schema()->table('core_groups', function (Blueprint $table)
         {
@@ -28,6 +30,8 @@ class CreateCoreFulltextIndexes extends Migration
         });
         Capsule::statement("CREATE FULLTEXT INDEX ccore_tenants_name_index ON {$prefix}core_tenants (Name)");
         Capsule::statement("CREATE FULLTEXT INDEX ccore_groups_name_index ON {$prefix}core_groups (Name)");
+
+        Capsule::connection()->commit();
     }
 
     /**
