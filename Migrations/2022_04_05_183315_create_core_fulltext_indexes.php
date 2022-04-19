@@ -39,12 +39,12 @@ class CreateCoreFulltextIndexes extends Migration
     {
         Capsule::schema()->table('core_tenants', function (Blueprint $table)
         {
-            $table->dropIndex(['Name']);
+            $table->dropIndex('ccore_tenants_name_index');
         });
         Capsule::schema()->table('core_groups', function (Blueprint $table)
         {
             $table->dropIndex(['TenantId']);
-            $table->dropIndex(['Name']);
+            $table->dropIndex('ccore_groups_name_index');
         });
         Capsule::schema()->table('core_auth_tokens', function (Blueprint $table)
         {
