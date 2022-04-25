@@ -138,7 +138,8 @@ class Module extends \Aurora\System\Module\AbstractModule
 			'IsModuleDisabledForObject',
 			'GetBlockedUser',
 			'BlockUser',
-			'CheckIsBlockedUser'
+			'CheckIsBlockedUser',
+			'GetAllGroup'
 		]);
 	}
 
@@ -4069,7 +4070,7 @@ For instructions, please refer to this section of documentation and our
 		return $mResult;
 	}
 
-	protected function getAllGroup($TenantId) 
+	public function GetAllGroup($TenantId) 
 	{
 		if (!$this->getConfig('AllowGroups', false)) {
 			return false;
@@ -4132,7 +4133,7 @@ For instructions, please refer to this section of documentation and our
 			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
 		}
 
-		$this->getAllGroup($TenantId);
+		$this->GetAllGroup($TenantId);
 
 		$aGroups = $query->get()->map(function ($oGroup) {
 			if ($oGroup->IsAll) {
