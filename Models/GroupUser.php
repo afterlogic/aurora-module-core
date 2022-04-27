@@ -16,7 +16,7 @@ namespace Aurora\Modules\Core\Models;
 
 use \Aurora\System\Classes\Model;
 
-class GroupContact extends Model
+class GroupUser extends Model
 {
     public $table = 'core_group_user';
 	protected $foreignModel = Group::class;
