@@ -12,7 +12,7 @@ class Group extends Model
     protected $moduleName = 'Core';
     
     protected $foreignModel = Tenant::class;
-	protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
+	protected $foreignModelIdColumn = 'TenantId'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
