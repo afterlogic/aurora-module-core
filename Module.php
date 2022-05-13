@@ -1456,7 +1456,7 @@ For instructions, please refer to this section of documentation and our
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
-			'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
+			'StoreAuthTokenInDB' => $oSettings ? $oSettings->GetConf('StoreAuthTokenInDB') : false,
 			'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
 			'AvailableBackendModules' => $oApiIntegrator->GetBackendModules(),
 		);
