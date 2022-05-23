@@ -3631,7 +3631,7 @@ For instructions, please refer to this section of documentation and our
 	 * @return bool
 	 * @throws \Aurora\System\Exceptions\ApiException
 	 */
-	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = [])
+	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null)
 	{
 		$PublicId = \trim($PublicId);
 		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
@@ -3667,7 +3667,7 @@ For instructions, please refer to this section of documentation and our
 				}
 
 				$mResult = $this->getUsersManager()->updateUser($oUser);
-				if ($mResult) {
+				if ($mResult && $this->getConfig('AllowGroups', false) && $GroupIds !== null) {
 					self::Decorator()->UpdateUserGroups($UserId, $GroupIds);
 				}
 
