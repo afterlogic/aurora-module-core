@@ -97,5 +97,9 @@
 	"AllowGroups": [
 		false,
 		"bool"
+	],
+	"DefaultTimeZone": [
+		"",
+		"string"
 	]
 }
