@@ -3555,7 +3555,7 @@ For instructions, please refer to this section of documentation and our
 			$oUser->Language = \Aurora\System\Api::GetLanguage(true);
 			$oUser->TimeFormat = self::getInstance()->getConfig('TimeFormat');
 			$oUser->DateFormat = self::getInstance()->getConfig('DateFormat');
-			$oUser->DefaultTimeZone = self::getInstance()->getConfig('DefaultTimeZone', '');
+			$oUser->DefaultTimeZone = '';
 
 			if ($this->getUsersManager()->createUser($oUser))
 			{
