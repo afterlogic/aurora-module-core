@@ -1,101 +1,197 @@
 {
-	"AllowCapa": [
-		false,
-		"bool"
-	],
-	"AllowPostLogin": [
-		false,
-		"bool"
-	],
-	"CsrfTokenProtection": [
-		true,
-		"bool"
-	],
-	"CronTimeToRunSeconds": [
-		10800,
-		"int"
-	],
-	"CronTimeToKillSeconds": [
-		10800,
-		"int"
-	],
-	"CronTimeFile": [
-		".clear.dat",
-		"string"
-	],
-	"UserSelectsDateFormat": [
-		false,
-		"bool"
-	],
-    "DateFormat": [
-        "DD\/MM\/YYYY",
-        "spec",
-        "\\Aurora\\System\\Enums\\DateFormat"
+  "AllowCapa": [
+    false,
+    "bool"
+  ],
+  "AllowCapa_Description": [
+    "",
+    "string"
+  ],
+  "AllowPostLogin": [
+    false,
+    "bool"
+  ],
+  "AllowPostLogin_Description": [
+    "",
+    "string"
+  ],
+  "CsrfTokenProtection": [
+    true,
+    "bool"
+  ],
+  "CsrfTokenProtection_Description": [
+    "",
+    "string"
+  ],
+  "CronTimeToRunSeconds": [
+    10800,
+    "int"
+  ],
+  "CronTimeToRunSeconds_Description": [
+    "",
+    "string"
+  ],
+  "CronTimeToKillSeconds": [
+    10800,
+    "int"
+  ],
+  "CronTimeToKillSeconds_Description": [
+    "",
+    "string"
+  ],
+  "CronTimeFile": [
+    ".clear.dat",
+    "string"
+  ],
+  "CronTimeFile_Description": [
+    "",
+    "string"
+  ],
+  "UserSelectsDateFormat": [
+    false,
+    "bool"
+  ],
+  "UserSelectsDateFormat_Description": [
+    "",
+    "string"
+  ],
+  "DateFormat": [
+    "DD/MM/YYYY",
+    "spec",
+    "\\Aurora\\System\\Enums\\DateFormat"
+  ],
+  "DateFormat_Description": [
+    "",
+    "string"
+  ],
+  "DateFormatList": [
+    [
+      "DD/MM/YYYY",
+      "MM/DD/YYYY",
+      "DD Month YYYY"
     ],
-    "DateFormatList": [
-        [
-            "DD\/MM\/YYYY",
-            "MM\/DD\/YYYY",
-            "DD Month YYYY"
-        ],
-		"array"
-	],
-	"Disabled": [
-		false,
-		"bool"
-	],
-	"GetAccountWithPassword": [
-		true,
-		"bool"
-	],
-	"LanguageListComment": "Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
-    "LanguageList": [
-        [],
-        "array"
-    ],
-    "Language": [
-        "English",
-        "string"
-    ],
-    "AutodetectLanguage": [
-        true,
-        "bool"
-    ],
-    "PostLoginErrorRedirectUrl": [
-        "./",
-        "string"
-    ],
-    "TimeFormat": [
-        "F24",
-        "spec",
-        "\\Aurora\\System\\Enums\\TimeFormat"
-	],
-    "SiteName": [
-        "",
-        "string"
-    ],
-	"ProductName": [
-		"Unknown",
-        "string"
-	],
-	"AuthTokenCookieExpireTime": [
-		30,
-		"int"
-	],
-	"EnableFailedLoginBlock": [
-		false,
-		"bool"
-	],
-	"LoginBlockAvailableTriesCount": [
-		3,
-		"int"
-	],
-	"LoginBlockDurationMinutes": [
-		30,
-		"int"
-	],
-	"AllowGroups": [
-		false,
-		"bool"
-	]
+    "array"
+  ],
+  "DateFormatList_Description": [
+    "",
+    "string"
+  ],
+  "Disabled": [
+    false,
+    "bool"
+  ],
+  "Disabled_Description": [
+    "",
+    "string"
+  ],
+  "GetAccountWithPassword": [
+    true,
+    "bool"
+  ],
+  "GetAccountWithPassword_Description": [
+    "",
+    "string"
+  ],
+  "LanguageListComment": "Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
+  "LanguageListComment_Description": [
+    "",
+    "string"
+  ],
+  "LanguageList": [
+    [],
+    "array"
+  ],
+  "LanguageList_Description": [
+    "",
+    "string"
+  ],
+  "Language": [
+    "English",
+    "string"
+  ],
+  "Language_Description": [
+    "",
+    "string"
+  ],
+  "AutodetectLanguage": [
+    true,
+    "bool"
+  ],
+  "AutodetectLanguage_Description": [
+    "",
+    "string"
+  ],
+  "PostLoginErrorRedirectUrl": [
+    "./",
+    "string"
+  ],
+  "PostLoginErrorRedirectUrl_Description": [
+    "",
+    "string"
+  ],
+  "TimeFormat": [
+    "F24",
+    "spec",
+    "\\Aurora\\System\\Enums\\TimeFormat"
+  ],
+  "TimeFormat_Description": [
+    "",
+    "string"
+  ],
+  "SiteName": [
+    "",
+    "string"
+  ],
+  "SiteName_Description": [
+    "",
+    "string"
+  ],
+  "ProductName": [
+    "Unknown",
+    "string"
+  ],
+  "ProductName_Description": [
+    "",
+    "string"
+  ],
+  "AuthTokenCookieExpireTime": [
+    30,
+    "int"
+  ],
+  "AuthTokenCookieExpireTime_Description": [
+    "",
+    "string"
+  ],
+  "EnableFailedLoginBlock": [
+    false,
+    "bool"
+  ],
+  "EnableFailedLoginBlock_Description": [
+    "",
+    "string"
+  ],
+  "LoginBlockAvailableTriesCount": [
+    3,
+    "int"
+  ],
+  "LoginBlockAvailableTriesCount_Description": [
+    "",
+    "string"
+  ],
+  "LoginBlockDurationMinutes": [
+    30,
+    "int"
+  ],
+  "LoginBlockDurationMinutes_Description": [
+    "",
+    "string"
+  ],
+  "AllowGroups": [
+    false,
+    "bool"
+  ],
+  "AllowGroups_Description": [
+    "",
+    "string"
+  ]
 }
