@@ -1,197 +1,197 @@
 {
-  "AllowCapa": [
-    false,
-    "bool"
-  ],
-  "AllowCapa_Description": [
-    "",
-    "string"
-  ],
-  "AllowPostLogin": [
-    false,
-    "bool"
-  ],
-  "AllowPostLogin_Description": [
-    "",
-    "string"
-  ],
-  "CsrfTokenProtection": [
-    true,
-    "bool"
-  ],
-  "CsrfTokenProtection_Description": [
-    "",
-    "string"
-  ],
-  "CronTimeToRunSeconds": [
-    10800,
-    "int"
-  ],
-  "CronTimeToRunSeconds_Description": [
-    "",
-    "string"
-  ],
-  "CronTimeToKillSeconds": [
-    10800,
-    "int"
-  ],
-  "CronTimeToKillSeconds_Description": [
-    "",
-    "string"
-  ],
-  "CronTimeFile": [
-    ".clear.dat",
-    "string"
-  ],
-  "CronTimeFile_Description": [
-    "",
-    "string"
-  ],
-  "UserSelectsDateFormat": [
-    false,
-    "bool"
-  ],
-  "UserSelectsDateFormat_Description": [
-    "",
-    "string"
-  ],
-  "DateFormat": [
-    "DD/MM/YYYY",
-    "spec",
-    "\\Aurora\\System\\Enums\\DateFormat"
-  ],
-  "DateFormat_Description": [
-    "",
-    "string"
-  ],
-  "DateFormatList": [
-    [
-      "DD/MM/YYYY",
-      "MM/DD/YYYY",
-      "DD Month YYYY"
-    ],
-    "array"
-  ],
-  "DateFormatList_Description": [
-    "",
-    "string"
-  ],
-  "Disabled": [
-    false,
-    "bool"
-  ],
-  "Disabled_Description": [
-    "",
-    "string"
-  ],
-  "GetAccountWithPassword": [
-    true,
-    "bool"
-  ],
-  "GetAccountWithPassword_Description": [
-    "",
-    "string"
-  ],
-  "LanguageListComment": "Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
-  "LanguageListComment_Description": [
-    "",
-    "string"
-  ],
-  "LanguageList": [
-    [],
-    "array"
-  ],
-  "LanguageList_Description": [
-    "",
-    "string"
-  ],
-  "Language": [
-    "English",
-    "string"
-  ],
-  "Language_Description": [
-    "",
-    "string"
-  ],
-  "AutodetectLanguage": [
-    true,
-    "bool"
-  ],
-  "AutodetectLanguage_Description": [
-    "",
-    "string"
-  ],
-  "PostLoginErrorRedirectUrl": [
-    "./",
-    "string"
-  ],
-  "PostLoginErrorRedirectUrl_Description": [
-    "",
-    "string"
-  ],
-  "TimeFormat": [
-    "F24",
-    "spec",
-    "\\Aurora\\System\\Enums\\TimeFormat"
-  ],
-  "TimeFormat_Description": [
-    "",
-    "string"
-  ],
-  "SiteName": [
-    "",
-    "string"
-  ],
-  "SiteName_Description": [
-    "",
-    "string"
-  ],
-  "ProductName": [
-    "Unknown",
-    "string"
-  ],
-  "ProductName_Description": [
-    "",
-    "string"
-  ],
-  "AuthTokenCookieExpireTime": [
-    30,
-    "int"
-  ],
-  "AuthTokenCookieExpireTime_Description": [
-    "",
-    "string"
-  ],
-  "EnableFailedLoginBlock": [
-    false,
-    "bool"
-  ],
-  "EnableFailedLoginBlock_Description": [
-    "",
-    "string"
-  ],
-  "LoginBlockAvailableTriesCount": [
-    3,
-    "int"
-  ],
-  "LoginBlockAvailableTriesCount_Description": [
-    "",
-    "string"
-  ],
-  "LoginBlockDurationMinutes": [
-    30,
-    "int"
-  ],
-  "LoginBlockDurationMinutes_Description": [
-    "",
-    "string"
-  ],
-  "AllowGroups": [
-    false,
-    "bool"
-  ],
-  "AllowGroups_Description": [
-    "",
-    "string"
-  ]
+	"AllowCapa": [
+		false,
+		"bool"
+	],
+	"AllowCapa_Description": [
+		"",
+		"string"
+	],
+	"AllowPostLogin": [
+		false,
+		"bool"
+	],
+	"AllowPostLogin_Description": [
+		"",
+		"string"
+	],
+	"CsrfTokenProtection": [
+		true,
+		"bool"
+	],
+	"CsrfTokenProtection_Description": [
+		"",
+		"string"
+	],
+	"CronTimeToRunSeconds": [
+		10800,
+		"int"
+	],
+	"CronTimeToRunSeconds_Description": [
+		"",
+		"string"
+	],
+	"CronTimeToKillSeconds": [
+		10800,
+		"int"
+	],
+	"CronTimeToKillSeconds_Description": [
+		"",
+		"string"
+	],
+	"CronTimeFile": [
+		".clear.dat",
+		"string"
+	],
+	"CronTimeFile_Description": [
+		"",
+		"string"
+	],
+	"UserSelectsDateFormat": [
+		false,
+		"bool"
+	],
+	"UserSelectsDateFormat_Description": [
+		"",
+		"string"
+	],
+	"DateFormat": [
+		"DD/MM/YYYY",
+		"spec",
+		"\\Aurora\\System\\Enums\\DateFormat"
+	],
+	"DateFormat_Description": [
+		"",
+		"string"
+	],
+	"DateFormatList": [
+		[
+			"DD/MM/YYYY",
+			"MM/DD/YYYY",
+			"DD Month YYYY"
+		],
+		"array"
+	],
+	"DateFormatList_Description": [
+		"",
+		"string"
+	],
+	"Disabled": [
+		false,
+		"bool"
+	],
+	"Disabled_Description": [
+		"",
+		"string"
+	],
+	"GetAccountWithPassword": [
+		true,
+		"bool"
+	],
+	"GetAccountWithPassword_Description": [
+		"",
+		"string"
+	],
+	"LanguageListComment": "Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
+	"LanguageListComment_Description": [
+		"",
+		"string"
+	],
+	"LanguageList": [
+		[],
+		"array"
+	],
+	"LanguageList_Description": [
+		"",
+		"string"
+	],
+	"Language": [
+		"English",
+		"string"
+	],
+	"Language_Description": [
+		"",
+		"string"
+	],
+	"AutodetectLanguage": [
+		true,
+		"bool"
+	],
+	"AutodetectLanguage_Description": [
+		"",
+		"string"
+	],
+	"PostLoginErrorRedirectUrl": [
+		"./",
+		"string"
+	],
+	"PostLoginErrorRedirectUrl_Description": [
+		"",
+		"string"
+	],
+	"TimeFormat": [
+		"F24",
+		"spec",
+		"\\Aurora\\System\\Enums\\TimeFormat"
+	],
+	"TimeFormat_Description": [
+		"",
+		"string"
+	],
+	"SiteName": [
+		"",
+		"string"
+	],
+	"SiteName_Description": [
+		"",
+		"string"
+	],
+	"ProductName": [
+		"Unknown",
+		"string"
+	],
+	"ProductName_Description": [
+		"",
+		"string"
+	],
+	"AuthTokenCookieExpireTime": [
+		30,
+		"int"
+	],
+	"AuthTokenCookieExpireTime_Description": [
+		"",
+		"string"
+	],
+	"EnableFailedLoginBlock": [
+		false,
+		"bool"
+	],
+	"EnableFailedLoginBlock_Description": [
+		"",
+		"string"
+	],
+	"LoginBlockAvailableTriesCount": [
+		3,
+		"int"
+	],
+	"LoginBlockAvailableTriesCount_Description": [
+		"",
+		"string"
+	],
+	"LoginBlockDurationMinutes": [
+		30,
+		"int"
+	],
+	"LoginBlockDurationMinutes_Description": [
+		"",
+		"string"
+	],
+	"AllowGroups": [
+		false,
+		"bool"
+	],
+	"AllowGroups_Description": [
+		"",
+		"string"
+	]
 }
