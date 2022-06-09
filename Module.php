@@ -4131,7 +4131,10 @@ For instructions, please refer to this section of documentation and our
 
 		$query = Group::where('TenantId', $TenantId);
 		if (!empty($Search)) {
-			$query = $query->where('Name', 'LIKE', '%' . $Search . '%');
+			$query = $query->where(function ($q) use ($Search) { 
+				$q->where('Name', 'LIKE', '%' . $Search . '%');
+				$q->orWhere('IsAll', true);
+			});
 		}
 
 		$this->GetAllGroup($TenantId);
@@ -4164,6 +4167,12 @@ For instructions, please refer to this section of documentation and our
 				'IsAll' => !!$oGroup->IsAll
 			];
 		})->toArray();
+
+		if (!empty($Search)) {
+			$aGroups = array_filter($aGroups, function ($aGroup) use ($Search) {
+				return (stripos($aGroup['Name'], $Search) !== false);
+			});
+		}
 
 		return [
 			'Items' => $aGroups,
