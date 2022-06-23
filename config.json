@@ -4,7 +4,7 @@
 		"bool"
 	],
 	"AllowCapa_Description": [
-		"",
+		"If set to true, product features can be enabled/disabled on user or tenant level",
 		"string"
 	],
 	"AllowPostLogin": [
@@ -12,7 +12,7 @@
 		"bool"
 	],
 	"AllowPostLogin_Description": [
-		"",
+		"If set to true, credentials can be submitted via POST request",
 		"string"
 	],
 	"CsrfTokenProtection": [
@@ -20,7 +20,7 @@
 		"bool"
 	],
 	"CsrfTokenProtection_Description": [
-		"",
+		"If set to true, CSRF protection is enabled",
 		"string"
 	],
 	"CronTimeToRunSeconds": [
@@ -28,7 +28,7 @@
 		"int"
 	],
 	"CronTimeToRunSeconds_Description": [
-		"",
+		"Defines intervals in seconds to run a routine of deleting temporary files",
 		"string"
 	],
 	"CronTimeToKillSeconds": [
@@ -36,7 +36,7 @@
 		"int"
 	],
 	"CronTimeToKillSeconds_Description": [
-		"",
+		"Defines minimal age in seconds of temporary files to be deleted",
 		"string"
 	],
 	"CronTimeFile": [
@@ -44,7 +44,7 @@
 		"string"
 	],
 	"CronTimeFile_Description": [
-		"",
+		"Defines filename for storing last timestamp when routine of deleting temporary files was run",
 		"string"
 	],
 	"UserSelectsDateFormat": [
@@ -52,7 +52,7 @@
 		"bool"
 	],
 	"UserSelectsDateFormat_Description": [
-		"",
+		"If set to true, users can select date format",
 		"string"
 	],
 	"DateFormat": [
@@ -61,7 +61,7 @@
 		"\\Aurora\\System\\Enums\\DateFormat"
 	],
 	"DateFormat_Description": [
-		"",
+		"Defines default date format used",
 		"string"
 	],
 	"DateFormatList": [
@@ -73,7 +73,7 @@
 		"array"
 	],
 	"DateFormatList_Description": [
-		"",
+		"Defines default date format used",
 		"string"
 	],
 	"Disabled": [
@@ -81,7 +81,7 @@
 		"bool"
 	],
 	"Disabled_Description": [
-		"",
+		"Setting to true disables the module",
 		"string"
 	],
 	"GetAccountWithPassword": [
@@ -102,7 +102,7 @@
 		"array"
 	],
 	"LanguageList_Description": [
-		"",
+		"Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
 		"string"
 	],
 	"Language": [
@@ -110,7 +110,7 @@
 		"string"
 	],
 	"Language_Description": [
-		"",
+		"Default interface language used",
 		"string"
 	],
 	"AutodetectLanguage": [
@@ -118,7 +118,7 @@
 		"bool"
 	],
 	"AutodetectLanguage_Description": [
-		"",
+		"Setting to true enables language autodetection",
 		"string"
 	],
 	"PostLoginErrorRedirectUrl": [
@@ -126,7 +126,7 @@
 		"string"
 	],
 	"PostLoginErrorRedirectUrl_Description": [
-		"",
+		"If login credentials were supplied with POST method, this setting defines redirect URL used when authentication error occurs",
 		"string"
 	],
 	"TimeFormat": [
@@ -135,7 +135,7 @@
 		"\\Aurora\\System\\Enums\\TimeFormat"
 	],
 	"TimeFormat_Description": [
-		"",
+		"Denotes time format used by default",
 		"string"
 	],
 	"SiteName": [
@@ -143,7 +143,7 @@
 		"string"
 	],
 	"SiteName_Description": [
-		"",
+		"Text used in browser title as a website name",
 		"string"
 	],
 	"ProductName": [
@@ -151,7 +151,7 @@
 		"string"
 	],
 	"ProductName_Description": [
-		"",
+		"Product name, displayed in About tab of adminpanel",
 		"string"
 	],
 	"AuthTokenCookieExpireTime": [
@@ -159,7 +159,7 @@
 		"int"
 	],
 	"AuthTokenCookieExpireTime_Description": [
-		"",
+		"Expiration time for authentication cookie, in days",
 		"string"
 	],
 	"EnableFailedLoginBlock": [
@@ -167,7 +167,7 @@
 		"bool"
 	],
 	"EnableFailedLoginBlock_Description": [
-		"",
+		"Setting to true enables feature of blocking user after a number of failed login attempts",
 		"string"
 	],
 	"LoginBlockAvailableTriesCount": [
@@ -175,7 +175,7 @@
 		"int"
 	],
 	"LoginBlockAvailableTriesCount_Description": [
-		"",
+		"Number of failed login attempts which will result in blocking user",
 		"string"
 	],
 	"LoginBlockDurationMinutes": [
@@ -183,7 +183,7 @@
 		"int"
 	],
 	"LoginBlockDurationMinutes_Description": [
-		"",
+		"Number of minutes user will be blocked for upon multiple failed login attempts",
 		"string"
 	],
 	"AllowGroups": [
@@ -191,7 +191,7 @@
 		"bool"
 	],
 	"AllowGroups_Description": [
-		"",
+		"Setting to true enables user groups which can be managed in adminpanel",
 		"string"
 	]
 }
