@@ -9,6 +9,7 @@ namespace Aurora\Modules\Core\Managers;
 
 use Aurora\Modules\Core\Models\Group;
 use \Aurora\Modules\Core\Models\User;
+use Aurora\Modules\Core\Models\UserBlock;
 use Illuminate\Database\Eloquent\Builder;
 use \Aurora\System\Enums\SortOrder;
 use Aurora\System\Managers\Integrator;
@@ -306,6 +307,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
 				}
+				UserBlock::where('UserId', $oUser->Id)->delete();
 //			}
 
 			$bResult = true;

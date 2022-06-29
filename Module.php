@@ -2088,6 +2088,8 @@ For instructions, please refer to this section of documentation and our
 				$oBlockedUser->Email = $sEmail;
 				$oBlockedUser->IpAddress = $sIp;
 			}
+			
+			$oBlockedUser->UserId = Api::getUserIdByPublicId($sEmail);
 			$oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
 			$oBlockedUser->Time = time();
 

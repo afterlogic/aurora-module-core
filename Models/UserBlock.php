@@ -9,6 +9,9 @@ class UserBlock extends Model
     protected $table = 'core_user_blocks';
     protected $moduleName = 'Core';
 
+    protected $foreignModel = User::class;
+	protected $foreignModelIdColumn = 'UserId'; // Column that refers to an external table
+
     /**
      * The attributes that are mass assignable.
      *
@@ -16,6 +19,7 @@ class UserBlock extends Model
      */
     protected $fillable = [
         'Id',
+        'UserId',
         'Email',
         'IpAddress',
         'ErrorLoginsCount',
