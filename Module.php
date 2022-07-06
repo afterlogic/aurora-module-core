@@ -3291,6 +3291,7 @@ For instructions, please refer to this section of documentation and our
 				'UUID' => $oUser->UUID,
 				'Name' => $oUser->Name,
 				'PublicId' => $oUser->PublicId,
+				'Role' => $oUser->Role,
 				'Groups' => $aGroups
 			];
 		}
