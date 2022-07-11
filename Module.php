@@ -2876,7 +2876,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		$oSettings =&\Aurora\System\Api::GetSettings();
-		if (!$oSettings->GetConf('EnableMultiChannel') && $ChannelId === 0)
+		if (/*!$oSettings->GetConf('EnableMultiChannel') && */$ChannelId === 0) // TODO: temporary ignore 'EnableMultiChannel' config
 		{
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->Id : 0;
