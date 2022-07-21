@@ -2043,17 +2043,20 @@ For instructions, please refer to this section of documentation and our
 				{
 					if ($oBlockedUser->ErrorLoginsCount >= $iLoginBlockAvailableTriesCount)
 					{
-						$iBlockTime = (int) ((time() - $oBlockedUser->Time) / 60);
+						$iBlockTime = (time() - $oBlockedUser->Time) / 60;
 						if ($iBlockTime > $iLoginBlockDurationMinutes)
 						{
-							$oBlockedUser->Delete();
+							$oBlockedUser->delete();
 						}
 						else
 						{
 							throw new \Aurora\System\Exceptions\ApiException(
 								1000,
 								null,
-								$this->i18N("BLOCKED_USER_MESSAGE_ERROR", ["N" => $iLoginBlockAvailableTriesCount, "M" => ($iLoginBlockDurationMinutes - $iBlockTime)])
+								$this->i18N("BLOCKED_USER_MESSAGE_ERROR", [
+									"N" => $iLoginBlockAvailableTriesCount, 
+									"M" => ceil($iLoginBlockDurationMinutes - $iBlockTime)
+								])
 							);
 						}
 					}
@@ -2069,35 +2072,46 @@ For instructions, please refer to this section of documentation and our
 	public function GetBlockedUser($sEmail, $sIp)
 	{
 		$mResult = false;
-		try {
-			$mResult = Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();		
-		} catch (\Exception $oEx) {
-			$mResult = false;
+
+		if($this->getConfig('EnableFailedLoginBlock', false)) {		
+
+			try {
+				$mResult = Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();		
+			} catch (\Exception $oEx) {
+				$mResult = false;
+			}
 		}
+
 		return $mResult;
 	}
 
 	public function BlockUser($sEmail, $sIp)
 	{
-		try
-		{
-			$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
-			if (!$oBlockedUser)
-			{
-				$oBlockedUser = new Models\UserBlock();
-				$oBlockedUser->Email = $sEmail;
-				$oBlockedUser->IpAddress = $sIp;
-			}
+		if($this->getConfig('EnableFailedLoginBlock', false)) {		
 			
-			$oBlockedUser->UserId = Api::getUserIdByPublicId($sEmail);
-			$oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
-			$oBlockedUser->Time = time();
+			$iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
+	
+			try
+			{
+				$oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
+				if (!$oBlockedUser) {
+					$oBlockedUser = new Models\UserBlock();
+					$oBlockedUser->Email = $sEmail;
+					$oBlockedUser->IpAddress = $sIp;
+				}
+				$iUserId = Api::getUserIdByPublicId($sEmail);
+				if ($iUserId && $oBlockedUser->ErrorLoginsCount < $iLoginBlockAvailableTriesCount) {
+					$oBlockedUser->UserId = $iUserId;
+					$oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
+					$oBlockedUser->Time = time();
 
-			$oBlockedUser->save();
-		}
-		catch (\Exception $oEx)
-		{
-			\Aurora\System\Api::LogException($oEx);
+					$oBlockedUser->save();
+				}
+			}
+			catch (\Exception $oEx)
+			{
+				\Aurora\System\Api::LogException($oEx);
+			}
 		}
 	}
 
@@ -2252,11 +2266,15 @@ For instructions, please refer to this section of documentation and our
 
 		$aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
 
-		if (!$aAuthData)
-		{
+		if (!$aAuthData) {
 			$this->BlockUser($Login, $sIp);
+			$this->CheckIsBlockedUser($Login, $sIp);
+		} else {
+			$oBlockedUser = $this->GetBlockedUser($Login, $sIp);
+			if ($oBlockedUser) {
+				$oBlockedUser->delete();
+			}
 		}
-
 		return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
 	}
 
