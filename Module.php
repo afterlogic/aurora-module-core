@@ -3661,7 +3661,7 @@ For instructions, please refer to this section of documentation and our
 		}
 		else
 		{
-			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 		}
 
 		if ($UserId > 0)
@@ -3670,6 +3670,8 @@ For instructions, please refer to this section of documentation and our
 
 			if ($oUser)
 			{
+				\Aurora\System\Api::checkUserAccess($oUser);
+
 				if (!empty($PublicId))
 				{
 					$oUser->PublicId = $PublicId;
