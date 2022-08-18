@@ -2028,7 +2028,7 @@ For instructions, please refer to this section of documentation and our
 		return $aResult;
 	}
 
-	public function CheckIsBlockedUser($sEmail, $sIp)
+	public function IsBlockedUser($sEmail, $sIp)
 	{
 		$bEnableFailedLoginBlock = $this->getConfig('EnableFailedLoginBlock', false);
 		$iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
@@ -2262,13 +2262,13 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
 		$sIp = \Aurora\System\Utils::getClientIp();
-		$this->CheckIsBlockedUser($Login, $sIp);
+		$this->IsBlockedUser($Login, $sIp);
 
 		$aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
 
 		if (!$aAuthData) {
 			$this->BlockUser($Login, $sIp);
-			$this->CheckIsBlockedUser($Login, $sIp);
+			$this->IsBlockedUser($Login, $sIp);
 		} else {
 			$oBlockedUser = $this->GetBlockedUser($Login, $sIp);
 			if ($oBlockedUser) {
