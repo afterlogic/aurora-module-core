@@ -13,6 +13,7 @@ use Aurora\Modules\Contacts\Models\Contact;
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
+use Aurora\Modules\Core\Models\UserBlock;
 use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
@@ -3843,6 +3844,9 @@ For instructions, please refer to this section of documentation and our
 		if (!empty($UserId) && is_int($UserId))
 		{
 			$bResult = $this->getUsersManager()->deleteUserById($UserId);
+			if ($bResult) {
+				UserBlock::where('UserId', $UserId)->delete();
+			}
 		}
 		else
 		{
