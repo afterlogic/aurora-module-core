@@ -35,7 +35,6 @@ class User extends Model
         'IsDisabled',
         'IdSubscription',
         'Role',
-        'DateCreated',
         'LastLogin',
         'LastLoginNow',
         'LoginsCount',
