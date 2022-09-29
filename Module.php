@@ -3519,6 +3519,10 @@ For instructions, please refer to this section of documentation and our
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
 
+		if (!\Aurora\System\Enums\UserRole::validateValue($Role)) {
+			throw new ApiException(Notifications::InvalidInputParameter);
+		}
+
 		if ($TenantId === 0)
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
@@ -3656,7 +3660,7 @@ For instructions, please refer to this section of documentation and our
 	public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null)
 	{
 		$PublicId = \trim($PublicId);
-		if (!empty($PublicId) && empty($TenantId) && $Role === -1 && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
+		if (!empty($PublicId) && empty($TenantId) && $UserId === \Aurora\System\Api::getAuthenticatedUserId())
 		{
 			\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
 		}
@@ -3681,7 +3685,7 @@ For instructions, please refer to this section of documentation and our
 				{
 					$oUser->IdTenant = $TenantId;
 				}
-				if ($Role !== -1)
+				if (\Aurora\System\Enums\UserRole::validateValue($Role))
 				{
 					$oUser->Role = $Role;
 				}
