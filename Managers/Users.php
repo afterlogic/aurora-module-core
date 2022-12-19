@@ -7,6 +7,7 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use \Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
@@ -241,7 +242,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 
 					if (!$oUser->save())
 					{
-						throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
+						throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
 					}
 				}
 				else
@@ -304,7 +305,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 //			{
 				if (!$oUser->delete())
 				{
-					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserDeleteFailed);
+					throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
 				}
 				UserBlock::where('UserId', $oUser->Id)->delete();
 //			}

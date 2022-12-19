@@ -42,6 +42,15 @@ class Module extends \Aurora\System\Module\AbstractModule
 
 	protected $oIntegratorManager = null;
 
+	/**
+	 *
+	 * @return Module
+	 */
+	public static function getInstance()
+	{
+		return \Aurora\System\Api::GetModule(self::GetName());
+	}
+
 	public function getTenantsManager()
 	{
 		if ($this->oTenantsManager === null)
@@ -830,7 +839,7 @@ For instructions, please refer to this section of documentation and our
 			}
 			$sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
-			$sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetConf('LoginAtDomainValue'));
+			$sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetValue('LoginAtDomainValue'));
 			if (0 < strlen($sAtDomain))
 			{
 				$sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
@@ -1472,19 +1481,19 @@ For instructions, please refer to this section of documentation and our
 			'SiteName' => $this->getConfig('SiteName'),
 			'SocialName' => '',
 			'TenantName' => \Aurora\System\Api::getTenantName(),
-			'EnableMultiTenant' => $oSettings && $oSettings->GetConf('EnableMultiTenant', false),
+			'EnableMultiTenant' => $oSettings && $oSettings->GetValue('EnableMultiTenant', false),
 			'TimeFormat' => $this->getConfig('TimeFormat'),
 			'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
 			'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) &&
 				(file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
 			'Version' => \Aurora\System\Api::VersionFull(),
 			'ProductName' => $this->getConfig('ProductName'),
-			'PasswordMinLength' => $oSettings ? $oSettings->GetConf('PasswordMinLength', 0) : 0,
-			'PasswordMustBeComplex' => $oSettings && $oSettings->GetConf('PasswordMustBeComplex', false),
+			'PasswordMinLength' => $oSettings ? $oSettings->GetValue('PasswordMinLength', 0) : 0,
+			'PasswordMustBeComplex' => $oSettings && $oSettings->GetValue('PasswordMustBeComplex', false),
 			'CookiePath' => \Aurora\System\Api::getCookiePath(),
 			'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
 			'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
-			'StoreAuthTokenInDB' => $oSettings->GetConf('StoreAuthTokenInDB'),
+			'StoreAuthTokenInDB' => $oSettings->GetValue('StoreAuthTokenInDB'),
 			'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
 			'AvailableBackendModules' => $oApiIntegrator->GetBackendModules(),
 			'AllowGroups' => $this->getConfig('AllowGroups', false),
@@ -1492,20 +1501,20 @@ For instructions, please refer to this section of documentation and our
 
 		if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
 		{
-			$sAdminPassword = $oSettings->GetConf('AdminPassword');
+			$sAdminPassword = $oSettings->GetValue('AdminPassword');
 
 			$aSettings = array_merge($aSettings, array(
-				'DBHost' => $oSettings->GetConf('DBHost'),
-				'DBName' => $oSettings->GetConf('DBName'),
-				'DBLogin' => $oSettings->GetConf('DBLogin'),
-				'AdminLogin' => $oSettings->GetConf('AdminLogin'),
+				'DBHost' => $oSettings->GetValue('DBHost'),
+				'DBName' => $oSettings->GetValue('DBName'),
+				'DBLogin' => $oSettings->GetValue('DBLogin'),
+				'AdminLogin' => $oSettings->GetValue('AdminLogin'),
 				'AdminHasPassword' => !empty($sAdminPassword),
-				'AdminLanguage' => $oSettings->GetConf('AdminLanguage'),
+				'AdminLanguage' => $oSettings->GetValue('AdminLanguage'),
 				'CommonLanguage' => $this->getConfig('Language'),
 				'SaltNotEmpty' => file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath())),
-				'EnableLogging' => $oSettings->GetConf('EnableLogging'),
-				'EnableEventLogging' => $oSettings->GetConf('EnableEventLogging'),
-				'LoggingLevel' => $oSettings->GetConf('LoggingLevel'),
+				'EnableLogging' => $oSettings->GetValue('EnableLogging'),
+				'EnableEventLogging' => $oSettings->GetValue('EnableEventLogging'),
+				'LoggingLevel' => $oSettings->GetValue('LoggingLevel'),
 				'LogFilesData' => $this->GetLogFilesData(),
 				'ELogLevel' => (new \Aurora\System\Enums\LogLevel)->getMap()
 			));
@@ -1656,7 +1665,7 @@ For instructions, please refer to this section of documentation and our
 			{
 				$oSettings->DBHost = $DbHost;
 			}
-			if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetConf('AdminLogin'))
+			if ($AdminLogin !== null && $AdminLogin !== $oSettings->GetValue('AdminLogin'))
 			{
 				$aArgs = array(
 					'Login' => $AdminLogin
@@ -1669,7 +1678,7 @@ For instructions, please refer to this section of documentation and our
 				$oSettings->AdminLogin = $AdminLogin;
 			}
 
-			$sAdminPassword = $oSettings->GetConf('AdminPassword');
+			$sAdminPassword = $oSettings->GetValue('AdminPassword');
 			if ((empty($sAdminPassword) && empty($Password) || !empty($Password)) && !empty($NewPassword))
 			{
 				if (empty($sAdminPassword) || crypt(trim($Password), \Aurora\System\Api::$sSalt) === $sAdminPassword)
@@ -2154,7 +2163,7 @@ For instructions, please refer to this section of documentation and our
 			if (isset($aAuthData['token']))
 			{
 				$iTime = $SignMe ? 0 : time();
-				$iAuthTokenExpirationLifetimeDays = \Aurora\Api::GetSettings()->GetConf('AuthTokenExpirationLifetimeDays', 0);
+				$iAuthTokenExpirationLifetimeDays = \Aurora\Api::GetSettings()->GetValue('AuthTokenExpirationLifetimeDays', 0);
 				$iExpire = 0;
 				if ($iAuthTokenExpirationLifetimeDays > 0)
 				{
@@ -2895,7 +2904,7 @@ For instructions, please refer to this section of documentation and our
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 
 		$oSettings =&\Aurora\System\Api::GetSettings();
-		if (/*!$oSettings->GetConf('EnableMultiChannel') && */$ChannelId === 0) // TODO: temporary ignore 'EnableMultiChannel' config
+		if (/*!$oSettings->GetValue('EnableMultiChannel') && */$ChannelId === 0) // TODO: temporary ignore 'EnableMultiChannel' config
 		{
 			$aChannels = $this->getChannelsManager()->getChannelList(0, 1);
 			$ChannelId = count($aChannels) === 1 ? $aChannels[0]->Id : 0;
@@ -2905,7 +2914,7 @@ For instructions, please refer to this section of documentation and our
 		if ($Name !== '' && $ChannelId > 0)
 		{
 			$iTenantsCount = $this->getTenantsManager()->getTenantsByChannelIdCount($ChannelId);
-			if ($oSettings->GetConf('EnableMultiTenant') || $iTenantsCount === 0)
+			if ($oSettings->GetValue('EnableMultiTenant') || $iTenantsCount === 0)
 			{
 				$oTenant = new Models\Tenant();
 
@@ -4030,7 +4039,7 @@ For instructions, please refer to this section of documentation and our
 		if (\Aurora\Api::GetSettings()->GetValue('StoreAuthTokenInDB', false))
 		{
 			$oUser = \Aurora\System\Api::getAuthenticatedUser();
-			$aUserSessions = \Aurora\System\Api::GetUserSession()->GetUserSessionsFromDB($oUser->Id);
+			$aUserSessions = \Aurora\System\Api::UserSession()->GetUserSessionsFromDB($oUser->Id);
 			foreach($aUserSessions as $oUserSession)
 			{
 				$aTokenInfo = \Aurora\System\Api::DecodeKeyValues($oUserSession->Token);

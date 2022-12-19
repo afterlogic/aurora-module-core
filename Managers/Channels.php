@@ -157,7 +157,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Models\Channel $oChannel
+	 * @param \Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @return bool
 	 */
@@ -195,7 +195,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
 	}
 
 	/**
-	 * @param Aurora\Modules\Core\Models\Channel $oChannel
+	 * @param \Aurora\Modules\Core\Models\Channel $oChannel
 	 *
 	 * @return bool
 	 */

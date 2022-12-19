@@ -18,6 +18,8 @@ class ErrorCodes
 	const TenantAlreadyExists = 1002;
 	const GroupAlreadyExists = 1003;
 	const MySqlConfigError = 1004;
+	const UserCreateFailed = 1005;
+	const UserDeleteFailed = 1006;
 
 	/**
 	 * @var array
@@ -26,5 +28,7 @@ class ErrorCodes
 		'ChannelDoesNotExist' => self::ChannelDoesNotExist,
 		'TenantAlreadyExists' => self::TenantAlreadyExists,
 		'GroupAlreadyExists' => self::GroupAlreadyExists,
+		'UserCreateFailed' => self::UserCreateFailed,
+		'UserDeleteFailed' => self::UserDeleteFailed,
 	];
 }
