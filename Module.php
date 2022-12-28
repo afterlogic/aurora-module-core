@@ -2415,10 +2415,11 @@ For instructions, please refer to this section of documentation and our
         if (!empty($mResult))
         {
             \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email , self::GetName());
-            return $mResult;
-        }
+        } else {
+			\Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
+		}
 
-        \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
+		return $mResult;
     }
 
 
@@ -2575,6 +2576,8 @@ For instructions, please refer to this section of documentation and our
 	public function CreateChannel($Login, $Description = '')
 	{
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+		
+		$mResult = false;
 
 		$Login = \trim($Login);
 		if ($Login !== '')
@@ -2590,13 +2593,15 @@ For instructions, please refer to this section of documentation and our
 
 			if ($this->getChannelsManager()->createChannel($oChannel))
 			{
-				return $oChannel->Id;
+				$mResult = $oChannel->Id;
 			}
 		}
 		else
 		{
 			throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
 		}
+
+		return $mResult;
 	}
 
 	/**
