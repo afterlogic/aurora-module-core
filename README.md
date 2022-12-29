@@ -1,7 +1,7 @@
 # Aurora Core module
 System module that provides core functionality such as User management, Tenants management.
 
-# Developing
+# Development
 This repository has a pre-commit hook. To make it work you need to configure git to use the particular hooks folder.
 
 `git config --local core.hooksPath .githooks/`
