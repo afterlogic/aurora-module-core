@@ -2412,8 +2412,7 @@ For instructions, please refer to this section of documentation and our
         );
 
 
-        if (!empty($mResult))
-        {
+        if (!empty($mResult)) {
             \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email , self::GetName());
         } else {
 			\Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
@@ -2575,6 +2574,7 @@ For instructions, please refer to this section of documentation and our
 	 */
 	public function CreateChannel($Login, $Description = '')
 	{
+		$mResult = -1;
 		\Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
 		
 		$mResult = false;
