@@ -20,6 +20,7 @@ class ErrorCodes
 	const MySqlConfigError = 1004;
 	const UserCreateFailed = 1005;
 	const UserDeleteFailed = 1006;
+	const UserAlreadyExists = 1007;
 
 	/**
 	 * @var array
