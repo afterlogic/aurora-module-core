@@ -89,7 +89,7 @@
 		"bool"
 	],
 	"GetAccountWithPassword_Description": [
-		"",
+		"If set to true, account object can be retrieved with password specified there",
 		"string"
 	],
 	"LanguageListComment": "Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.",
