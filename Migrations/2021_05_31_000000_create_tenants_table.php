@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use \Illuminate\Database\Capsule\Manager as Capsule;
+use Illuminate\Database\Capsule\Manager as Capsule;
 use Illuminate\Database\Schema\Blueprint;
 
 class CreateTenantsTable extends Migration
@@ -14,7 +14,6 @@ class CreateTenantsTable extends Migration
     public function up()
     {
         Capsule::schema()->create('core_tenants', function (Blueprint $table) {
-
             $table->increments('Id');
             $table->integer('IdChannel')->default(0);
             $table->boolean('IsDisabled')->default(false);
@@ -39,7 +38,6 @@ class CreateTenantsTable extends Migration
             $table->timestamp(\Aurora\System\Classes\Model::CREATED_AT)->nullable();
             $table->timestamp(\Aurora\System\Classes\Model::UPDATED_AT)->nullable();
         });
-
     }
 
     /**

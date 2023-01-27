@@ -2,7 +2,7 @@
 
 namespace Aurora\Modules\Core\Models;
 
-use \Aurora\System\Classes\Model;
+use Aurora\System\Classes\Model;
 use Aurora\Modules\Core\Models\Tenant;
 
 class User extends Model
@@ -19,7 +19,7 @@ class User extends Model
     ];
 
     protected $foreignModel = Tenant::class;
-	protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
@@ -85,17 +85,17 @@ class User extends Model
     ];
 
     public function isAdmin()
-	{
-		return $this->Id === -1;
-	}
+    {
+        return $this->Id === -1;
+    }
 
-	public function isNormalOrTenant()
-	{
-		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
-	}
+    public function isNormalOrTenant()
+    {
+        return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
+    }
 
     public function Groups()
-	{
-		return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
-	}
+    {
+        return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
+    }
 }

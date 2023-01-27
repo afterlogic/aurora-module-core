@@ -2,7 +2,7 @@
 
 namespace Aurora\Modules\Core\Models;
 
-use \Aurora\System\Classes\Model;
+use Aurora\System\Classes\Model;
 
 class Channel extends Model
 {

@@ -14,22 +14,22 @@ namespace Aurora\Modules\Core\Enums;
  */
 class ErrorCodes
 {
-	const ChannelDoesNotExist = 1001;
-	const TenantAlreadyExists = 1002;
-	const GroupAlreadyExists = 1003;
-	const MySqlConfigError = 1004;
-	const UserCreateFailed = 1005;
-	const UserDeleteFailed = 1006;
-	const UserAlreadyExists = 1007;
+    public const ChannelDoesNotExist = 1001;
+    public const TenantAlreadyExists = 1002;
+    public const GroupAlreadyExists = 1003;
+    public const MySqlConfigError = 1004;
+    public const UserCreateFailed = 1005;
+    public const UserDeleteFailed = 1006;
+    public const UserAlreadyExists = 1007;
 
-	/**
-	 * @var array
-	 */
-	protected $aConsts = [
-		'ChannelDoesNotExist' => self::ChannelDoesNotExist,
-		'TenantAlreadyExists' => self::TenantAlreadyExists,
-		'GroupAlreadyExists' => self::GroupAlreadyExists,
-		'UserCreateFailed' => self::UserCreateFailed,
-		'UserDeleteFailed' => self::UserDeleteFailed,
-	];
+    /**
+     * @var array
+     */
+    protected $aConsts = [
+        'ChannelDoesNotExist' => self::ChannelDoesNotExist,
+        'TenantAlreadyExists' => self::TenantAlreadyExists,
+        'GroupAlreadyExists' => self::GroupAlreadyExists,
+        'UserCreateFailed' => self::UserCreateFailed,
+        'UserDeleteFailed' => self::UserDeleteFailed,
+    ];
 }

@@ -9,10 +9,10 @@ namespace Aurora\Modules\Core\Managers;
 
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
-use \Aurora\Modules\Core\Models\User;
+use Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
 use Illuminate\Database\Eloquent\Builder;
-use \Aurora\System\Enums\SortOrder;
+use Aurora\System\Enums\SortOrder;
 use Aurora\System\Managers\Integrator;
 
 /**
@@ -24,305 +24,270 @@ use Aurora\System\Managers\Integrator;
  */
 class Users extends \Aurora\System\Managers\AbstractManager
 {
-	/**
-	 *
-	 * @param \Aurora\System\Module\AbstractModule $oModule
-	 */
-	public function __construct(\Aurora\System\Module\AbstractModule $oModule)
-	{
-		parent::__construct($oModule);
-	}
+    /**
+     *
+     * @param \Aurora\System\Module\AbstractModule $oModule
+     */
+    public function __construct(\Aurora\System\Module\AbstractModule $oModule)
+    {
+        parent::__construct($oModule);
+    }
 
-	/**
-	 * Retrieves information on particular WebMail Pro user.
-	 *
-	 * @param int|string $mUserId User identifier or UUID.
-	 *
-	 * @return User | false
-	 */
-	public function getUser($mUserId)
-	{
-		$oUser = false;
-		if ($mUserId !== -1)
-		{
-			try
-			{
-				$oUser = User::findOrFail($mUserId);
-			}
-			catch (\Exception $oException)
-			{
-				$oUser = false;
-			}
-		}
-		else
-		{
-			$oUser = Integrator::GetAdminUser();
-		}
-		return $oUser;
-	}
+    /**
+     * Retrieves information on particular WebMail Pro user.
+     *
+     * @param int|string $mUserId User identifier or UUID.
+     *
+     * @return User | false
+     */
+    public function getUser($mUserId)
+    {
+        $oUser = false;
+        if ($mUserId !== -1) {
+            try {
+                $oUser = User::findOrFail($mUserId);
+            } catch (\Exception $oException) {
+                $oUser = false;
+            }
+        } else {
+            $oUser = Integrator::GetAdminUser();
+        }
+        return $oUser;
+    }
 
-	public function getUserByPublicId($UserPublicId)
-	{
-		$oUser = null;
-		$sUserPublicId = trim((string)$UserPublicId);
+    public function getUserByPublicId($UserPublicId)
+    {
+        $oUser = null;
+        $sUserPublicId = trim((string)$UserPublicId);
 
-		if ($sUserPublicId)
-		{
-			try {
-				$oUser = User::firstWhere('PublicId', $sUserPublicId);
-			} catch (\Illuminate\Database\QueryException $oEx) {
-				\Aurora\Api::LogException($oEx);
-			}
-		}
-		return $oUser;
-	}
+        if ($sUserPublicId) {
+            try {
+                $oUser = User::firstWhere('PublicId', $sUserPublicId);
+            } catch (\Illuminate\Database\QueryException $oEx) {
+                \Aurora\Api::LogException($oEx);
+            }
+        }
+        return $oUser;
+    }
 
-	/**
-	 *
-	 * @param string $sSearchDesc
-	 * @param Builder $oFilters
-	 * @return int
-	 */
-	public function getUsersCount($sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
-	{
-		$iResult = 0;
-		$query = isset($oFilters) ? $oFilters : User::query();
-		if ($iGroupId > 0) {
-			$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
-				$q->where('GroupId', $iGroupId);
-			});
-		} elseif ($iGroupId === 0) {
-			$query = $query->doesnthave('Groups');
-		}
-		
-		if ($sSearchDesc !== '') {
-			$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
-		}
+    /**
+     *
+     * @param string $sSearchDesc
+     * @param Builder $oFilters
+     * @return int
+     */
+    public function getUsersCount($sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
+    {
+        $iResult = 0;
+        $query = isset($oFilters) ? $oFilters : User::query();
+        if ($iGroupId > 0) {
+            $query = $query->whereHas('Groups', function ($q) use ($iGroupId) {
+                $q->where('GroupId', $iGroupId);
+            });
+        } elseif ($iGroupId === 0) {
+            $query = $query->doesnthave('Groups');
+        }
 
-		try {
-			$iResult = $query->count();
-		} catch (\Illuminate\Database\QueryException $oEx) {
-			\Aurora\Api::LogException($oEx);
-		}
+        if ($sSearchDesc !== '') {
+            $query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
+        }
 
-		return $iResult;
-	}
+        try {
+            $iResult = $query->count();
+        } catch (\Illuminate\Database\QueryException $oEx) {
+            \Aurora\Api::LogException($oEx);
+        }
 
-	/**
-	 * Obtains list of information about users.
-	 * @param int $iOffset
-	 * @param int $iLimit
-	 * @param string $sOrderBy = 'Email'. Field by which to sort.
-	 * @param int $iOrderType = 0
-	 * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
-	 * @param array $aFilters = []
-	 * @return array | false
-	 */
-	public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
-	{
-		$aResult = [];
-		try
-		{
-			$query = isset($oFilters) ? $oFilters : User::query();
+        return $iResult;
+    }
 
-			if ($sSearchDesc !== '') {
-				$query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
-			}
-			if ($iOffset > 0) {
-				$query = $query->offset($iOffset);
-			}
-			if ($iLimit > 0) {
-				$query = $query->limit($iLimit);
-			}
+    /**
+     * Obtains list of information about users.
+     * @param int $iOffset
+     * @param int $iLimit
+     * @param string $sOrderBy = 'Email'. Field by which to sort.
+     * @param int $iOrderType = 0
+     * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
+     * @param array $aFilters = []
+     * @return array | false
+     */
+    public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
+    {
+        $aResult = [];
+        try {
+            $query = isset($oFilters) ? $oFilters : User::query();
 
-			if ($iGroupId > 0) {
-				$oGroup = Group::find($iGroupId);
-				if ($oGroup->IsAll) {
+            if ($sSearchDesc !== '') {
+                $query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
+            }
+            if ($iOffset > 0) {
+                $query = $query->offset($iOffset);
+            }
+            if ($iLimit > 0) {
+                $query = $query->limit($iLimit);
+            }
 
-					$query = $query->orWhere('IdTenant', $oGroup->TenantId);				
-				} else {
-					$query = $query->whereHas('Groups', function($q) use ($iGroupId) {
-						$q->where('GroupId', $iGroupId);
-					});					
-				}
-			} elseif ($iGroupId === 0) {
-				$query = $query->doesnthave('Groups');
-			}
+            if ($iGroupId > 0) {
+                $oGroup = Group::find($iGroupId);
+                if ($oGroup->IsAll) {
+                    $query = $query->orWhere('IdTenant', $oGroup->TenantId);
+                } else {
+                    $query = $query->whereHas('Groups', function ($q) use ($iGroupId) {
+                        $q->where('GroupId', $iGroupId);
+                    });
+                }
+            } elseif ($iGroupId === 0) {
+                $query = $query->doesnthave('Groups');
+            }
 
-			$aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
-		}
-		catch (\Illuminate\Database\QueryException $oEx)
-		{
-			$aResult = [];
-			\Aurora\Api::LogException($oEx);
-		}
-		return $aResult;
-	}
+            $aResult = $query->orderBy($sOrderBy, $iOrderType === SortOrder::ASC ? 'asc' : 'desc')->get();
+        } catch (\Illuminate\Database\QueryException $oEx) {
+            $aResult = [];
+            \Aurora\Api::LogException($oEx);
+        }
+        return $aResult;
+    }
 
-	/**
-	 * Determines how many users are in particular tenant. Tenant identifier is used for look up.
-	 *
-	 * @param int $iTenantId Tenant identifier.
-	 *
-	 * @return int | false
-	 */
-	public function getUsersCountForTenant($iTenantId)
-	{
-		$mResult = 0;
-		try
-		{
-			$mResult = User::where('IdTenent', $iTenantId)->count();
-		}
-		catch (\Illuminate\Database\QueryException $oEx)
-		{
-			$mResult = 0;
-			\Aurora\Api::LogException($oEx);
-		}
-		return $mResult;
-	}
+    /**
+     * Determines how many users are in particular tenant. Tenant identifier is used for look up.
+     *
+     * @param int $iTenantId Tenant identifier.
+     *
+     * @return int | false
+     */
+    public function getUsersCountForTenant($iTenantId)
+    {
+        $mResult = 0;
+        try {
+            $mResult = User::where('IdTenent', $iTenantId)->count();
+        } catch (\Illuminate\Database\QueryException $oEx) {
+            $mResult = 0;
+            \Aurora\Api::LogException($oEx);
+        }
+        return $mResult;
+    }
 
-	/**
-	 * Calculates total number of users registered in WebMail Pro.
-	 *
-	 * @return int
-	 */
-	public function getTotalUsersCount()
-	{
-		$iResult = 0;
-		try
-		{
-			$iResult = User::count();
-		}
-		catch (\Illuminate\Database\QueryException $oEx)
-		{
-			$iResult = 0;
-			\Aurora\Api::LogException($oEx);
-		}
-		return $iResult;
-	}
+    /**
+     * Calculates total number of users registered in WebMail Pro.
+     *
+     * @return int
+     */
+    public function getTotalUsersCount()
+    {
+        $iResult = 0;
+        try {
+            $iResult = User::count();
+        } catch (\Illuminate\Database\QueryException $oEx) {
+            $iResult = 0;
+            \Aurora\Api::LogException($oEx);
+        }
+        return $iResult;
+    }
 
-	/**
-	 * @param User $oUser
-	 *
-	 * @return bool
-	 */
-	public function isExists(User $oUser)
-	{
-		$bResult = false;
-		$oResult = null;
+    /**
+     * @param User $oUser
+     *
+     * @return bool
+     */
+    public function isExists(User $oUser)
+    {
+        $bResult = false;
+        $oResult = null;
 
-		try {
-			$oResult = User::find($oUser->Id);
-		} catch (\Illuminate\Database\QueryException $oEx) {
-			\Aurora\Api::LogException($oEx);
-		}
-		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
-		{
-			$bResult = true;
-		}
+        try {
+            $oResult = User::find($oUser->Id);
+        } catch (\Illuminate\Database\QueryException $oEx) {
+            \Aurora\Api::LogException($oEx);
+        }
+        if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant) {
+            $bResult = true;
+        }
 
-		return $bResult;
-	}
+        return $bResult;
+    }
 
-	/**
-	 * @param User $oUser
-	 *
-	 * @return bool
-	 */
-	public function createUser(User &$oUser)
-	{
-		$bResult = false;
-		try
-		{
-			if ($oUser->validate())
-			{
-				if (!$this->isExists($oUser))
-				{
-					$oUser->UUID = $oUser->generateUUID();
+    /**
+     * @param User $oUser
+     *
+     * @return bool
+     */
+    public function createUser(User &$oUser)
+    {
+        $bResult = false;
+        try {
+            if ($oUser->validate()) {
+                if (!$this->isExists($oUser)) {
+                    $oUser->UUID = $oUser->generateUUID();
 
-					if (!$oUser->save())
-					{
-						throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
-					}
-				}
-				else
-				{
-					throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
-				}
-			}
+                    if (!$oUser->save()) {
+                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
+                    }
+                } else {
+                    throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
+                }
+            }
 
-			$bResult = true;
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
+            $bResult = true;
+        } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        }
 
-		return $bResult;
-	}
+        return $bResult;
+    }
 
-	/**
-	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
-	 *
-	 * @return bool
-	 */
-	public function updateUser(User &$oUser)
-	{
-		$bResult = false;
-		try
-		{
-			if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin)
-			{
-				if (!$oUser->update())
-				{
-					throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
-				}
-			}
+    /**
+     * @param Aurora\Modules\Core\Classes\Channel $oChannel
+     *
+     * @return bool
+     */
+    public function updateUser(User &$oUser)
+    {
+        $bResult = false;
+        try {
+            if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
+                if (!$oUser->update()) {
+                    throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
+                }
+            }
 
-			$bResult = true;
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
+            $bResult = true;
+        } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        }
 
-		return $bResult;
-	}
+        return $bResult;
+    }
 
-	/**
-	 * @param User $oUser
-	 *
-	 * @return bool
-	 */
-	public function deleteUser(User &$oUser)
-	{
-		$bResult = false;
-		try
-		{
-//			if ($oUser->validate())
-//			{
-				if (!$oUser->delete())
-				{
-					throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
-				}
-				UserBlock::where('UserId', $oUser->Id)->delete();
-//			}
+    /**
+     * @param User $oUser
+     *
+     * @return bool
+     */
+    public function deleteUser(User &$oUser)
+    {
+        $bResult = false;
+        try {
+            //			if ($oUser->validate())
+            //			{
+            if (!$oUser->delete()) {
+                throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
+            }
+            UserBlock::where('UserId', $oUser->Id)->delete();
+            //			}
 
-			$bResult = true;
-		}
-		catch (\Aurora\System\Exceptions\BaseException $oException)
-		{
-			$bResult = false;
-			$this->setLastException($oException);
-		}
+            $bResult = true;
+        } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        }
 
-		return $bResult;
-	}
+        return $bResult;
+    }
 
-	public function deleteUserById($id)
-	{
-		return User::find($id)->delete();
-	}
+    public function deleteUserById($id)
+    {
+        return User::find($id)->delete();
+    }
 }

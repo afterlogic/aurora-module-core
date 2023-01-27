@@ -2,7 +2,7 @@
 
 namespace Aurora\Modules\Core\Models;
 
-use \Aurora\System\Classes\Model;
+use Aurora\System\Classes\Model;
 use Aurora\Modules\Core\Models\Tenant;
 use Aurora\Modules\Core\Module as CoreModule;
 
@@ -10,9 +10,9 @@ class Group extends Model
 {
     protected $table = 'core_groups';
     protected $moduleName = 'Core';
-    
+
     protected $foreignModel = Tenant::class;
-	protected $foreignModelIdColumn = 'TenantId'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'TenantId'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
@@ -43,9 +43,9 @@ class Group extends Model
     ];
 
     public function Users()
-	{
-		return $this->belongsToMany(User::class, 'core_group_user', 'GroupId', 'UserId');
-	}
+    {
+        return $this->belongsToMany(User::class, 'core_group_user', 'GroupId', 'UserId');
+    }
 
     public function getName()
     {

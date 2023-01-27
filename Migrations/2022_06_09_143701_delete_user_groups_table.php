@@ -22,7 +22,7 @@ class DeleteUserGroupsTable extends Migration
      * @return void
      */
     public function down()
-    {        
+    {
         Capsule::schema()->create('core_user_groups_legacy', function (Blueprint $table) {
             $table->id('Id');
             $table->string('UrlIdentifier')->default('');
