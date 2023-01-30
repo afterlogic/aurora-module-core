@@ -42,9 +42,9 @@ use Aurora\Modules\Core\Models\Tenant;
  * @property string $Capa           @Deprecated since 9.7.0
  * @property string $CustomFields   @Deprecated since 9.7.0
  * @property bool   $FilesEnable    @Deprecated since 9.7.0
- * @property string $EmailNotification  @Deprecated since 9.7.0 ???
- * @property string $PasswordResetHash  @Deprecated since 9.7.0 ???
- * @property bool   $WriteSeparateLog   If set to 1, a separate log file is recorded for the user
+ * @property string $EmailNotification  @Deprecated since 9.7.0
+ * @property string $PasswordResetHash  @Deprecated since 9.7.0
+ * @property bool   $WriteSeparateLog   If set to true, a separate log file is recorded for the user
  * @property string $DefaultTimeZone    Default time zone set for this user
  * @property int    $TokensValidFromTimestamp   Timestamp the token is valid since
  * @property array  $Properties     Custom properties for use by other modules
