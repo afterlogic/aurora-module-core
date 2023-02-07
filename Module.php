@@ -1902,8 +1902,7 @@ For instructions, please refer to this section of documentation and our
         \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
 
         $aArgs = array(
-            'AuthToken' => $AuthToken,
-            'WithPassword' => $this->getConfig('GetAccountWithPassword')
+            'AuthToken' => $AuthToken
         );
         $aResult = [];
 
