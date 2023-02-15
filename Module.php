@@ -120,7 +120,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             [
                 ['CreateAccount', [$this, 'onCreateAccount'], 100],
                 ['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
-                ['ChangePassword::after', [$this, 'onAfterChangePassword']],
                 ['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100]
             ]
         );
@@ -450,22 +449,6 @@ For instructions, please refer to this section of documentation and our
         ];
 
         $mResult[self::GetName()] = $aCompatibilities;
-    }
-
-    public function onAfterChangePassword($aArgs, &$mResult)
-    {
-        if ($mResult && $mResult->UseToAuthorize) {
-            $oUser = \Aurora\System\Api::getAuthenticatedUser();
-            if ($oUser instanceof \Aurora\Modules\Core\Models\User &&
-                (($oUser->isNormalOrTenant() && $oUser->Id === $mResult->IdUser) ||
-                $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin)
-            ) {
-                $oUser = self::Decorator()->GetUserUnchecked($mResult->IdUser);
-                if ($oUser instanceof \Aurora\Modules\Core\Models\User) {
-                    $this->UpdateTokensValidFromTimestamp($oUser);
-                }
-            }
-        }
     }
 
     public function onBeforeRunEntry($aArgs, &$mResult)
