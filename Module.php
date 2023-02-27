@@ -129,12 +129,12 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetUserByUUID',
             'GetUserByPublicId',
             'GetAdminUser',
-            'GetTenantUnchecked',
+            'GetTenantWithoutRoleCheck',
             'GetTenantName',
             'GetTenantIdByName',
             'GetDefaultGlobalTenant',
             'UpdateTenantObject',
-            'GetUserUnchecked',
+            'GetUserWithoutRoleCheck',
             'UpdateTokensValidFromTimestamp',
             'GetAccountUsedToAuthorize',
             'GetDigestHash',
@@ -890,9 +890,9 @@ For instructions, please refer to this section of documentation and our
      * @param int|string $UserId User identifier or UUID.
      * @return \Aurora\Modules\Core\Models\User
      */
-    public function GetUserUnchecked($UserId = '')
+    public function GetUserWithoutRoleCheck($UserId = '')
     {
-        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserUnchecked function
+        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserWithoutRoleCheck function
 
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
@@ -912,7 +912,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetUserByUUID($UUID)
     {
-        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserUnchecked function
+        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserWithoutRoleCheck function
 
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
@@ -965,7 +965,7 @@ For instructions, please refer to this section of documentation and our
      * @param int $Id Tenant identifier.
      * @return \Aurora\Modules\Core\Models\Tenant|null
      */
-    public function GetTenantUnchecked($Id)
+    public function GetTenantWithoutRoleCheck($Id)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
@@ -1009,9 +1009,9 @@ For instructions, please refer to this section of documentation and our
         if (!empty($sAuthToken)) {
             $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
             if ($iUserId !== false && $iUserId > 0) {
-                $oUser = self::Decorator()->GetUserUnchecked($iUserId);
+                $oUser = self::Decorator()->GetUserWithoutRoleCheck($iUserId);
                 if ($oUser) {
-                    $oTenant = self::Decorator()->GetTenantUnchecked($oUser->IdTenant);
+                    $oTenant = self::Decorator()->GetTenantWithoutRoleCheck($oUser->IdTenant);
                     if ($oTenant) {
                         $sTenant = $oTenant->Name;
                     }
@@ -2648,7 +2648,7 @@ For instructions, please refer to this section of documentation and our
             \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
         }
 
-        return $this->GetTenantUnchecked($Id);
+        return $this->GetTenantWithoutRoleCheck($Id);
     }
 
     /**
@@ -3592,7 +3592,7 @@ For instructions, please refer to this section of documentation and our
     {
         $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
 
-        $oUser = self::Decorator()->GetUserUnchecked($UserId);
+        $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
 
         if ($oUser instanceof \Aurora\Modules\Core\Models\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {
             \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
