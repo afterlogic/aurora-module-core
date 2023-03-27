@@ -22,6 +22,7 @@ use stdClass;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
+use Aurora\System\Logger;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -48,7 +49,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     public static function getInstance()
     {
-        return \Aurora\System\Api::GetModule(self::GetName());
+        return Api::GetModule(self::GetName());
     }
 
     public function getTenantsManager()
@@ -176,7 +177,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      *		*int* **TenantId** Identifier of tenant for creating new user in it.
      *		*int* **$PublicId** New user name.
      * }
-     * @param \Aurora\Modules\Core\Models\User $oResult
+     * @param Models\User $oResult
      */
     public function onCreateAccount(&$Args, &$Result)
     {
@@ -197,9 +198,9 @@ class Module extends \Aurora\System\Module\AbstractModule
                 $oUser = $this->getUsersManager()->getUserByPublicId($sPublicId);
             }
             if (!isset($oUser)) {
-                $bPrevState = \Aurora\System\Api::skipCheckUserRole(true);
+                $bPrevState = Api::skipCheckUserRole(true);
                 $iUserId = self::Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
-                \Aurora\System\Api::skipCheckUserRole($bPrevState);
+                Api::skipCheckUserRole($bPrevState);
                 $oUser = $this->getUsersManager()->getUser($iUserId);
             }
 
@@ -250,7 +251,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
         $aCompatibility['session.valid'] = (int) (function_exists('session_start') && isset($_SESSION['checksessionindex']));
 
-        $dataPath = \Aurora\System\Api::DataPath();
+        $dataPath = Api::DataPath();
 
         $aCompatibility['data.dir'] = $dataPath;
         $aCompatibility['data.dir.valid'] = (int) (@is_dir($aCompatibility['data.dir']) && @is_writable($aCompatibility['data.dir']));
@@ -267,7 +268,7 @@ class Module extends \Aurora\System\Module\AbstractModule
             (int) @rmdir($aCompatibility['data.dir'].'/'.$sTempPathName);
 
 
-        $oSettings =& \Aurora\System\Api::GetSettings();
+        $oSettings =& Api::GetSettings();
 
         $aCompatibility['settings.file'] = $oSettings ? $oSettings->GetPath() : '';
 
@@ -566,14 +567,14 @@ For instructions, please refer to this section of documentation and our
     /**
      *
      * @return string
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function EntryApi()
     {
         @ob_start();
 
-        if (!is_writable(\Aurora\System\Api::DataPath())) {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::SystemNotConfigured);
+        if (!is_writable(Api::DataPath())) {
+            throw new ApiException(Notifications::SystemNotConfigured);
         }
 
         $aResponseItem = null;
@@ -584,28 +585,28 @@ For instructions, please refer to this section of documentation and our
         $sTenantName = $this->oHttp->GetPost('TenantName', null);
 
         if (isset($sModule, $sMethod)) {
-            $oModule = \Aurora\System\Api::GetModule($sModule);
+            $oModule = Api::GetModule($sModule);
             if ($oModule instanceof \Aurora\System\Module\AbstractModule) {
                 try {
-                    \Aurora\System\Api::Log(" ");
-                    \Aurora\System\Api::Log(" ===== API: " . $sModule . '::' . $sMethod);
+                    Api::Log(" ");
+                    Api::Log(" ===== API: " . $sModule . '::' . $sMethod);
 
-                    $bIsEmptyAuthToken = !\Aurora\System\Api::getAuthTokenFromHeaders();
+                    $bIsEmptyAuthToken = !Api::getAuthTokenFromHeaders();
 
-                    if ($this->getConfig('CsrfTokenProtection', true) && !\Aurora\System\Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
-                        throw new \Aurora\System\Exceptions\ApiException(
-                            \Aurora\System\Notifications::InvalidToken
+                    if ($this->getConfig('CsrfTokenProtection', true) && !Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
+                        throw new ApiException(
+                            Notifications::InvalidToken
                         );
                     }
 
                     if (!empty($sModule) && !empty($sMethod)) {
-                        if (!\Aurora\System\Api::validateAuthToken() && !$bIsEmptyAuthToken) {
-                            throw new \Aurora\System\Exceptions\ApiException(
-                                \Aurora\System\Notifications::AuthError
+                        if (!Api::validateAuthToken() && !$bIsEmptyAuthToken) {
+                            throw new ApiException(
+                                Notifications::AuthError
                             );
                         }
 
-                        \Aurora\System\Api::setTenantName($sTenantName);
+                        Api::setTenantName($sTenantName);
 
                         $aParameters = [];
                         if (isset($sParameters) && \is_string($sParameters)) {
@@ -626,27 +627,27 @@ For instructions, please refer to this section of documentation and our
                             true
                         );
 
-                        $oLastException = \Aurora\System\Api::GetModuleManager()->GetLastException();
+                        $oLastException = Api::GetModuleManager()->GetLastException();
                         if (isset($oLastException)) {
                             throw $oLastException;
                         }
 
                         $aResponseItem = $oModule->DefaultResponse(
                             $sMethod,
-                            \Aurora\System\Api::GetModuleManager()->GetResults()
+                            Api::GetModuleManager()->GetResults()
                         );
                     }
 
                     if (!\is_array($aResponseItem)) {
-                        throw new \Aurora\System\Exceptions\ApiException(
-                            \Aurora\System\Notifications::UnknownError
+                        throw new ApiException(
+                            Notifications::UnknownError
                         );
                     }
                 } catch (\Exception $oException) {
-                    \Aurora\System\Api::LogException($oException);
+                    Api::LogException($oException);
 
                     $aAdditionalParams = null;
-                    if ($oException instanceof \Aurora\System\Exceptions\ApiException) {
+                    if ($oException instanceof ApiException) {
                         $aAdditionalParams = $oException->GetObjectParams();
                     }
 
@@ -657,8 +658,8 @@ For instructions, please refer to this section of documentation and our
                     );
                 }
             } else {
-                $oException = new \Aurora\System\Exceptions\ApiException(
-                    \Aurora\System\Notifications::ModuleNotFound
+                $oException = new ApiException(
+                    Notifications::ModuleNotFound
                 );
                 $aResponseItem = $this->ExceptionResponse(
                     $sMethod,
@@ -666,8 +667,8 @@ For instructions, please refer to this section of documentation and our
                 );
             }
         } else {
-            $oException = new \Aurora\System\Exceptions\ApiException(
-                \Aurora\System\Notifications::InvalidInputParameter
+            $oException = new ApiException(
+                Notifications::InvalidInputParameter
             );
             $aResponseItem = $this->ExceptionResponse(
                 $sMethod,
@@ -690,7 +691,7 @@ For instructions, please refer to this section of documentation and our
         $oApiIntegrator = $this->getIntegratorManager();
         $oApiIntegrator->setMobile(true);
 
-        \Aurora\System\Api::Location('./');
+        Api::Location('./');
     }
 
     /**
@@ -701,8 +702,8 @@ For instructions, please refer to this section of documentation and our
         try {
             $sHash = $this->oHttp->GetRequest('hash');
             if (!empty($sHash)) {
-                $sData = \Aurora\System\Api::Cacher()->get('SSO:'.$sHash, true);
-                $aData = \Aurora\System\Api::DecodeKeyValues($sData);
+                $sData = Api::Cacher()->get('SSO:'.$sHash, true);
+                $aData = Api::DecodeKeyValues($sData);
 
                 if (isset($aData['Password'], $aData['Email'])) {
                     $sLanguage = $this->oHttp->GetRequest('lang');
@@ -714,9 +715,9 @@ For instructions, please refer to this section of documentation and our
                             \Aurora\System\Application::AUTH_TOKEN_KEY,
                             $aResult['AuthToken'],
                             ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
-                            \Aurora\System\Api::getCookiePath(),
+                            Api::getCookiePath(),
                             null,
-                            \Aurora\System\Api::getCookieSecure()
+                            Api::getCookieSecure()
                         );
                     } else {
                         @\setcookie(
@@ -730,10 +731,10 @@ For instructions, please refer to this section of documentation and our
                 self::Decorator()->Logout();
             }
         } catch (\Exception $oExc) {
-            \Aurora\System\Api::LogException($oExc);
+            Api::LogException($oExc);
         }
 
-        \Aurora\System\Api::Location('./');
+        Api::Location('./');
     }
 
     /**
@@ -750,7 +751,7 @@ For instructions, please refer to this section of documentation and our
             }
             $sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
-            $sAtDomain = trim(\Aurora\System\Api::GetSettings()->GetValue('LoginAtDomainValue'));
+            $sAtDomain = trim(Api::GetSettings()->GetValue('LoginAtDomainValue'));
             if (0 < strlen($sAtDomain)) {
                 $sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
                 $sLogin = $sEmail;
@@ -763,23 +764,23 @@ For instructions, please refer to this section of documentation and our
                     \Aurora\System\Application::AUTH_TOKEN_KEY,
                     $aResult['AuthToken'],
                     ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
-                    \Aurora\System\Api::getCookiePath(),
+                    Api::getCookiePath(),
                     null,
-                    \Aurora\System\Api::getCookieSecure()
+                    Api::getCookieSecure()
                 );
             }
 
-            \Aurora\System\Api::Location('./');
+            Api::Location('./');
         }
     }
 
     public function EntryFileCache()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
         $sRawKey = \Aurora\System\Router::getItemByIndex(1, '');
         $sAction = \Aurora\System\Router::getItemByIndex(2, '');
-        $aValues = \Aurora\System\Api::DecodeKeyValues($sRawKey);
+        $aValues = Api::DecodeKeyValues($sRawKey);
 
         $bDownload = true;
         $bThumbnail = false;
@@ -803,13 +804,11 @@ For instructions, please refer to this section of documentation and our
 
         if (isset($aValues['TempFile'], $aValues['TempName'], $aValues['Name'])) {
             $sModule = isset($aValues['Module']) && !empty($aValues['Module']) ? $aValues['Module'] : 'System';
-            $bResult = false;
-            $sUUID = \Aurora\System\Api::getUserUUIDById($iUserId);
+            $sUUID = Api::getUserUUIDById($iUserId);
             $oApiFileCache = new \Aurora\System\Managers\Filecache();
             $mResult = $oApiFileCache->getFile($sUUID, $aValues['TempName'], '', $sModule);
 
             if (is_resource($mResult)) {
-                $bResult = true;
                 $sFileName = $aValues['Name'];
                 $sContentType = (empty($sFileName)) ? 'text/plain' : \MailSo\Base\Utils::MimeContentType($sFileName);
                 $sFileName = \Aurora\System\Utils::clearFileName($sFileName, $sContentType);
@@ -821,7 +820,7 @@ For instructions, please refer to this section of documentation and our
 
     public function IsModuleExists($Module)
     {
-        return \Aurora\System\Api::GetModuleManager()->ModuleExists($Module);
+        return Api::GetModuleManager()->ModuleExists($Module);
     }
 
     /**
@@ -830,7 +829,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetVersion()
     {
-        return \Aurora\System\Api::Version();
+        return Api::Version();
     }
 
     /**
@@ -843,7 +842,7 @@ For instructions, please refer to this section of documentation and our
      */
     protected function ClearTempFiles()
     {
-        $sTempPath =\Aurora\System\Api::DataPath().'/temp';
+        $sTempPath =Api::DataPath().'/temp';
         if (@is_dir($sTempPath)) {
             $iNow = time();
 
@@ -852,13 +851,13 @@ For instructions, please refer to this section of documentation and our
             $sDataFile = $this->getConfig('CronTimeFile', '.clear.dat');
 
             $iFiletTime = -1;
-            if (@file_exists(\Aurora\System\Api::DataPath().'/'.$sDataFile)) {
-                $iFiletTime = (int) @file_get_contents(\Aurora\System\Api::DataPath().'/'.$sDataFile);
+            if (@file_exists(Api::DataPath().'/'.$sDataFile)) {
+                $iFiletTime = (int) @file_get_contents(Api::DataPath().'/'.$sDataFile);
             }
 
             if ($iFiletTime === -1 || $iNow - $iFiletTime > $iTime2Run) {
                 $this->removeDirByTime($sTempPath, $iTime2Kill, $iNow);
-                @file_put_contents(\Aurora\System\Api::DataPath().'/'.$sDataFile, $iNow);
+                @file_put_contents(Api::DataPath().'/'.$sDataFile, $iNow);
             }
         }
 
@@ -871,7 +870,7 @@ For instructions, please refer to this section of documentation and our
      *
      * Updates user by object.
      *
-     * @param \Aurora\Modules\Core\Models\User $oUser
+     * @param Models\User $oUser
      * returns bool
      */
     public function UpdateUserObject($oUser)
@@ -888,12 +887,10 @@ For instructions, please refer to this section of documentation and our
      * Returns user object.
      *
      * @param int|string $UserId User identifier or UUID.
-     * @return \Aurora\Modules\Core\Models\User
+     * @return Models\User
      */
     public function GetUserWithoutRoleCheck($UserId = '')
     {
-        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserWithoutRoleCheck function
-
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $oUser = $this->getUsersManager()->getUser($UserId);
@@ -908,12 +905,10 @@ For instructions, please refer to this section of documentation and our
      * Returns user object.
      *
      * @param int $UUID User uuid identifier.
-     * @return \Aurora\Modules\Core\Models\User
+     * @return Models\User
      */
     public function GetUserByUUID($UUID)
     {
-        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetUserWithoutRoleCheck function
-
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $oUser = $this->getUsersManager()->getUser($UUID);
@@ -928,7 +923,7 @@ For instructions, please refer to this section of documentation and our
      * Returns user object.
      *
      * @param string $PublicId User public identifier.
-     * @return \Aurora\Modules\Core\Models\User
+     * @return Models\User
      */
     public function GetUserByPublicId($PublicId)
     {
@@ -945,12 +940,10 @@ For instructions, please refer to this section of documentation and our
      *
      * Creates and returns user with super administrator role.
      *
-     * @return \Aurora\Modules\Core\Models\User
+     * @return Models\User
      */
     public function GetAdminUser()
     {
-        // doesn't call checkUserRoleIsAtLeast because checkUserRoleIsAtLeast function calls GetAdminUser function
-
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         return $this->getIntegratorManager()->GetAdminUser();
@@ -963,7 +956,7 @@ For instructions, please refer to this section of documentation and our
      * Returns tenant object by identifier.
      *
      * @param int $Id Tenant identifier.
-     * @return \Aurora\Modules\Core\Models\Tenant|null
+     * @return Models\Tenant|null
      */
     public function GetTenantWithoutRoleCheck($Id)
     {
@@ -1005,9 +998,9 @@ For instructions, please refer to this section of documentation and our
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $sTenant = '';
-        $sAuthToken = \Aurora\System\Api::getAuthToken();
+        $sAuthToken = Api::getAuthToken();
         if (!empty($sAuthToken)) {
-            $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
+            $iUserId = Api::getAuthenticatedUserId();
             if ($iUserId !== false && $iUserId > 0) {
                 $oUser = self::Decorator()->GetUserWithoutRoleCheck($iUserId);
                 if ($oUser) {
@@ -1024,7 +1017,7 @@ For instructions, please refer to this section of documentation and our
         } else {
             $sTenant = $this->oHttp->GetRequest('tenant', '');
         }
-        \Aurora\System\Api::setTenantName($sTenant);
+        Api::setTenantName($sTenant);
         return $sTenant;
     }
 
@@ -1042,7 +1035,7 @@ For instructions, please refer to this section of documentation and our
      *
      * Returns default global tenant.
      *
-     * @return \Aurora\Modules\Core\Models\Tenant
+     * @return Models\Tenant
      */
     public function GetDefaultGlobalTenant()
     {
@@ -1073,7 +1066,7 @@ For instructions, please refer to this section of documentation and our
      * !Not public
      * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
      *
-     * @param \Aurora\Modules\Core\Models\User $oUser
+     * @param Models\User $oUser
      * @return int
      */
     public function UpdateTokensValidFromTimestamp($oUser)
@@ -1141,10 +1134,10 @@ For instructions, please refer to this section of documentation and our
      */
     public function DoServerInitializations($Timezone = '')
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Customer);
+        Api::checkUserRoleIsAtLeast(UserRole::Customer);
         $result = true;
 
-        $iUserId = \Aurora\System\Api::getAuthenticatedUserId();
+        $iUserId = Api::getAuthenticatedUserId();
 
         $oApiIntegrator = $this->getIntegratorManager();
 
@@ -1152,10 +1145,9 @@ For instructions, please refer to this section of documentation and our
             $oApiIntegrator->resetCookies();
         }
 
-        $oCacher = \Aurora\System\Api::Cacher();
+        $oCacher = Api::Cacher();
 
         $bDoGC = false;
-        $bDoHepdeskClear = false;
         if ($oCacher && $oCacher->IsInited()) {
             $iTime = $oCacher->GetTimer('Cache/ClearFileCache');
             if (0 === $iTime || $iTime + 60 * 60 * 24 < time()) {
@@ -1163,33 +1155,15 @@ For instructions, please refer to this section of documentation and our
                     $bDoGC = true;
                 }
             }
-
-            // if (\Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
-            // {
-            // 	$iTime = $oCacher->GetTimer('Cache/ClearHelpdeskUsers');
-            // 	if (0 === $iTime || $iTime + 60 * 60 * 24 < time())
-            // 	{
-            // 		if ($oCacher->SetTimer('Cache/ClearHelpdeskUsers'))
-            // 		{
-            // 			$bDoHepdeskClear = true;
-            // 		}
-            // 	}
-            // }
         }
 
         if ($bDoGC) {
-            \Aurora\System\Api::Log('GC: FileCache / Start');
+            Api::Log('GC: FileCache / Start');
             $oApiFileCache = new \Aurora\System\Managers\Filecache();
             $oApiFileCache->gc();
             $oCacher->gc();
-            \Aurora\System\Api::Log('GC: FileCache / End');
+            Api::Log('GC: FileCache / End');
         }
-
-        // if ($bDoHepdeskClear && \Aurora\System\Api::GetModuleManager()->ModuleExists('Helpdesk'))
-        // {
-        // 	\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearUnregistredUsers');
-        // 	\Aurora\System\Api::ExecuteMethod('Helpdesk::ClearAllOnline');
-        // }
 
         return $result;
     }
@@ -1229,7 +1203,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function Ping()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
         return 'Pong';
     }
@@ -1347,9 +1321,9 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetSettings()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
-        $oUser = \Aurora\System\Api::getAuthenticatedUser();
+        $oUser = Api::getAuthenticatedUser();
 
         $oApiIntegrator = $this->getIntegratorManager();
         $iLastErrorCode = $oApiIntegrator->getLastErrorCode();
@@ -1357,32 +1331,32 @@ For instructions, please refer to this section of documentation and our
             $oApiIntegrator->clearLastErrorCode();
         }
 
-        $oSettings =& \Aurora\System\Api::GetSettings();
+        $oSettings =& Api::GetSettings();
 
         $aSettings = array(
             'AutodetectLanguage' => $this->getConfig('AutodetectLanguage'),
             'UserSelectsDateFormat' => $this->getConfig('UserSelectsDateFormat', false),
             'DateFormat' => $this->getConfig('DateFormat', 'DD/MM/YYYY'),
             'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
-            'EUserRole' => (new \Aurora\System\Enums\UserRole())->getMap(),
-            'Language' => \Aurora\System\Api::GetLanguage(),
-            'ShortLanguage' => \Aurora\System\Utils::ConvertLanguageNameToShort(\Aurora\System\Api::GetLanguage()),
+            'EUserRole' => (new UserRole())->getMap(),
+            'Language' => Api::GetLanguage(),
+            'ShortLanguage' => \Aurora\System\Utils::ConvertLanguageNameToShort(Api::GetLanguage()),
             'LanguageList' => $oApiIntegrator->getLanguageList(),
             'LastErrorCode' => $iLastErrorCode,
             'SiteName' => $this->getConfig('SiteName'),
             'SocialName' => '',
-            'TenantName' => \Aurora\System\Api::getTenantName(),
+            'TenantName' => Api::getTenantName(),
             'EnableMultiTenant' => $oSettings && $oSettings->GetValue('EnableMultiTenant', false),
             'TimeFormat' => $this->getConfig('TimeFormat'),
-            'UserId' => \Aurora\System\Api::getAuthenticatedUserId(),
-            'IsSystemConfigured' => is_writable(\Aurora\System\Api::DataPath()) &&
-                (file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath()))),
-            'Version' => \Aurora\System\Api::VersionFull(),
+            'UserId' => Api::getAuthenticatedUserId(),
+            'IsSystemConfigured' => is_writable(Api::DataPath()) &&
+                (file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath()))),
+            'Version' => Api::VersionFull(),
             'ProductName' => $this->getConfig('ProductName'),
             'PasswordMinLength' => $oSettings ? $oSettings->GetValue('PasswordMinLength', 0) : 0,
             'PasswordMustBeComplex' => $oSettings && $oSettings->GetValue('PasswordMustBeComplex', false),
-            'CookiePath' => \Aurora\System\Api::getCookiePath(),
-            'CookieSecure' => \Aurora\System\Api::getCookieSecure(),
+            'CookiePath' => Api::getCookiePath(),
+            'CookieSecure' => Api::getCookieSecure(),
             'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
             'StoreAuthTokenInDB' => $oSettings->GetValue('StoreAuthTokenInDB'),
             'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
@@ -1390,7 +1364,7 @@ For instructions, please refer to this section of documentation and our
             'AllowGroups' => $this->getConfig('AllowGroups', false),
         );
 
-        if ($oSettings && !empty($oUser) && $oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
+        if ($oSettings && !empty($oUser) && $oUser->Role === UserRole::SuperAdmin) {
             $sAdminPassword = $oSettings->GetValue('AdminPassword');
 
             $aSettings = array_merge($aSettings, array(
@@ -1401,7 +1375,7 @@ For instructions, please refer to this section of documentation and our
                 'AdminHasPassword' => !empty($sAdminPassword),
                 'AdminLanguage' => $oSettings->GetValue('AdminLanguage'),
                 'CommonLanguage' => $this->getConfig('Language'),
-                'SaltNotEmpty' => file_exists(\Aurora\System\Api::GetSaltPath()) && strlen(@file_get_contents(\Aurora\System\Api::GetSaltPath())),
+                'SaltNotEmpty' => file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath())),
                 'EnableLogging' => $oSettings->GetValue('EnableLogging'),
                 'EnableEventLogging' => $oSettings->GetValue('EnableEventLogging'),
                 'LoggingLevel' => $oSettings->GetValue('LoggingLevel'),
@@ -1502,7 +1476,7 @@ For instructions, please refer to this section of documentation and our
      * @param bool $EnableEventLogging Indicates if events logs are enabled.
      * @param int $LoggingLevel Specify logging level.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function UpdateSettings(
         $DbLogin = null,
@@ -1523,11 +1497,11 @@ For instructions, please refer to this section of documentation and our
         $LoggingLevel = null
     )
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
-        $oUser = \Aurora\System\Api::getAuthenticatedUser();
+        $oUser = Api::getAuthenticatedUser();
 
-        if ($oUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
+        if ($oUser->Role === UserRole::SuperAdmin) {
             if ($SiteName !== null || $Language !== null || $TimeFormat !== null || $AutodetectLanguage !== null) {
                 if ($SiteName !== null) {
                     $this->setConfig('SiteName', $SiteName);
@@ -1543,7 +1517,7 @@ For instructions, please refer to this section of documentation and our
                 }
                 $this->saveModuleConfig();
             }
-            $oSettings =&\Aurora\System\Api::GetSettings();
+            $oSettings =&Api::GetSettings();
             if ($DbLogin !== null) {
                 $oSettings->DBLogin = $DbLogin;
             }
@@ -1570,10 +1544,10 @@ For instructions, please refer to this section of documentation and our
 
             $sAdminPassword = $oSettings->GetValue('AdminPassword');
             if ((empty($sAdminPassword) && empty($Password) || !empty($Password)) && !empty($NewPassword)) {
-                if (empty($sAdminPassword) || crypt(trim($Password), \Aurora\System\Api::$sSalt) === $sAdminPassword) {
-                    $oSettings->AdminPassword = crypt(trim($NewPassword), \Aurora\System\Api::$sSalt);
+                if (empty($sAdminPassword) || crypt(trim($Password), Api::$sSalt) === $sAdminPassword) {
+                    $oSettings->AdminPassword = crypt(trim($NewPassword), Api::$sSalt);
                 } else {
-                    throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
+                    throw new ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
                 }
             }
             if ($AdminLanguage !== null) {
@@ -1609,9 +1583,9 @@ For instructions, please refer to this section of documentation and our
 
     public function UpdateLoggingSettings($EnableLogging = null, $EnableEventLogging = null, $LoggingLevel = null)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $oSettings =&\Aurora\System\Api::GetSettings();
+        $oSettings =&Api::GetSettings();
 
         if ($EnableLogging !== null) {
             $oSettings->EnableLogging = $EnableLogging;
@@ -1634,9 +1608,9 @@ For instructions, please refer to this section of documentation and our
      */
     public function SetMobile($Mobile)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
-        $oApiIntegrator = $this->getIntegratorManager();
-        return $oApiIntegrator ? $oApiIntegrator->setMobile($Mobile) : false;
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
+        $oIntegrator = $this->getIntegratorManager();
+        return $oIntegrator ? $oIntegrator->setMobile($Mobile) : false;
     }
 
     /**
@@ -1688,7 +1662,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function CreateTables()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         if (!function_exists('mysqli_fetch_all')) {
             throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
@@ -1714,7 +1688,7 @@ For instructions, please refer to this section of documentation and our
 
             $bResult = true;
         } catch (\Exception $oEx) {
-            \Aurora\System\Api::LogException($oEx);
+            Api::LogException($oEx);
             if ($oEx instanceof ApiException) {
                 throw $oEx;
             }
@@ -1725,7 +1699,7 @@ For instructions, please refer to this section of documentation and our
 
     public function GetOrphans()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $bResult = false;
 
@@ -1740,7 +1714,7 @@ For instructions, please refer to this section of documentation and our
             $content = array_filter(explode(PHP_EOL, $output->fetch()));
             $bResult = $content;
         } catch (\Exception $oEx) {
-            \Aurora\System\Api::LogException($oEx);
+            Api::LogException($oEx);
         }
 
         return $bResult;
@@ -1752,14 +1726,14 @@ For instructions, please refer to this section of documentation and our
      */
     public function UpdateConfig()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $bResult = true;
         try {
-            \Aurora\System\Api::Init();
-            \Aurora\System\Api::GetModuleManager()->SyncModulesConfigs();
+            Api::Init();
+            Api::GetModuleManager()->SyncModulesConfigs();
 
-            \Aurora\System\Api::GetSettings()->SyncConfigs();
+            Api::GetSettings()->SyncConfigs();
         } catch (\Exception $e) {
             $bResult = false;
         }
@@ -1829,7 +1803,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function TestDbConnection($DbLogin, $DbName, $DbHost, $DbPassword = null)
     {
-        Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         if (!function_exists('mysqli_fetch_all')) {
             throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
         }
@@ -1865,9 +1839,9 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetAuthenticatedAccount($AuthToken)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
-        $aUserInfo = \Aurora\System\Api::getAuthenticatedUserInfo($AuthToken);
+        $aUserInfo = Api::getAuthenticatedUserInfo($AuthToken);
         $oAccount = call_user_func_array([$aUserInfo['accountType'], 'find'], [(int)$aUserInfo['account']]);
 
         return $oAccount;
@@ -1882,7 +1856,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetAccounts($AuthToken, $Type = '')
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
         $aArgs = array(
             'AuthToken' => $AuthToken
@@ -1906,8 +1880,13 @@ For instructions, please refer to this section of documentation and our
         return $aResult;
     }
 
+    /**
+     * 
+     */
     public function IsBlockedUser($sEmail, $sIp)
     {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
         $bEnableFailedLoginBlock = $this->getConfig('EnableFailedLoginBlock', false);
         $iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
         $iLoginBlockDurationMinutes = $this->getConfig('LoginBlockDurationMinutes', 30);
@@ -1921,7 +1900,7 @@ For instructions, please refer to this section of documentation and our
                         if ($iBlockTime > $iLoginBlockDurationMinutes) {
                             $oBlockedUser->delete();
                         } else {
-                            throw new \Aurora\System\Exceptions\ApiException(
+                            throw new ApiException(
                                 1000,
                                 null,
                                 $this->i18N("BLOCKED_USER_MESSAGE_ERROR", [
@@ -1933,13 +1912,15 @@ For instructions, please refer to this section of documentation and our
                     }
                 }
             } catch (\Aurora\System\Exceptions\DbException $oEx) {
-                \Aurora\System\Api::LogException($oEx);
+                Api::LogException($oEx);
             }
         }
     }
 
     public function GetBlockedUser($sEmail, $sIp)
     {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
         $mResult = false;
 
         if ($this->getConfig('EnableFailedLoginBlock', false)) {
@@ -1955,6 +1936,8 @@ For instructions, please refer to this section of documentation and our
 
     public function BlockUser($sEmail, $sIp)
     {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
         if ($this->getConfig('EnableFailedLoginBlock', false)) {
             $iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
 
@@ -1974,7 +1957,7 @@ For instructions, please refer to this section of documentation and our
                     $oBlockedUser->save();
                 }
             } catch (\Exception $oEx) {
-                \Aurora\System\Api::LogException($oEx);
+                Api::LogException($oEx);
             }
         }
     }
@@ -1999,14 +1982,19 @@ For instructions, please refer to this section of documentation and our
                 $mResult
             );
         } catch (\Exception $oException) {
-            \Aurora\System\Api::GetModuleManager()->SetLastException($oException);
+            Api::GetModuleManager()->SetLastException($oException);
         }
 
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function SetAuthDataAndGetAuthToken($aAuthData, $Language = '', $SignMe = false)
     {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
         $mResult = false;
         if ($aAuthData && is_array($aAuthData)) {
             $mResult = $aAuthData;
@@ -2018,17 +2006,17 @@ For instructions, please refer to this section of documentation and our
                     $iExpire = time() + ($iAuthTokenExpirationLifetimeDays * 24 * 60 * 60);
                 }
 
-                $sAuthToken = \Aurora\System\Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
+                $sAuthToken = Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
 
                 //this will store user data in static variable of Api class for later usage
-                $oUser = \Aurora\System\Api::getAuthenticatedUser($sAuthToken);
+                $oUser = Api::getAuthenticatedUser($sAuthToken);
 
-                if ($oUser && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
+                if ($oUser && $oUser->Role !== UserRole::SuperAdmin) {
                     // If User is super admin don't try to detect tenant. It will try to connect to DB.
                     // Super admin should be able to log in without connecting to DB.
-                    $oTenant = \Aurora\System\Api::getTenantByWebDomain();
+                    $oTenant = Api::getTenantByWebDomain();
                     if ($oTenant && $oUser->IdTenant !== $oTenant->Id) {
-                        throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError);
+                        throw new ApiException(Notifications::AuthError);
                     }
                 }
 
@@ -2040,15 +2028,15 @@ For instructions, please refer to this section of documentation and our
                 $oUser->LoginsCount =  $oUser->LoginsCount + 1;
 
                 $this->getUsersManager()->updateUser($oUser);
-                \Aurora\System\Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
+                Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
                 $mResult = [
                     'AuthToken' => $sAuthToken
                 ];
             }
         } else {
-            \Aurora\System\Api::LogEvent('login-failed', self::GetName());
-            \Aurora\System\Api::GetModuleManager()->SetLastException(
-                new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::AuthError)
+            Api::LogEvent('login-failed', self::GetName());
+            Api::GetModuleManager()->SetLastException(
+                new ApiException(Notifications::AuthError)
             );
         }
 
@@ -2108,22 +2096,22 @@ For instructions, please refer to this section of documentation and our
      * @param string $Language New value of language for user.
      * @param bool $SignMe Indicates if it is necessary to remember user between sessions.
      * @return array
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function Login($Login, $Password, $Language = '', $SignMe = false)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
         $sIp = \Aurora\System\Utils::getClientIp();
-        $this->IsBlockedUser($Login, $sIp);
+        $this->Decorator()->IsBlockedUser($Login, $sIp);
 
         $aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
 
         if (!$aAuthData) {
-            $this->BlockUser($Login, $sIp);
-            $this->IsBlockedUser($Login, $sIp);
+            $this->Decorator()->BlockUser($Login, $sIp);
+            $this->Decorator()->IsBlockedUser($Login, $sIp);
         } else {
-            $oBlockedUser = $this->GetBlockedUser($Login, $sIp);
+            $oBlockedUser = $this->Decorator()->GetBlockedUser($Login, $sIp);
             if ($oBlockedUser) {
                 $oBlockedUser->delete();
             }
@@ -2181,16 +2169,16 @@ For instructions, please refer to this section of documentation and our
     /**
      * @param string $Password Account password.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function VerifyPassword($Password)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
         $mResult = false;
         $bResult = false;
-        $sAuthToken = \Aurora\System\Api::getAuthToken();
+        $sAuthToken = Api::getAuthToken();
         $oApiIntegrator = $this->getIntegratorManager();
 
         $aUserInfo = $oApiIntegrator->getAuthenticatedUserInfo($sAuthToken);
@@ -2216,7 +2204,7 @@ For instructions, please refer to this section of documentation and our
                     && $mResult['token'] === 'auth'
                     && isset($mResult['id'])
                 ) {
-                    $UserId = \Aurora\System\Api::getAuthenticatedUserId();
+                    $UserId = Api::getAuthenticatedUserId();
                     if ($mResult['id'] === $UserId) {
                         $bResult = true;
                     }
@@ -2248,15 +2236,18 @@ For instructions, please refer to this section of documentation and our
 
 
         if (!empty($mResult)) {
-            \Aurora\System\Api::LogEvent('resetPassword-success: ' . $email, self::GetName());
+            Api::LogEvent('resetPassword-success: ' . $email, self::GetName());
         } else {
-            \Aurora\System\Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
+            Api::LogEvent('resetPassword-failed: ' . $email, self::GetName());
         }
 
         return $mResult;
     }
 
 
+    /**
+     * 
+     */
     public function ResetPasswordBySecurityQuestion($securityAnswer, $securityToken)
     {
         $mResult = false;
@@ -2273,13 +2264,16 @@ For instructions, please refer to this section of documentation and our
 
 
         if (!empty($mResult)) {
-            \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-success: ' . $securityAnswer, self::GetName());
+            Api::LogEvent('ResetPasswordBySecurityQuestion-success: ' . $securityAnswer, self::GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('ResetPasswordBySecurityQuestion-failed: ' . $securityAnswer, self::GetName());
+        Api::LogEvent('ResetPasswordBySecurityQuestion-failed: ' . $securityAnswer, self::GetName());
     }
 
+    /**
+     * 
+     */
     public function UpdatePassword($Password, $ConfirmPassword, $Hash)
     {
         $mResult = false;
@@ -2296,11 +2290,11 @@ For instructions, please refer to this section of documentation and our
         );
 
         if (!empty($mResult)) {
-            \Aurora\System\Api::LogEvent('updatePassword-success: ' . $Hash, self::GetName());
+            Api::LogEvent('updatePassword-success: ' . $Hash, self::GetName());
             return $mResult;
         }
 
-        \Aurora\System\Api::LogEvent('updatePassword-failed: ' . $Hash, self::GetName());
+        Api::LogEvent('updatePassword-failed: ' . $Hash, self::GetName());
     }
 
     /**
@@ -2349,18 +2343,17 @@ For instructions, please refer to this section of documentation and our
      * Logs out authenticated user. Clears session.
      *
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function Logout()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::Anonymous);
+        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
-        \Aurora\System\Api::LogEvent('logout', self::GetName());
+        Api::LogEvent('logout', self::GetName());
 
-        \Aurora\System\Api::UserSession()->Delete(
-            \Aurora\System\Api::getAuthToken()
+        Api::UserSession()->Delete(
+            Api::getAuthToken()
         );
-
 
         return true;
     }
@@ -2399,12 +2392,12 @@ For instructions, please refer to this section of documentation and our
      * @param string $Login New channel login.
      * @param string $Description New channel description.
      * @return int New channel identifier.
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function CreateChannel($Login, $Description = '')
     {
         $mResult = -1;
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $mResult = false;
 
@@ -2422,7 +2415,7 @@ For instructions, please refer to this section of documentation and our
                 $mResult = $oChannel->Id;
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return $mResult;
@@ -2435,11 +2428,11 @@ For instructions, please refer to this section of documentation and our
      * @param string $Login New login for channel.
      * @param string $Description New description for channel.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function UpdateChannel($ChannelId, $Login = '', $Description = '')
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         if ($ChannelId > 0) {
             $oChannel = $this->getChannelsManager()->getChannelById($ChannelId);
@@ -2456,7 +2449,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getChannelsManager()->updateChannel($oChannel);
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -2467,11 +2460,11 @@ For instructions, please refer to this section of documentation and our
      *
      * @param int $ChannelId Identifier of channel to delete.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function DeleteChannel($ChannelId)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         if ($ChannelId > 0) {
             $oChannel = $this->getChannelsManager()->getChannelById($ChannelId);
@@ -2480,7 +2473,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getChannelsManager()->deleteChannel($oChannel);
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -2548,14 +2541,14 @@ For instructions, please refer to this section of documentation and our
      *		*array* **Items** Tenant list
      *		*int* **Count** Tenant count
      * }
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function GetTenants($Offset = 0, $Limit = 0, $Search = '')
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-        $bTenant = $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        $bTenant = $oAuthenticatedUser->Role === UserRole::TenantAdmin;
 
         $aTenantsFromDb = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
         $oSettings = $this->GetModuleSettings();
@@ -2637,15 +2630,17 @@ For instructions, please refer to this section of documentation and our
      * Returns tenant object by identifier.
      *
      * @param int $Id Tenant identifier.
-     * @return \Aurora\Modules\Core\Models\Tenant|null
+     * @return Models\Tenant|null
      */
     public function GetTenant($Id)
     {
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $Id) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $Id) {
+            throw new ApiException(Notifications::AccessDenied);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         return $this->GetTenantWithoutRoleCheck($Id);
@@ -2711,13 +2706,13 @@ For instructions, please refer to this section of documentation and our
      * @param string $WebDomain New tenant web domain.
      * @param string $SiteName Tenant site name.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function CreateTenant($ChannelId = 0, $Name = '', $Description = '', $WebDomain = '', $SiteName = null)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $oSettings =&\Aurora\System\Api::GetSettings();
+        $oSettings = &Api::GetSettings();
         if (/*!$oSettings->GetValue('EnableMultiChannel') && */$ChannelId === 0) { // TODO: temporary ignore 'EnableMultiChannel' config
             $aChannels = $this->getChannelsManager()->getChannelList(0, 1);
             $ChannelId = count($aChannels) === 1 ? $aChannels[0]->Id : 0;
@@ -2744,7 +2739,7 @@ For instructions, please refer to this section of documentation and our
                 }
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -2810,15 +2805,16 @@ For instructions, please refer to this section of documentation and our
      * @param string $SiteName Tenant site name.
      * @param int $ChannelId Identifier of the tenant channel.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function UpdateTenant($TenantId, $Description = null, $WebDomain = null, $SiteName = null, $ChannelId = 0)
     {
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-        if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
+            throw new ApiException(Notifications::AccessDenied);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         if (!empty($TenantId)) {
@@ -2832,17 +2828,17 @@ For instructions, please refer to this section of documentation and our
                 if ($Description !== null) {
                     $oTenant->Description = $Description;
                 }
-                if ($WebDomain !== null && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
+                if ($WebDomain !== null && $oAuthenticatedUser->Role === UserRole::SuperAdmin) {
                     $oTenant->WebDomain = $WebDomain;
                 }
-                if (!empty($ChannelId) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::SuperAdmin) {
+                if (!empty($ChannelId) && $oAuthenticatedUser->Role === UserRole::SuperAdmin) {
                     $oTenant->IdChannel = $ChannelId;
                 }
 
                 return $this->getTenantsManager()->updateTenant($oTenant);
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -2902,7 +2898,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function DeleteTenants($IdList)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $bResult = true;
 
@@ -2965,18 +2961,18 @@ For instructions, please refer to this section of documentation and our
      *
      * @param int $TenantId Identifier of tenant to delete.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function DeleteTenant($TenantId)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         if (!empty($TenantId)) {
             $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
 
             if ($oTenant) {
                 // Delete tenant config files.
-                $sTenantSpacePath = \Aurora\System\Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
+                $sTenantSpacePath = Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
                 if (@is_dir($sTenantSpacePath)) {
                     $this->deleteTree($sTenantSpacePath);
                 }
@@ -2985,7 +2981,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getTenantsManager()->deleteTenant($oTenant);
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -3065,13 +3061,13 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null, $GroupId = -1)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-        if ($oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
+            throw new ApiException(Notifications::AccessDenied);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         $aResult = [
@@ -3120,9 +3116,12 @@ For instructions, please refer to this section of documentation and our
         return self::Decorator()->GetUsers($TenantId, $Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
     }
 
+    /**
+     * 
+     */
     public function GetTotalUsersCount()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         return $this->getUsersManager()->getTotalUsersCount();
     }
@@ -3183,20 +3182,20 @@ For instructions, please refer to this section of documentation and our
      * Returns user object.
      *
      * @param int|string $Id User identifier or UUID.
-     * @return \Aurora\Modules\Core\Models\User
+     * @return Models\User
      */
     public function GetUser($Id = '')
     {
         $oUser = $this->getUsersManager()->getUser($Id);
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
 
         if (!empty($oUser)) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
-            if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
-                \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
-            } elseif (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
-                \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+            if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
+                Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+            } elseif (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
+                Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
             } else {
-                \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
             }
 
             return $oUser;
@@ -3205,11 +3204,20 @@ For instructions, please refer to this section of documentation and our
         return null;
     }
 
+    /**
+     * 
+     */
     public function TurnOffSeparateLogs()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        
+        $Filters = Models\User::query();
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
+            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->TenantId);
+        }
 
-        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', User::where('WriteSeparateLog', true));
+        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
         foreach ($aResults as $aUser) {
             $oUser = self::Decorator()->GetUser($aUser['EntityId']);
             if ($oUser) {
@@ -3221,20 +3229,32 @@ For instructions, please refer to this section of documentation and our
         return true;
     }
 
+    /**
+     * 
+     */
     public function ClearSeparateLogs()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        \Aurora\System\Api::RemoveSeparateLogs();
+        Api::RemoveSeparateLogs();
 
         return true;
     }
 
+    /**
+     * 
+     */
     public function GetUsersWithSeparateLog()
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', Models\User::where('WriteSeparateLog', true));
+        $Filters = Models\User::query();
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
+            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->TenantId);
+        }
+
+        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
         $aUsers = [];
         foreach ($aResults as $aUser) {
             $aUsers[] = $aUser['PublicId'];
@@ -3299,49 +3319,49 @@ For instructions, please refer to this section of documentation and our
      * @param int $Role New user role.
      * @param bool $WriteSeparateLog Indicates if log file should be written separate for this user.
      * @return int|false
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
-    public function CreateUser($TenantId = 0, $PublicId = '', $Role = \Aurora\System\Enums\UserRole::NormalUser, $WriteSeparateLog = false)
+    public function CreateUser($TenantId = 0, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        if (!\Aurora\System\Enums\UserRole::validateValue($Role)) {
+        if (!UserRole::validateValue($Role)) {
             throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         if ($TenantId === 0) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
             $aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
             $TenantId = count($aTenants) === 1 ? $aTenants[0]->Id : 0;
         }
 
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
-        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
+            throw new ApiException(Notifications::AccessDenied);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
         if (!$oTenant) {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         $PublicId = \trim($PublicId);
         if (substr_count($PublicId, '@') > 1) {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         if (!empty($TenantId) && !empty($PublicId)) {
             $oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
-            if ($oUser instanceof \Aurora\Modules\Core\Models\User) {
-                throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
+            if ($oUser instanceof Models\User) {
+                throw new ApiException(Notifications::UserAlreadyExists);
             } else {
-                $oLicense = \Aurora\System\Api::GetModuleDecorator('Licensing');
+                $oLicense = Api::GetModuleDecorator('Licensing');
                 if ($oLicense instanceof \Aurora\System\Module\Decorator) {
                     if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
-                        \Aurora\System\Api::Log("Error: License limit");
-                        throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::LicenseLimit);
+                        Api::Log("Error: License limit");
+                        throw new ApiException(Notifications::LicenseLimit);
                     }
                 }
             }
@@ -3353,7 +3373,7 @@ For instructions, please refer to this section of documentation and our
             $oUser->Role = $Role;
             $oUser->WriteSeparateLog = $WriteSeparateLog;
 
-            $oUser->Language = \Aurora\System\Api::GetLanguage(true);
+            $oUser->Language = Api::GetLanguage(true);
             $oUser->TimeFormat = self::getInstance()->getConfig('TimeFormat');
             $oUser->DateFormat = self::getInstance()->getConfig('DateFormat');
             $oUser->DefaultTimeZone = '';
@@ -3362,7 +3382,7 @@ For instructions, please refer to this section of documentation and our
                 return $oUser->Id;
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -3427,22 +3447,22 @@ For instructions, please refer to this section of documentation and our
      * @param int $Role New user role.
      * @param bool $WriteSeparateLog New value of indicator if user's logs should be in a separate file.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null)
     {
         $PublicId = \trim($PublicId);
-        if (!empty($PublicId) && empty($TenantId) && $UserId === \Aurora\System\Api::getAuthenticatedUserId()) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+        if (!empty($PublicId) && empty($TenantId) && $UserId === Api::getAuthenticatedUserId()) {
+            Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         }
 
         if ($UserId > 0) {
             $oUser = $this->getUsersManager()->getUser($UserId);
 
             if ($oUser) {
-                \Aurora\System\Api::checkUserAccess($oUser);
+                Api::checkUserAccess($oUser);
 
                 if (!empty($PublicId)) {
                     $oUser->PublicId = $PublicId;
@@ -3450,7 +3470,7 @@ For instructions, please refer to this section of documentation and our
                 if (!empty($TenantId)) {
                     $oUser->IdTenant = $TenantId;
                 }
-                if (\Aurora\System\Enums\UserRole::validateValue($Role)) {
+                if (UserRole::validateValue($Role)) {
                     $oUser->Role = $Role;
                 }
                 if ($WriteSeparateLog !== null) {
@@ -3465,7 +3485,7 @@ For instructions, please refer to this section of documentation and our
                 return $mResult;
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return false;
@@ -3586,18 +3606,21 @@ For instructions, please refer to this section of documentation and our
      *
      * @param int $UserId User identifier.
      * @return bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function DeleteUser($UserId = 0)
     {
-        $oAuthenticatedUser = \Aurora\System\Api::getAuthenticatedUser();
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
 
         $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+        
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        if ($oUser instanceof \Aurora\Modules\Core\Models\User && $oAuthenticatedUser->Role === \Aurora\System\Enums\UserRole::TenantAdmin && $oUser->IdTenant === $oAuthenticatedUser->IdTenant) {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::TenantAdmin);
+        if ($oUser instanceof Models\User && $oAuthenticatedUser->Role === UserRole::TenantAdmin && 
+            $oUser->IdTenant !== $oAuthenticatedUser->IdTenant) {
+               throw new ApiException(Notifications::AccessDenied);
         } else {
-            \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         $bResult = false;
@@ -3608,23 +3631,26 @@ For instructions, please refer to this section of documentation and our
                 UserBlock::where('UserId', $UserId)->delete();
             }
         } else {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter);
         }
 
         return $bResult;
     }
 
+    /**
+     * 
+     */
     public function GetLogFilesData()
     {
         $aData = [];
 
-        $sFileName = \Aurora\System\Api::GetLogFileName();
-        $sFilePath = \Aurora\System\Api::GetLogFileDir() . $sFileName;
+        $sFileName = Api::GetLogFileName();
+        $sFilePath = Api::GetLogFileDir() . $sFileName;
         $aData['LogFileName'] = $sFileName;
         $aData['LogSizeBytes'] = file_exists($sFilePath) ? filesize($sFilePath) : 0;
 
-        $sEventFileName = \Aurora\System\Api::GetLogFileName(\Aurora\System\Logger::$sEventLogPrefix);
-        $sEventFilePath = \Aurora\System\Api::GetLogFileDir() . $sEventFileName;
+        $sEventFileName = Api::GetLogFileName(Logger::$sEventLogPrefix);
+        $sEventFilePath = Api::GetLogFileDir() . $sEventFileName;
         $aData['EventLogFileName'] = $sEventFileName;
         $aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
 
@@ -3633,13 +3659,13 @@ For instructions, please refer to this section of documentation and our
 
     public function GetLogFile($EventsLog = false, $PublicId = '')
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
+        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : '';
         if ($PublicId !== '') {
             $sLogFilePrefix = $PublicId . '-';
         }
-        $sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
 
         if (file_exists($sFileName)) {
             $mResult = fopen($sFileName, "r");
@@ -3662,12 +3688,15 @@ For instructions, please refer to this section of documentation and our
         }
     }
 
+    /**
+     * 
+     */
     public function GetLog($EventsLog, $PartSize = 10240)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
-        $sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
+        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : '';
+        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
 
         $logData = '';
 
@@ -3687,12 +3716,12 @@ For instructions, please refer to this section of documentation and our
      */
     public function ClearLog($EventsLog)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? \Aurora\System\Logger::$sEventLogPrefix : '';
-        $sFileName = \Aurora\System\Api::GetLogFileDir().\Aurora\System\Api::GetLogFileName($sLogFilePrefix);
+        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : '';
+        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
 
-        return \Aurora\System\Api::ClearLog($sFileName);
+        return Api::ClearLog($sFileName);
     }
 
     /**
@@ -3701,14 +3730,14 @@ For instructions, please refer to this section of documentation and our
      * @param string $Content
      * @param string $FileName
      * @return array|bool
-     * @throws \Aurora\System\Exceptions\ApiException
+     * @throws ApiException
      */
     public function SaveContentAsTempFile($UserId, $Content, $FileName)
     {
         $mResult = false;
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
-        $sUUID = \Aurora\System\Api::getUserUUIDById($UserId);
+        $sUUID = Api::getUserUUIDById($UserId);
         try {
             $sTempName = md5($sUUID.$Content.$FileName);
             $oApiFileCache = new \Aurora\System\Managers\Filecache();
@@ -3727,7 +3756,7 @@ For instructions, please refer to this section of documentation and our
                 );
             }
         } catch (\Exception $oException) {
-            throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::FilesNotAllowed, $oException);
+            throw new ApiException(Notifications::FilesNotAllowed, $oException);
         }
 
         return $mResult;
@@ -3741,9 +3770,9 @@ For instructions, please refer to this section of documentation and our
      */
     public function UpdateUserTimezone($Timezone)
     {
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::NormalUser);
+        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
-        $oUser = \Aurora\System\Api::getAuthenticatedUser();
+        $oUser = Api::getAuthenticatedUser();
 
         if ($oUser && $Timezone) {
             if ($oUser && $oUser->DefaultTimeZone !== $Timezone) {
@@ -3756,36 +3785,50 @@ For instructions, please refer to this section of documentation and our
         return true;
     }
 
+    /**
+     * 
+     */
     public function GetCompatibilities()
     {
         return [];
     }
 
+    /**
+     * 
+     */
     public function IsModuleDisabledForObject($oObject, $sModuleName)
     {
         return ($oObject instanceof \Aurora\System\Classes\Model) ? $oObject->isModuleDisabled($sModuleName) : false;
     }
 
+    /**
+     * 
+     */
     public function GetUserSessions()
     {
         $aResult = [];
         if (\Aurora\Api::GetSettings()->GetValue('StoreAuthTokenInDB', false)) {
-            $oUser = \Aurora\System\Api::getAuthenticatedUser();
-            $aUserSessions = \Aurora\System\Api::UserSession()->GetUserSessionsFromDB($oUser->Id);
-            foreach ($aUserSessions as $oUserSession) {
-                $aTokenInfo = \Aurora\System\Api::DecodeKeyValues($oUserSession->Token);
+            $oUser = Api::getAuthenticatedUser();
+            if ($oUser) {
+                $aUserSessions = Api::UserSession()->GetUserSessionsFromDB($oUser->Id);
+                foreach ($aUserSessions as $oUserSession) {
+                    $aTokenInfo = Api::DecodeKeyValues($oUserSession->Token);
 
-                if ($aTokenInfo !== false && isset($aTokenInfo['id'])) {
-                    $aResult[] = [
-                        'LastUsageDateTime' => $oUserSession->LastUsageDateTime,
-                        'ExpireDateTime' => (int) isset($aTokenInfo['@expire']) ? $aTokenInfo['@expire'] : 0,
-                    ];
+                    if ($aTokenInfo !== false && isset($aTokenInfo['id'])) {
+                        $aResult[] = [
+                            'LastUsageDateTime' => $oUserSession->LastUsageDateTime,
+                            'ExpireDateTime' => (int) isset($aTokenInfo['@expire']) ? $aTokenInfo['@expire'] : 0,
+                        ];
+                    }
                 }
             }
         }
         return $aResult;
     }
 
+    /**
+     * 
+     */
     public function CreateGroup($TenantId, $Name)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -3818,6 +3861,9 @@ For instructions, please refer to this section of documentation and our
         }
     }
 
+    /**
+     * 
+     */
     public function GetGroup($TenantId, $GroupId)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -3841,6 +3887,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function GetAllGroup($TenantId)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -3879,6 +3928,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function GetGroups($TenantId, $Search = '')
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -3947,6 +3999,9 @@ For instructions, please refer to this section of documentation and our
         ];
     }
 
+    /** 
+     * 
+    */
     public function UpdateGroup($GroupId, $Name)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -3986,7 +4041,7 @@ For instructions, please refer to this section of documentation and our
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
-        \Aurora\System\Api::checkUserRoleIsAtLeast(\Aurora\System\Enums\UserRole::SuperAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $bResult = true;
 
@@ -3997,6 +4052,9 @@ For instructions, please refer to this section of documentation and our
         return $bResult;
     }
 
+    /**
+     * 
+     */
     public function DeleteGroup($GroupId)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -4020,6 +4078,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function GetGroupUsers($TenantId, $GroupId)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -4060,6 +4121,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function AddUsersToGroup($GroupId, $UserIds)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -4084,6 +4148,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function RemoveUsersFromGroup($GroupId, $UserIds)
     {
         if (!$this->getConfig('AllowGroups', false)) {
@@ -4108,6 +4175,9 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+     * 
+     */
     public function UpdateUserGroups($UserId, $GroupIds)
     {
         if (!$this->getConfig('AllowGroups', false)) {
