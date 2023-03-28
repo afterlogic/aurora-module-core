@@ -11,29 +11,29 @@ use \Aurora\System\SettingsProperty;
 use \Aurora\System\Enums;
 
 /**
- * @property bool Disabled
- * @property bool AllowCapa
- * @property bool AllowPostLogin
- * @property bool CsrfTokenProtection
- * @property int CronTimeToRunSeconds
- * @property int CronTimeToKillSeconds
- * @property string CronTimeFile
- * @property bool UserSelectsDateFormat
- * @property Enums\DateFormat DateFormat
- * @property array DateFormatList
- * @property array LanguageList
- * @property string LanguageListComment
- * @property string Language
- * @property bool AutodetectLanguage
- * @property string PostLoginErrorRedirectUrl
- * @property Enums\TimeFormat TimeFormat
- * @property string SiteName
- * @property string ProductName
- * @property int AuthTokenCookieExpireTime
- * @property bool EnableFailedLoginBlock
- * @property bool AllowPosLoginBlockAvailableTriesCounttLogin
- * @property bool LoginBlockDurationMinutes
- * @property bool AllowGroups
+ * @property bool   $Disabled
+ * @property bool   $AllowCapa
+ * @property bool   $AllowPostLogin
+ * @property bool   $CsrfTokenProtection
+ * @property int    $CronTimeToRunSeconds
+ * @property int    $CronTimeToKillSeconds
+ * @property string $CronTimeFile
+ * @property bool   $UserSelectsDateFormat
+ * @property Enums\DateFormat $DateFormat
+ * @property array  $DateFormatList
+ * @property array  $LanguageList
+ * @property string $LanguageListComment
+ * @property string $Language
+ * @property bool   $AutodetectLanguage
+ * @property string $PostLoginErrorRedirectUrl
+ * @property Enums\TimeFormat $TimeFormat
+ * @property string $SiteName
+ * @property string $ProductName
+ * @property int    $AuthTokenCookieExpireTime
+ * @property bool   $EnableFailedLoginBlock
+ * @property bool   $AllowPosLoginBlockAvailableTriesCounttLogin
+ * @property bool   $LoginBlockDurationMinutes
+ * @property bool   $AllowGroups
  */
 
 class Settings extends \Aurora\System\Module\Settings
