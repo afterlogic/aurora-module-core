@@ -97,6 +97,15 @@ class Module extends \Aurora\System\Module\AbstractModule
         return $this->oIntegratorManager;
     }
 
+    /**
+     *
+     * @return Settings
+     */
+    protected function GetModuleSettings()
+    {
+        return $this->oModuleSettings;
+    }
+
 
     /***** private functions *****/
     /**
