@@ -37,6 +37,9 @@ use Aurora\System\Classes\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|Channel whereProperties($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Channel whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Channel find(int|string $id, array|string $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Channel findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Channel first(array|string $columns = ['*'])
  * @mixin \Eloquent
  */
 class Channel extends Model

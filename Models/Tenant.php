@@ -64,6 +64,9 @@ use Aurora\Modules\Core\Models\Channel;
  * @method static \Illuminate\Database\Eloquent\Builder|Tenant whereUserCountLimit($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Tenant whereWebDomain($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Tenant find(int|string $id, array|string $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Tenant findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Tenant first(array|string $columns = ['*'])
  * @mixin \Eloquent
  */
 class Tenant extends Model

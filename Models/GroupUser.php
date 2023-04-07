@@ -29,6 +29,9 @@ use Aurora\System\Classes\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\GroupUser whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
  * @method static \Illuminate\Database\Eloquent\Builder|GroupUser whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\GroupUser find(int|string $id, array|string $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\GroupUser findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\GroupUser first(array|string $columns = ['*'])
  * @mixin \Eloquent
  */
 class GroupUser extends Model

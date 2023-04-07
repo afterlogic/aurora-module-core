@@ -47,6 +47,10 @@ use Aurora\Modules\Core\Module as CoreModule;
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group find(int|string $id, array|string $columns = ['*'])
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group first(array|string $columns = ['*'])
  * @mixin \Eloquent
  */
 class Group extends Model

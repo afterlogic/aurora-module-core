@@ -1382,7 +1382,7 @@ For instructions, please refer to this section of documentation and our
             'AllowGroups' => $this->getConfig('AllowGroups', false),
         );
 
-        if ($oSettings && isset($oUser) && $oUser->Role === UserRole::SuperAdmin) {
+        if ($oSettings && ($oUser instanceof User) && $oUser->Role === UserRole::SuperAdmin) {
             $sAdminPassword = $oSettings->GetValue('AdminPassword');
 
             $aSettings = array_merge($aSettings, array(
@@ -1402,7 +1402,7 @@ For instructions, please refer to this section of documentation and our
             ));
         }
 
-        if (isset($oUser) && $oUser->isNormalOrTenant()) {
+        if (($oUser instanceof User) && $oUser->isNormalOrTenant()) {
             if ($oUser->DateFormat !== '') {
                 $aSettings['DateFormat'] = $oUser->DateFormat;
             }
@@ -3377,6 +3377,7 @@ For instructions, please refer to this section of documentation and our
             } else {
                 $oLicense = Api::GetModuleDecorator('Licensing');
                 if ($oLicense instanceof \Aurora\System\Module\Decorator) {
+                    /** @phpstan-ignore-next-line */
                     if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
                         throw new ApiException(Notifications::LicenseLimit);
@@ -3979,14 +3980,13 @@ For instructions, please refer to this section of documentation and our
             if ($oGroup->IsAll) {
                 $aEmails = Contact::where('IdTenant', $oGroup->TenantId)
                     ->where('Storage', StorageType::Team)->get()->map(
-                        /** @param Contact $oContact */
-                        function ($oContact) {
-                        if (!empty($oContact->FullName)) {
-                            return '"' . $oContact->FullName .  '"' . '<' . $oContact->ViewEmail . '>';
-                        } else {
-                            return $oContact->ViewEmail;
+                        function (Contact $oContact) {
+                            if (!empty($oContact->FullName)) {
+                                return '"' . $oContact->FullName .  '"' . '<' . $oContact->ViewEmail . '>';
+                            } else {
+                                return $oContact->ViewEmail;
+                            }
                         }
-                    }
                     )->toArray();
             } else {
                 $aEmails = $oGroup->Users->map(function ($oUser) {

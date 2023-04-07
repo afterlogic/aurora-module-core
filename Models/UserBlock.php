@@ -40,6 +40,9 @@ use Aurora\System\Classes\Model;
  * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereUserId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock find(int|string $id, array|string $columns = ['*'])
+ * @method static int count(string $columns = '*')
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock first(array|string $columns = ['*'])
  * @mixin \Eloquent
  */
 class UserBlock extends Model
