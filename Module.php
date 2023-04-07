@@ -52,6 +52,15 @@ class Module extends \Aurora\System\Module\AbstractModule
         return Api::GetModule(self::GetName());
     }
 
+    /**
+     *
+     * @return Module
+     */
+    public static function Decorator()
+    {
+        return parent::Decorator();
+    }
+
     public function getTenantsManager()
     {
         if ($this->oTenantsManager === null) {
@@ -157,7 +166,7 @@ class Module extends \Aurora\System\Module\AbstractModule
     {
         $mResult = false;
         $oFile = null;
-        if (isset($_FILES) && count($_FILES) > 0) {
+        if (count($_FILES) > 0) {
             $oFile = current($_FILES);
         }
         if (isset($oFile, $oFile['name'], $oFile['tmp_name'], $oFile['size'], $oFile['type'])) {
@@ -177,7 +186,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      *		*int* **TenantId** Identifier of tenant for creating new user in it.
      *		*int* **$PublicId** New user name.
      * }
-     * @param Models\User $oResult
+     * @param Models\User $Result
      */
     public function onCreateAccount(&$Args, &$Result)
     {
@@ -214,7 +223,7 @@ class Module extends \Aurora\System\Module\AbstractModule
 
     /**
      * @ignore
-     * @param type $aArgs
+     * @param array $aArgs
      * @param array $mResult
      */
     public function onAfterGetCompatibilities($aArgs, &$mResult)
@@ -1364,7 +1373,7 @@ For instructions, please refer to this section of documentation and our
             'AllowGroups' => $this->getConfig('AllowGroups', false),
         );
 
-        if ($oSettings && !empty($oUser) && $oUser->Role === UserRole::SuperAdmin) {
+        if ($oSettings && isset($oUser) && $oUser->Role === UserRole::SuperAdmin) {
             $sAdminPassword = $oSettings->GetValue('AdminPassword');
 
             $aSettings = array_merge($aSettings, array(
@@ -1384,7 +1393,7 @@ For instructions, please refer to this section of documentation and our
             ));
         }
 
-        if (!empty($oUser) && $oUser->isNormalOrTenant()) {
+        if (isset($oUser) && $oUser->isNormalOrTenant()) {
             if ($oUser->DateFormat !== '') {
                 $aSettings['DateFormat'] = $oUser->DateFormat;
             }
@@ -1829,7 +1838,7 @@ For instructions, please refer to this section of documentation and our
             }
         }
 
-        return isset($oPdo);
+        return $oPdo instanceof \PDO;
     }
 
     /**
@@ -2121,9 +2130,9 @@ For instructions, please refer to this section of documentation and our
 
     /**
      *
-     * @param [type] $Login
-     * @param [type] $Realm
-     * @param [type] $Type
+     * @param string $Login
+     * @param string $Realm
+     * @param string $Type
      * @return void
      */
     public function GetDigestHash($Login, $Realm, $Type)
@@ -2637,7 +2646,7 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $Id) {
+        if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $Id) {
             throw new ApiException(Notifications::AccessDenied);
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
@@ -3189,10 +3198,10 @@ For instructions, please refer to this section of documentation and our
         $oUser = $this->getUsersManager()->getUser($Id);
         $oAuthenticatedUser = Api::getAuthenticatedUser();
 
-        if (!empty($oUser)) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
-            if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
+        if ($oUser) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
+            if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
                 Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
-            } elseif (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
+            } elseif (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
                 Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
             } else {
                 Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
@@ -3214,7 +3223,7 @@ For instructions, please refer to this section of documentation and our
         $Filters = Models\User::query();
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
-            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->TenantId);
+            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->IdTenant);
         }
 
         $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
@@ -3251,7 +3260,7 @@ For instructions, please refer to this section of documentation and our
         $Filters = Models\User::query();
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
-            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->TenantId);
+            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->IdTenant);
         }
 
         $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
@@ -3336,7 +3345,7 @@ For instructions, please refer to this section of documentation and our
         }
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if (!empty($oAuthenticatedUser) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
+        if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
             throw new ApiException(Notifications::AccessDenied);
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
@@ -3961,6 +3970,7 @@ For instructions, please refer to this section of documentation and our
             if ($oGroup->IsAll) {
                 $aEmails = Contact::where('IdTenant', $oGroup->TenantId)
                     ->where('Storage', StorageType::Team)->get()->map(
+                        /** @param Contact $oContact */
                         function ($oContact) {
                         if (!empty($oContact->FullName)) {
                             return '"' . $oContact->FullName .  '"' . '<' . $oContact->ViewEmail . '>';
@@ -4190,7 +4200,7 @@ For instructions, please refer to this section of documentation and our
         $oAuthUser = Api::getAuthenticatedUser();
         $oUser = User::find($UserId);
 
-        if ($oAuthUser && $oAuthUser->Role === UserRole::TenantAdmin && $oAuthUser->TenantId !== $oUser->IdTenant) {
+        if ($oAuthUser && $oAuthUser->Role === UserRole::TenantAdmin && $oAuthUser->IdTenant !== $oUser->IdTenant) {
             throw new ApiException(Notifications::AccessDenied);
         }
         if ($oUser) {

@@ -14,7 +14,7 @@ class AlterUserBlocksTableAddUseridColumn extends Migration
     public function up()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_user_blocks ADD UserId int(11) default 0");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_user_blocks ADD UserId int(11) default 0");
     }
 
     /**
@@ -25,6 +25,6 @@ class AlterUserBlocksTableAddUseridColumn extends Migration
     public function down()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_user_blocks DROP COLUMN UserId");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_user_blocks DROP COLUMN UserId");
     }
 }

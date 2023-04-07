@@ -13,16 +13,41 @@ use Aurora\Modules\Core\Module as CoreModule;
 
 /**
  * The Core Group class.
- * 
+ *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
- * 
  * @property int    $Id             Object primary key
  * @property int    $TenantId       Tenant ID
  * @property string $Name           Tenant name
  * @property bool   $IsAll          Defines whether the group represents all the users
- * @property array  $Properties		Custom properties for use by other modules   		
+ * @property array  $Properties		Custom properties for use by other modules
+ * @property \Illuminate\Support\Carbon|null $CreatedAt
+ * @property \Illuminate\Support\Carbon|null $UpdatedAt
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read int|null $users_count
+ * @property-read mixed $entity_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group firstWhere(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Group newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Group newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Group query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group where(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereIsAll($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereProperties($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereTenantId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Group whereUpdatedAt($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\User> $Users
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\Group find(int|string $id, array|string $columns = ['*'])
+ * @mixin \Eloquent
  */
 class Group extends Model
 {

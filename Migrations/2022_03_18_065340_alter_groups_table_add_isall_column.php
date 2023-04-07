@@ -14,7 +14,7 @@ class AlterGroupsTableAddIsallColumn extends Migration
     public function up()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_groups ADD IsAll tinyint(1) default 0");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_groups ADD IsAll tinyint(1) default 0");
     }
 
     /**
@@ -25,6 +25,6 @@ class AlterGroupsTableAddIsallColumn extends Migration
     public function down()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_groups DROP COLUMN IsAll");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_groups DROP COLUMN IsAll");
     }
 }

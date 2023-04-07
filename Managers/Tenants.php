@@ -80,7 +80,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     }
 
     /**
-     * @return Aurora\Modules\Core\Models\Tenant
+     * @return \Aurora\Modules\Core\Models\Tenant
      */
     public function getDefaultGlobalTenant()
     {
@@ -101,7 +101,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     /**
      * @param mixed $mTenantId
      *
-     * @return \Aurora\Modules\Core\Classes\Tenant|null
+     * @return \Aurora\Modules\Core\Models\Tenant|null
      */
     public function getTenantById($mTenantId)
     {
@@ -121,9 +121,8 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 
     /**
      * @param string $sTenantName
-     * @param string $sTenantPassword Default value is **null**.
      *
-     * @return
+     * @return Tenant
      */
     public function getTenantByName($sTenantName)
     {
@@ -216,9 +215,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     }
 
     /**
-     * @param Aurora\Modules\Core\Classes\Tenant $oTenant
-     *
-     * @throws $oException
+     * @param \Aurora\Modules\Core\Models\Tenant $oTenant
      *
      * @return bool
      */
@@ -292,9 +289,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     /**
      * @TODO rewrite other menagers usage
      *
-     * @param Aurora\Modules\Core\Classes\Tenant $oTenant
-     *
-     * @throws $oException
+     * @param \Aurora\Modules\Core\Models\Tenant $oTenant
      *
      * @return bool
      */

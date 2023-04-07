@@ -12,11 +12,10 @@ use Aurora\Modules\Core\Models\Tenant;
 
 /**
  * The Core User class.
- * 
+ *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
- * 
  * @property int    $Id             Object primary key
  * @property string $UUID           Unique identifier of the object
  * @property string $Name           User name
@@ -48,6 +47,59 @@ use Aurora\Modules\Core\Models\Tenant;
  * @property string $DefaultTimeZone    Default time zone set for this user
  * @property int    $TokensValidFromTimestamp   Timestamp the token is valid since
  * @property array  $Properties     Custom properties for use by other modules
+ * @property \Illuminate\Support\Carbon|null $CreatedAt
+ * @property \Illuminate\Support\Carbon|null $UpdatedAt
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read int|null $groups_count
+ * @property-read mixed $entity_id
+ * @property-read Tenant|null $parent
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User firstWhere(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User where(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAnswer1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereAnswer2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereCapa($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereCustomFields($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereDateFormat($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereDefaultTimeZone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereDesktopNotifications($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereEmailNotification($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereFilesEnable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereIdSubscription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereIdTenant($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereIsDisabled($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLanguage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLastLogin($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLastLoginNow($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereLoginsCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePasswordResetHash($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereProperties($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User wherePublicId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereQuestion1($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereQuestion2($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSipEnable($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSipImpi($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereSipPassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTimeFormat($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereTokensValidFromTimestamp($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereUUID($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|User whereWriteSeparateLog($value)
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User find(int|string $id, array|string $columns = ['*'])
+ * @mixin \Eloquent
  */
 class User extends Model
 {

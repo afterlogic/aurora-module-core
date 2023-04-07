@@ -22,7 +22,7 @@ class CreateCoreFulltextIndexes extends Migration
                 $table->index(['TenantId']);
             }
             if (!$doctrineTable->hasIndex('ccore_groups_name_index')) {
-                Capsule::statement("CREATE FULLTEXT INDEX ccore_groups_name_index ON {$prefix}core_groups (Name)");
+                Capsule::connection()->statement("CREATE FULLTEXT INDEX ccore_groups_name_index ON {$prefix}core_groups (Name)");
             }
         });
         Capsule::schema()->table('core_auth_tokens', function (Blueprint $table) use ($prefix, $sm) {
@@ -39,7 +39,7 @@ class CreateCoreFulltextIndexes extends Migration
         });
         $doctrineTable = $sm->listTableDetails($prefix . 'core_tenants');
         if (!$doctrineTable->hasIndex('ccore_tenants_name_index')) {
-            Capsule::statement("CREATE FULLTEXT INDEX ccore_tenants_name_index ON {$prefix}core_tenants (Name)");
+            Capsule::connection()->statement("CREATE FULLTEXT INDEX ccore_tenants_name_index ON {$prefix}core_tenants (Name)");
         }
     }
 

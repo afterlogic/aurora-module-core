@@ -14,7 +14,7 @@ class AlterUserBlocksTableChangeUseridColumnOrder extends Migration
     public function up()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_user_blocks MODIFY UserId int(11) AFTER Id");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_user_blocks MODIFY UserId int(11) AFTER Id");
     }
 
     /**
@@ -25,6 +25,6 @@ class AlterUserBlocksTableChangeUseridColumnOrder extends Migration
     public function down()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::statement("ALTER TABLE {$prefix}core_user_blocks MODIFY UserId int(11) AFTER UpdatedAt");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_user_blocks MODIFY UserId int(11) AFTER UpdatedAt");
     }
 }

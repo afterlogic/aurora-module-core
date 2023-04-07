@@ -32,10 +32,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
      * @param int $iOffset
      * @param int $iLimit
      * @param string $sOrderBy Default value is **Login**
-     * @param bool $iOrderType Default value is **\Aurora\System\Enums\SortOrder::ASC**
+     * @param int $iOrderType Default value is **\Aurora\System\Enums\SortOrder::ASC**
      * @param string $sSearchDesc Default value is empty string
      *
-     * @return array|false [Id => [Login, Description]]
+     * @return array|bool [Id => [Login, Description]]
      */
     public function getChannelList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Login', $iOrderType = SortOrder::ASC, $sSearchDesc = '')
     {
@@ -78,7 +78,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     /**
      * @param int $iChannelId
      *
-     * @return \Aurora\Modules\Core\Classes\Channel
+     * @return \Aurora\Modules\Core\Models\Channel
      */
     public function getChannelById($iChannelId)
     {
@@ -114,7 +114,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     }
 
     /**
-     * @param Aurora\Modules\Core\Models\Channel $oChannel
+     * @param \Aurora\Modules\Core\Models\Channel $oChannel
      *
      * @return bool
      */
@@ -125,6 +125,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
             $oChannels = Channel::where('Login', $oChannel->Login)->get();
 
             foreach ($oChannels as $oObject) {
+                /**
+                 * @var Channel $oObject
+                 */
                 if ($oObject->Id !== $oChannel->Id) {
                     $bResult = true;
                     break;
@@ -194,9 +197,9 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     }
 
     /**
-     * @param Aurora\Modules\Core\Models\Channel $oChannel
+     * @param \Aurora\Modules\Core\Models\Channel $oChannel
      *
-     * @throws $oException
+     * @throws \Exception
      *
      * @return bool
      */
@@ -204,10 +207,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            /* @var $oTenantsManager CApiTenantsManager */
+            /* @var $oTenantsManager \Aurora\System\Managers\AbstractManager */
             $oTenantsManager = new \Aurora\Modules\Core\Managers\Tenants($this->oModule);
 
-            if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oChannel->Id, true)) {
+            if ($oTenantsManager && !$oTenantsManager->deleteTenantsByChannelId($oChannel->Id)) {
                 $oException = $oTenantsManager->GetLastException();
                 if ($oException) {
                     throw $oException;

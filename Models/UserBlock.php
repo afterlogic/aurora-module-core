@@ -11,11 +11,10 @@ use Aurora\System\Classes\Model;
 
 /**
  * The Core UserBlock class.
-	* 
+ *
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
- * 
  * @property int    $Id                Object primary key
  * @property int    $UserId            User ID of the user blocked
  * @property string $Email             Public ID of the user blocked
@@ -23,6 +22,25 @@ use Aurora\System\Classes\Model;
  * @property int    $ErrorLoginsCount  Number of failed login attempts
  * @property int    $Time              Timestamp when user block added
  * @property array  $Properties        Custom properties for use by other modules
+ * @property \Illuminate\Support\Carbon|null $CreatedAt
+ * @property \Illuminate\Support\Carbon|null $UpdatedAt
+ * @property-read mixed $entity_id
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock firstWhere(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock query()
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock where(Closure|string|array|\Illuminate\Database\Query\Expression $column, mixed $operator = null, mixed $value = null, string $boolean = 'and')
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereErrorLoginsCount($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock whereIn(string $column, mixed $values, string $boolean = 'and', bool $not = false)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereIpAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereTime($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|UserBlock whereUserId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\UserBlock find(int|string $id, array|string $columns = ['*'])
+ * @mixin \Eloquent
  */
 class UserBlock extends Model
 {

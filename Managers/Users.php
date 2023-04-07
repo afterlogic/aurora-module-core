@@ -108,7 +108,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
      * @param string $sOrderBy = 'Email'. Field by which to sort.
      * @param int $iOrderType = 0
      * @param string $sSearchDesc = ''. If specified, the search goes on by substring in the name and email of default account.
-     * @param array $aFilters = []
+     * @param Builder $aFilters = []
      * @return array | false
      */
     public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
@@ -237,7 +237,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
     }
 
     /**
-     * @param Aurora\Modules\Core\Classes\Channel $oChannel
+     * @param \Aurora\Modules\Core\Models\User $oUser
      *
      * @return bool
      */
