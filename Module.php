@@ -61,6 +61,9 @@ class Module extends \Aurora\System\Module\AbstractModule
         return parent::Decorator();
     }
 
+    /**
+     * @return Managers\Tenants
+     */
     public function getTenantsManager()
     {
         if ($this->oTenantsManager === null) {
@@ -70,6 +73,9 @@ class Module extends \Aurora\System\Module\AbstractModule
         return $this->oTenantsManager;
     }
 
+    /**
+     * @return Managers\Channels
+     */
     public function getChannelsManager()
     {
         if ($this->oChannelsManager === null) {
@@ -79,6 +85,9 @@ class Module extends \Aurora\System\Module\AbstractModule
         return $this->oChannelsManager;
     }
 
+    /**
+     * @return Managers\Users
+     */
     public function getUsersManager()
     {
         if ($this->oUsersManager === null) {
@@ -88,6 +97,9 @@ class Module extends \Aurora\System\Module\AbstractModule
         return $this->oUsersManager;
     }
 
+    /**
+     * @return \Aurora\System\Managers\Integrator
+     */
     public function getIntegratorManager()
     {
         if ($this->oIntegratorManager === null) {
