@@ -49,7 +49,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      */
     public static function getInstance()
     {
-        return Api::GetModule(self::GetName());
+        return parent::getInstance();
     }
 
     /**
@@ -3093,8 +3093,10 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
+            if ($oAuthenticatedUser->IdTenant !== $TenantId) {
+                throw new ApiException(Notifications::AccessDenied);
+            }
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
