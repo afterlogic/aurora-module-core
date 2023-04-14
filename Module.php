@@ -901,7 +901,7 @@ For instructions, please refer to this section of documentation and our
      * Updates user by object.
      *
      * @param Models\User $oUser
-     * returns bool
+     * @return bool
      */
     public function UpdateUserObject($oUser)
     {
@@ -1083,7 +1083,7 @@ For instructions, please refer to this section of documentation and our
      * Updates tenant.
      *
      * @param Models\Tenant $oTenant
-     * @return void
+     * @return bool
      */
     public function UpdateTenantObject($oTenant)
     {
