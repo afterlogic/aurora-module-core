@@ -57,9 +57,9 @@ class Group extends Model
 {
     protected $table = 'core_groups';
     protected $moduleName = 'Core';
-    
+
     protected $foreignModel = Tenant::class;
-	protected $foreignModelIdColumn = 'TenantId'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'TenantId'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
@@ -91,17 +91,17 @@ class Group extends Model
 
     /**
      * Returns list of users which belong to this group
-     * 
+     *
      * return array
      */
     public function Users()
-	{
-		return $this->belongsToMany(User::class, 'core_group_user', 'GroupId', 'UserId');
-	}
+    {
+        return $this->belongsToMany(User::class, 'core_group_user', 'GroupId', 'UserId');
+    }
 
     /**
      * Returns a name of group, or special language constant if the group represents all the users
-     * 
+     *
      * return string
      */
     public function getName()

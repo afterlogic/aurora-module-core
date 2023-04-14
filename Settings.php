@@ -7,8 +7,8 @@
 
 namespace Aurora\Modules\Core;
 
-use \Aurora\System\SettingsProperty;
-use \Aurora\System\Enums;
+use Aurora\System\SettingsProperty;
+use Aurora\System\Enums;
 
 /**
  * @property bool $Disabled

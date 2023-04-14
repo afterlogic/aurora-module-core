@@ -119,7 +119,7 @@ class User extends Model
     ];
 
     protected $foreignModel = Tenant::class;
-	protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'IdTenant'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
@@ -186,31 +186,31 @@ class User extends Model
 
     /**
      * Checks if a user is a superadmin.
-     * 
+     *
      * return bool
      */
     public function isAdmin()
-	{
-		return $this->Id === -1;
-	}
+    {
+        return $this->Id === -1;
+    }
 
     /**
      * Checks if a user can act as a regular user.
-     * 
+     *
      * return bool
      */
-	public function isNormalOrTenant()
-	{
-		return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
-	}
+    public function isNormalOrTenant()
+    {
+        return $this->Role === \Aurora\System\Enums\UserRole::NormalUser || $this->Role === \Aurora\System\Enums\UserRole::TenantAdmin;
+    }
 
     /**
      * Returns array of groups the user is related to.
-     * 
+     *
      * return array
      */
     public function Groups()
-	{
-		return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
-	}
+    {
+        return $this->belongsToMany(Group::class, 'core_group_user', 'UserId', 'GroupId');
+    }
 }

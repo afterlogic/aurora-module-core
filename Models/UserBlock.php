@@ -51,7 +51,7 @@ class UserBlock extends Model
     protected $moduleName = 'Core';
 
     protected $foreignModel = User::class;
-	protected $foreignModelIdColumn = 'UserId'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'UserId'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.

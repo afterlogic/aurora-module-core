@@ -37,17 +37,17 @@ use Aurora\System\Classes\Model;
 class GroupUser extends Model
 {
     public $table = 'core_group_user';
-	protected $foreignModel = Group::class;
-	protected $foreignModelIdColumn = 'GroupId'; // Column that refers to an external table
+    protected $foreignModel = Group::class;
+    protected $foreignModelIdColumn = 'GroupId'; // Column that refers to an external table
 
     /**
      * The attributes that are mass assignable.
      *
      * @var array
-     */	
-	protected $fillable = [
-		'Id',
-		'GroupId',
-		'UserId'
-	];
+     */
+    protected $fillable = [
+        'Id',
+        'GroupId',
+        'UserId'
+    ];
 }

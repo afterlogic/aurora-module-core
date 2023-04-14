@@ -1525,8 +1525,7 @@ For instructions, please refer to this section of documentation and our
         $EnableLogging = null,
         $EnableEventLogging = null,
         $LoggingLevel = null
-    )
-    {
+    ) {
         Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
         $oUser = Api::getAuthenticatedUser();
@@ -1911,7 +1910,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function IsBlockedUser($sEmail, $sIp)
     {
@@ -2019,7 +2018,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function SetAuthDataAndGetAuthToken($aAuthData, $Language = '', $SignMe = false)
     {
@@ -2276,7 +2275,7 @@ For instructions, please refer to this section of documentation and our
 
 
     /**
-     * 
+     *
      */
     public function ResetPasswordBySecurityQuestion($securityAnswer, $securityToken)
     {
@@ -2302,7 +2301,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function UpdatePassword($Password, $ConfirmPassword, $Hash)
     {
@@ -3147,7 +3146,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetTotalUsersCount()
     {
@@ -3235,12 +3234,12 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function TurnOffSeparateLogs()
     {
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-        
+
         $Filters = Models\User::query();
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
@@ -3260,7 +3259,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function ClearSeparateLogs()
     {
@@ -3272,7 +3271,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetUsersWithSeparateLog()
     {
@@ -3644,12 +3643,12 @@ For instructions, please refer to this section of documentation and our
         $oAuthenticatedUser = Api::getAuthenticatedUser();
 
         $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
-        
+
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-        if ($oUser instanceof Models\User && $oAuthenticatedUser->Role === UserRole::TenantAdmin && 
+        if ($oUser instanceof Models\User && $oAuthenticatedUser->Role === UserRole::TenantAdmin &&
             $oUser->IdTenant !== $oAuthenticatedUser->IdTenant) {
-               throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied);
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
@@ -3669,7 +3668,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetLogFilesData()
     {
@@ -3720,7 +3719,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetLog($EventsLog, $PartSize = 10240)
     {
@@ -3817,7 +3816,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetCompatibilities()
     {
@@ -3825,7 +3824,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function IsModuleDisabledForObject($oObject, $sModuleName)
     {
@@ -3833,7 +3832,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetUserSessions()
     {
@@ -3858,7 +3857,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function CreateGroup($TenantId, $Name)
     {
@@ -3893,7 +3892,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetGroup($TenantId, $GroupId)
     {
@@ -3919,7 +3918,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetAllGroup($TenantId)
     {
@@ -3960,7 +3959,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetGroups($TenantId, $Search = '')
     {
@@ -4030,8 +4029,8 @@ For instructions, please refer to this section of documentation and our
         ];
     }
 
-    /** 
-     * 
+    /**
+     *
     */
     public function UpdateGroup($GroupId, $Name)
     {
@@ -4084,7 +4083,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function DeleteGroup($GroupId)
     {
@@ -4110,7 +4109,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function GetGroupUsers($TenantId, $GroupId)
     {
@@ -4153,7 +4152,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function AddUsersToGroup($GroupId, $UserIds)
     {
@@ -4180,7 +4179,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function RemoveUsersFromGroup($GroupId, $UserIds)
     {
@@ -4207,7 +4206,7 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * 
+     *
      */
     public function UpdateUserGroups($UserId, $GroupIds)
     {

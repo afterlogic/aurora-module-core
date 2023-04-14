@@ -75,7 +75,7 @@ class Tenant extends Model
     protected $moduleName = 'Core';
 
     protected $foreignModel = Channel::class;
-	protected $foreignModelIdColumn = 'IdChannel'; // Column that refers to an external table
+    protected $foreignModelIdColumn = 'IdChannel'; // Column that refers to an external table
 
     protected $parentType = \Aurora\System\Module\Settings::class;
 
@@ -136,7 +136,7 @@ class Tenant extends Model
 
     /**
      * Returns tenant ID
-     * 
+     *
      * return int
      */
     public function getEntityIdAttribute()
