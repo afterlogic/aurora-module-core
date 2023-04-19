@@ -2037,7 +2037,7 @@ For instructions, please refer to this section of documentation and our
                 $sAuthToken = Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
 
                 //this will store user data in static variable of Api class for later usage
-                $oUser = Api::getAuthenticatedUser($sAuthToken);
+                $oUser = Api::getAuthenticatedUser($sAuthToken, true);
 
                 if ($oUser && $oUser->Role !== UserRole::SuperAdmin) {
                     // If User is super admin don't try to detect tenant. It will try to connect to DB.
