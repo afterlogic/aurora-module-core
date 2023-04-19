@@ -31,6 +31,8 @@ use Aurora\System\Logger;
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
+ * @property Settings $oModuleSettings
+ *
  * @package Modules
  */
 class Module extends \Aurora\System\Module\AbstractModule
@@ -622,7 +624,7 @@ For instructions, please refer to this section of documentation and our
 
                     $bIsEmptyAuthToken = !Api::getAuthTokenFromHeaders();
 
-                    if ($this->getConfig('CsrfTokenProtection', true) && !Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
+                    if ($this->oModuleSettings->CsrfTokenProtection && !Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
                         throw new ApiException(
                             Notifications::InvalidToken
                         );
@@ -771,7 +773,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function EntryPostlogin()
     {
-        if ($this->getConfig('AllowPostLogin', false)) {
+        if ($this->oModuleSettings->AllowPostLogin) {
             $sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
             $sLogin = (string) $this->oHttp->GetRequest('Login', '');
 
@@ -875,9 +877,9 @@ For instructions, please refer to this section of documentation and our
         if (@is_dir($sTempPath)) {
             $iNow = time();
 
-            $iTime2Run = $this->getConfig('CronTimeToRunSeconds', 10800);
-            $iTime2Kill = $this->getConfig('CronTimeToKillSeconds', 10800);
-            $sDataFile = $this->getConfig('CronTimeFile', '.clear.dat');
+            $iTime2Run = $this->oModuleSettings->CronTimeToRunSeconds;
+            $iTime2Kill = $this->oModuleSettings->CronTimeToKillSeconds;
+            $sDataFile = $this->oModuleSettings->CronTimeFile;
 
             $iFiletTime = -1;
             if (@file_exists(Api::DataPath().'/'.$sDataFile)) {
@@ -1363,34 +1365,34 @@ For instructions, please refer to this section of documentation and our
         $oSettings =& Api::GetSettings();
 
         $aSettings = array(
-            'AutodetectLanguage' => $this->getConfig('AutodetectLanguage'),
-            'UserSelectsDateFormat' => $this->getConfig('UserSelectsDateFormat', false),
-            'DateFormat' => $this->getConfig('DateFormat', 'DD/MM/YYYY'),
-            'DateFormatList' => $this->getConfig('DateFormatList', ['DD/MM/YYYY', 'MM/DD/YYYY', 'DD Month YYYY']),
+            'AutodetectLanguage' => $this->oModuleSettings->AutodetectLanguage,
+            'UserSelectsDateFormat' => $this->oModuleSettings->UserSelectsDateFormat,
+            'DateFormat' => $this->oModuleSettings->DateFormat,
+            'DateFormatList' => $this->oModuleSettings->DateFormatList,
             'EUserRole' => (new UserRole())->getMap(),
             'Language' => Api::GetLanguage(),
             'ShortLanguage' => \Aurora\System\Utils::ConvertLanguageNameToShort(Api::GetLanguage()),
             'LanguageList' => $oApiIntegrator->getLanguageList(),
             'LastErrorCode' => $iLastErrorCode,
-            'SiteName' => $this->getConfig('SiteName'),
+            'SiteName' => $this->oModuleSettings->SiteName,
             'SocialName' => '',
             'TenantName' => Api::getTenantName(),
             'EnableMultiTenant' => $oSettings && $oSettings->GetValue('EnableMultiTenant', false),
-            'TimeFormat' => $this->getConfig('TimeFormat'),
+            'TimeFormat' => $this->oModuleSettings->TimeFormat,
             'UserId' => Api::getAuthenticatedUserId(),
             'IsSystemConfigured' => is_writable(Api::DataPath()) &&
                 (file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath()))),
             'Version' => Api::VersionFull(),
-            'ProductName' => $this->getConfig('ProductName'),
+            'ProductName' => $this->oModuleSettings->ProductName,
             'PasswordMinLength' => $oSettings ? $oSettings->GetValue('PasswordMinLength', 0) : 0,
             'PasswordMustBeComplex' => $oSettings && $oSettings->GetValue('PasswordMustBeComplex', false),
             'CookiePath' => Api::getCookiePath(),
             'CookieSecure' => Api::getCookieSecure(),
-            'AuthTokenCookieExpireTime' => $this->getConfig('AuthTokenCookieExpireTime', 30),
+            'AuthTokenCookieExpireTime' => $this->oModuleSettings->AuthTokenCookieExpireTime,
             'StoreAuthTokenInDB' => $oSettings->GetValue('StoreAuthTokenInDB'),
             'AvailableClientModules' => $oApiIntegrator->GetClientModuleNames(),
             'AvailableBackendModules' => $oApiIntegrator->GetBackendModules(),
-            'AllowGroups' => $this->getConfig('AllowGroups', false),
+            'AllowGroups' => $this->oModuleSettings->AllowGroups,
         );
 
         if ($oSettings && ($oUser instanceof User) && $oUser->Role === UserRole::SuperAdmin) {
@@ -1403,7 +1405,7 @@ For instructions, please refer to this section of documentation and our
                 'AdminLogin' => $oSettings->GetValue('AdminLogin'),
                 'AdminHasPassword' => !empty($sAdminPassword),
                 'AdminLanguage' => $oSettings->GetValue('AdminLanguage'),
-                'CommonLanguage' => $this->getConfig('Language'),
+                'CommonLanguage' => $this->oModuleSettings->Language,
                 'SaltNotEmpty' => file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath())),
                 'EnableLogging' => $oSettings->GetValue('EnableLogging'),
                 'EnableEventLogging' => $oSettings->GetValue('EnableEventLogging'),
@@ -1915,9 +1917,9 @@ For instructions, please refer to this section of documentation and our
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        $bEnableFailedLoginBlock = $this->getConfig('EnableFailedLoginBlock', false);
-        $iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
-        $iLoginBlockDurationMinutes = $this->getConfig('LoginBlockDurationMinutes', 30);
+        $bEnableFailedLoginBlock = $this->oModuleSettings->EnableFailedLoginBlock;
+        $iLoginBlockAvailableTriesCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
+        $iLoginBlockDurationMinutes = $this->oModuleSettings->LoginBlockDurationMinutes;
 
         if ($bEnableFailedLoginBlock) {
             try {
@@ -1951,7 +1953,7 @@ For instructions, please refer to this section of documentation and our
 
         $mResult = false;
 
-        if ($this->getConfig('EnableFailedLoginBlock', false)) {
+        if ($this->oModuleSettings->EnableFailedLoginBlock) {
             try {
                 $mResult = Models\UserBlock::where('Email', $sEmail)->where('IpAddress', $sIp)->first();
             } catch (\Exception $oEx) {
@@ -1966,8 +1968,8 @@ For instructions, please refer to this section of documentation and our
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        if ($this->getConfig('EnableFailedLoginBlock', false)) {
-            $iLoginBlockAvailableTriesCount = $this->getConfig('LoginBlockAvailableTriesCount', 3);
+        if ($this->oModuleSettings->EnableFailedLoginBlock) {
+            $iLoginBlockAvailableTriesCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
 
             try {
                 $oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
@@ -3114,7 +3116,7 @@ For instructions, please refer to this section of documentation and our
         $aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters, $GroupId);
         foreach ($aUsers as $oUser) {
             $aGroups = [];
-            if ($this->getConfig('AllowGroups', false)) {
+            if ($this->oModuleSettings->AllowGroups) {
                 foreach ($oUser->Groups as $oGroup) {
                     if (!$oGroup->IsAll) {
                         $aGroups[] = [
@@ -3509,7 +3511,7 @@ For instructions, please refer to this section of documentation and our
                 }
 
                 $mResult = $this->getUsersManager()->updateUser($oUser);
-                if ($mResult && $this->getConfig('AllowGroups', false) && $GroupIds !== null) {
+                if ($mResult && $this->oModuleSettings->AllowGroups && $GroupIds !== null) {
                     self::Decorator()->UpdateUserGroups($UserId, $GroupIds);
                 }
 
@@ -3862,7 +3864,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function CreateGroup($TenantId, $Name)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -3897,7 +3899,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetGroup($TenantId, $GroupId)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             return false;
         }
 
@@ -3923,7 +3925,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetAllGroup($TenantId)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             return false;
         }
 
@@ -3964,7 +3966,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetGroups($TenantId, $Search = '')
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             return [
                 'Items' => [],
                 'Count' => 0
@@ -4035,7 +4037,7 @@ For instructions, please refer to this section of documentation and our
     */
     public function UpdateGroup($GroupId, $Name)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4068,7 +4070,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function DeleteGroups($IdList)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4088,7 +4090,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function DeleteGroup($GroupId)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4114,7 +4116,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetGroupUsers($TenantId, $GroupId)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4157,7 +4159,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function AddUsersToGroup($GroupId, $UserIds)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4184,7 +4186,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function RemoveUsersFromGroup($GroupId, $UserIds)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 
@@ -4211,7 +4213,7 @@ For instructions, please refer to this section of documentation and our
      */
     public function UpdateUserGroups($UserId, $GroupIds)
     {
-        if (!$this->getConfig('AllowGroups', false)) {
+        if (!$this->oModuleSettings->AllowGroups) {
             throw new ApiException(Notifications::MethodAccessDenied);
         }
 

@@ -31,7 +31,8 @@ use Aurora\System\Enums;
  * @property string $ProductName
  * @property int $AuthTokenCookieExpireTime
  * @property bool $EnableFailedLoginBlock
- * @property bool $AllowPosLoginBlockAvailableTriesCounttLogin
+ * @property bool $AllowPostLogin
+ * @property int $LoginBlockAvailableTriesCount
  * @property bool $LoginBlockDurationMinutes
  * @property bool $AllowGroups
  */
