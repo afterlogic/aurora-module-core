@@ -65,7 +65,7 @@ class Module extends \Aurora\System\Module\AbstractModule
      *
      * @return Settings
      */
-    protected function GetModuleSettings()
+    public function getModuleSettings()
     {
         return $this->oModuleSettings;
     }
@@ -2579,7 +2579,7 @@ For instructions, please refer to this section of documentation and our
         $bTenant = $oAuthenticatedUser->Role === UserRole::TenantAdmin;
 
         $aTenantsFromDb = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
-        $oSettings = $this->GetModuleSettings();
+        $oSettings = $this->getModuleSettings();
         $aTenants = [];
 
         foreach ($aTenantsFromDb as $oTenant) {
@@ -2759,7 +2759,7 @@ For instructions, please refer to this section of documentation and our
 
                 if ($this->getTenantsManager()->createTenant($oTenant)) {
                     if ($SiteName !== null) {
-                        $oSettings = $this->GetModuleSettings();
+                        $oSettings = $this->getModuleSettings();
                         $oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);
                         $oSettings->SaveTenantSettings($oTenant->Name);
                     }
@@ -2849,7 +2849,7 @@ For instructions, please refer to this section of documentation and our
             $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
             if ($oTenant) {
                 if ($SiteName !== null) {
-                    $oSettings = $this->GetModuleSettings();
+                    $oSettings = $this->getModuleSettings();
                     $oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);
                     $oSettings->SaveTenantSettings($oTenant->Name);
                 }
