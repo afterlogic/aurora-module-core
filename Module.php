@@ -46,7 +46,6 @@ class Module extends \Aurora\System\Module\AbstractModule
     protected $oIntegratorManager = null;
 
     /**
-     *
      * @return Module
      */
     public static function getInstance()
@@ -55,7 +54,6 @@ class Module extends \Aurora\System\Module\AbstractModule
     }
 
     /**
-     *
      * @return Module
      */
     public static function Decorator()
@@ -64,7 +62,6 @@ class Module extends \Aurora\System\Module\AbstractModule
     }
 
     /**
-     *
      * @return Settings
      */
     public function getModuleSettings()
@@ -741,7 +738,7 @@ For instructions, please refer to this section of documentation and our
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
 
                     if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                        $iAuthTokenCookieExpireTime = (int) self::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+                        $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
                         @\setcookie(
                             \Aurora\System\Application::AUTH_TOKEN_KEY,
                             $aResult['AuthToken'],
@@ -790,7 +787,7 @@ For instructions, please refer to this section of documentation and our
 
             $aResult = self::Decorator()->Login($sLogin, $sPassword);
             if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                $iAuthTokenCookieExpireTime = (int) self::getInstance()->getConfig('AuthTokenCookieExpireTime', 30);
+                $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
                 @\setcookie(
                     \Aurora\System\Application::AUTH_TOKEN_KEY,
                     $aResult['AuthToken'],
@@ -3407,8 +3404,8 @@ For instructions, please refer to this section of documentation and our
             $oUser->WriteSeparateLog = $WriteSeparateLog;
 
             $oUser->Language = Api::GetLanguage(true);
-            $oUser->TimeFormat = self::getInstance()->getConfig('TimeFormat');
-            $oUser->DateFormat = self::getInstance()->getConfig('DateFormat');
+            $oUser->TimeFormat = self::getInstance()->oModuleSettings->TimeFormat;
+            $oUser->DateFormat = self::getInstance()->oModuleSettings->DateFormat;
             $oUser->DefaultTimeZone = '';
 
             if ($this->getUsersManager()->createUser($oUser)) {
