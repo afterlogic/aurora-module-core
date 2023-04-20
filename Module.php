@@ -2759,8 +2759,9 @@ For instructions, please refer to this section of documentation and our
                 if ($this->getTenantsManager()->createTenant($oTenant)) {
                     if ($SiteName !== null) {
                         $oSettings = $this->getModuleSettings();
-                        $oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);
-                        $oSettings->SaveTenantSettings($oTenant->Name);
+                        $oSettings->SaveTenantSettings($oTenant->Name, [
+                            'SiteName' => $SiteName
+                        ]);
                     }
                     return $oTenant->Id;
                 }
@@ -2849,8 +2850,9 @@ For instructions, please refer to this section of documentation and our
             if ($oTenant) {
                 if ($SiteName !== null) {
                     $oSettings = $this->getModuleSettings();
-                    $oSettings->SetTenantValue($oTenant->Name, 'SiteName', $SiteName);
-                    $oSettings->SaveTenantSettings($oTenant->Name);
+                    $oSettings->SaveTenantSettings($oTenant->Name, [
+                        'SiteName' => $SiteName
+                    ]);
                 }
                 if ($Description !== null) {
                     $oTenant->Description = $Description;
