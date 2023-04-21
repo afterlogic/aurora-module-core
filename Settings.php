@@ -42,29 +42,144 @@ class Settings extends \Aurora\System\Module\Settings
     protected function initDefaults()
     {
         $this->aContainer = [
-            'Disabled' => new SettingsProperty(false, 'bool', null, 'Setting to true disables the module'),
-            'AllowCapa' => new SettingsProperty(false, 'bool', null, 'If set to true, product features can be enabled/disabled on user or tenant level'),
-            'AllowPostLogin' =>  new SettingsProperty(false, 'bool', null, 'If set to true, credentials can be submitted via POST request'),
-            'CsrfTokenProtection' => new SettingsProperty(true, 'bool', null, 'If set to true, CSRF protection is enabled'),
-            'CronTimeToRunSeconds' => new SettingsProperty(10800, 'int', null, 'Defines intervals in seconds to run a routine of deleting temporary files'),
-            'CronTimeToKillSeconds' => new SettingsProperty(10800, 'int', null, 'Defines minimal age in seconds of temporary files to be deleted'),
-            'CronTimeFile' => new SettingsProperty('.clear.dat', 'string', null, 'Defines filename for storing last timestamp when routine of deleting temporary files was run'),
-            'UserSelectsDateFormat' => new SettingsProperty(false, 'bool', null, 'If set to true, users can select date format'),
-            'DateFormat' => new SettingsProperty('"DD/MM/YYYY', 'spec', Enums\DateFormat::class, 'Defines default date format used'),
-            'DateFormatList' => new SettingsProperty(["DD/MM/YYYY", "MM/DD/YYYY", "DD Month YYYY"], 'array', null, 'Defines default date format used'),
-            'LanguageList' => new SettingsProperty([], 'array', null, 'Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.'),
-            'LanguageListComment' => new SettingsProperty('', 'string', null, 'Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.'),
-            'Language' => new SettingsProperty('', 'string', null, 'Default interface language used'),
-            'AutodetectLanguage' => new SettingsProperty(true, 'bool', null, 'Setting to true enables language autodetection'),
-            'PostLoginErrorRedirectUrl' => new SettingsProperty('./', 'string', null, 'If login credentials were supplied with POST method, this setting defines redirect URL used when authentication error occurs'),
-            'TimeFormat' => new SettingsProperty('F24', 'spec', Enums\TimeFormat::class, 'Denotes time format used by default'),
-            'SiteName' => new SettingsProperty('', 'string', null, 'Text used in browser title as a website name'),
-            'ProductName' => new SettingsProperty('Unknown', 'string', null, 'Product name, displayed in About tab of adminpanel'),
-            'AuthTokenCookieExpireTime' => new SettingsProperty(30, 'int', null, 'Expiration time for authentication cookie, in days'),
-            'EnableFailedLoginBlock' => new SettingsProperty(false, 'bool', null, 'Setting to true enables feature of blocking user after a number of failed login attempts'),
-            'LoginBlockAvailableTriesCount' => new SettingsProperty(3, 'int', null, 'Number of failed login attempts which will result in blocking user'),
-            'LoginBlockDurationMinutes' => new SettingsProperty(30, 'int', null, 'Number of minutes user will be blocked for upon multiple failed login attempts'),
-            'AllowGroups' => new SettingsProperty(false, 'bool', null, 'Setting to true enables user groups which can be managed in adminpanel'),
+            'Disabled' => new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'Setting to true disables the module'
+            ),
+            'AllowCapa' => new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'If set to true, product features can be enabled/disabled on user or tenant level'
+            ),
+            'AllowPostLogin' =>  new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'If set to true, credentials can be submitted via POST request'
+            ),
+            'CsrfTokenProtection' => new SettingsProperty(
+                true,
+                'bool',
+                null,
+                'If set to true, CSRF protection is enabled'
+            ),
+            'CronTimeToRunSeconds' => new SettingsProperty(
+                10800,
+                'int',
+                null,
+                'Defines intervals in seconds to run a routine of deleting temporary files'
+            ),
+            'CronTimeToKillSeconds' => new SettingsProperty(
+                10800,
+                'int',
+                null,
+                'Defines minimal age in seconds of temporary files to be deleted'
+            ),
+            'CronTimeFile' => new SettingsProperty(
+                '.clear.dat',
+                'string',
+                null,
+                'Defines filename for storing last timestamp when routine of deleting temporary files was run'
+            ),
+            'UserSelectsDateFormat' => new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'If set to true, users can select date format'
+            ),
+            'DateFormat' => new SettingsProperty(
+                Enums\DateFormat::DDMMYYYY,
+                'spec',
+                Enums\DateFormat::class,
+                'Defines default date format used'
+            ),
+            'DateFormatList' => new SettingsProperty(
+                [Enums\DateFormat::DDMMYYYY, Enums\DateFormat::MMDDYYYY, Enums\DateFormat::DD_MONTH_YYYY],
+                'array',
+                null,
+                'Defines default date format used'
+            ),
+            'LanguageList' => new SettingsProperty(
+                [],
+                'array',
+                null,
+                'Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.'
+            ),
+            'LanguageListComment' => new SettingsProperty(
+                '',
+                'string',
+                null,
+                'Empty array means that every language from every module will be available. [\"English\", \"German\"] means that only English and German languages will be used in the system.'
+            ),
+            'Language' => new SettingsProperty(
+                '',
+                'string',
+                null,
+                'Default interface language used'
+            ),
+            'AutodetectLanguage' => new SettingsProperty(
+                true,
+                'bool',
+                null,
+                'Setting to true enables language autodetection'
+            ),
+            'PostLoginErrorRedirectUrl' => new SettingsProperty(
+                './',
+                'string',
+                null,
+                'If login credentials were supplied with POST method, this setting defines redirect URL used when authentication error occurs'
+            ),
+            'TimeFormat' => new SettingsProperty(
+                Enums\TimeFormat::F24,
+                'spec',
+                Enums\TimeFormat::class,
+                'Denotes time format used by default'
+            ),
+            'SiteName' => new SettingsProperty(
+                '',
+                'string',
+                null,
+                'Text used in browser title as a website name'
+            ),
+            'ProductName' => new SettingsProperty(
+                'Unknown',
+                'string',
+                null,
+                'Product name, displayed in About tab of adminpanel'
+            ),
+            'AuthTokenCookieExpireTime' => new SettingsProperty(
+                30,
+                'int',
+                null,
+                'Expiration time for authentication cookie, in days'
+            ),
+            'EnableFailedLoginBlock' => new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'Setting to true enables feature of blocking user after a number of failed login attempts'
+            ),
+            'LoginBlockAvailableTriesCount' => new SettingsProperty(
+                3,
+                'int',
+                null,
+                'Number of failed login attempts which will result in blocking user'
+            ),
+            'LoginBlockDurationMinutes' => new SettingsProperty(
+                30,
+                'int',
+                null,
+                'Number of minutes user will be blocked for upon multiple failed login attempts'
+            ),
+            'AllowGroups' => new SettingsProperty(
+                false,
+                'bool',
+                null,
+                'Setting to true enables user groups which can be managed in adminpanel'
+            ),
         ];
     }
 }

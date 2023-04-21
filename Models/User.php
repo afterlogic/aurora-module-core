@@ -160,15 +160,15 @@ class User extends Model
         'Properties'
     ];
 
-    /** 
-     * @var array 
+    /**
+     * @var array
      * */
     protected $validationRules = [
         'TimeFormat' => 'in:0,1',
     ];
 
-    /** 
-     * @var array 
+    /**
+     * @var array
      */
     protected $validationMessages = [
         'TimeFormat.in' => 'User model validation error, rule: TimeFormat'
