@@ -773,15 +773,9 @@ For instructions, please refer to this section of documentation and our
         if ($this->oModuleSettings->AllowPostLogin) {
             $sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
             $sLogin = (string) $this->oHttp->GetRequest('Login', '');
-
-            if ($sLogin==='') {
-                $sLogin = $sEmail;
-            }
             $sPassword = (string) $this->oHttp->GetRequest('Password', '');
 
-            $sAtDomain = trim(Api::GetSettings()->LoginAtDomainValue);
-            if (0 < strlen($sAtDomain)) {
-                $sEmail = \Aurora\System\Utils::GetAccountNameFromEmail($sLogin).'@'.$sAtDomain;
+            if ($sLogin === '') {
                 $sLogin = $sEmail;
             }
 
