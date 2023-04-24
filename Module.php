@@ -3382,9 +3382,8 @@ For instructions, please refer to this section of documentation and our
             if ($oUser instanceof Models\User) {
                 throw new ApiException(Notifications::UserAlreadyExists);
             } else {
-                $oLicense = Api::GetModuleDecorator('Licensing');
-                if ($oLicense instanceof \Aurora\System\Module\Decorator) {
-                    /** @phpstan-ignore-next-line */
+                if (class_exists('\Aurora\Modules\Licensing\Module')) {
+                    $oLicense = \Aurora\Modules\Licensing\Module::Decorator();
                     if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
                         throw new ApiException(Notifications::LicenseLimit);
