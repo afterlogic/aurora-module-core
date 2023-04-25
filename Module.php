@@ -3399,8 +3399,8 @@ For instructions, please refer to this section of documentation and our
             $oUser->WriteSeparateLog = $WriteSeparateLog;
 
             $oUser->Language = Api::GetLanguage(true);
-            $oUser->TimeFormat = self::getInstance()->oModuleSettings->TimeFormat;
-            $oUser->DateFormat = self::getInstance()->oModuleSettings->DateFormat;
+            $oUser->TimeFormat = $this->oModuleSettings->TimeFormat;
+            $oUser->DateFormat = $this->oModuleSettings->DateFormat;
             $oUser->DefaultTimeZone = '';
 
             if ($this->getUsersManager()->createUser($oUser)) {
