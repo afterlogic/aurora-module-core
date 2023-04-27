@@ -92,14 +92,7 @@ use Aurora\Modules\Core\Models\Tenant;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUUID($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereWriteSeparateLog($value)
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User find(int|string $id, array|string $columns = ['*'])
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
  * @method static int count(string $columns = '*')
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User findOrFail(int|string $id, mixed $id, Closure|array|string $columns = ['*'], Closure $callback = null)
  * @method static \Illuminate\Database\Eloquent\Builder|\Aurora\Modules\Core\Models\User first(array|string $columns = ['*'])
