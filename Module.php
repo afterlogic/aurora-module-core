@@ -1749,17 +1749,7 @@ For instructions, please refer to this section of documentation and our
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $bResult = true;
-        try {
-            Api::Init();
-            Api::GetModuleManager()->SyncModulesConfigs();
-
-            Api::GetSettings()->SyncConfigs();
-        } catch (\Exception $e) {
-            $bResult = false;
-        }
-
-        return $bResult;
+        return Api::UpdateSettings();
     }
 
     /**
