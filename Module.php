@@ -1565,8 +1565,8 @@ For instructions, please refer to this section of documentation and our
 
             $sAdminPassword = $oSettings->AdminPassword;
             if ((empty($sAdminPassword) && empty($Password) || !empty($Password)) && !empty($NewPassword)) {
-                if (empty($sAdminPassword) || crypt(trim($Password), Api::$sSalt) === $sAdminPassword) {
-                    $oSettings->AdminPassword = crypt(trim($NewPassword), Api::$sSalt);
+                if (empty($sAdminPassword) || crypt(trim($Password), Api::GetHashSalt()) === $sAdminPassword) {
+                    $oSettings->AdminPassword = crypt(trim($NewPassword), Api::GetHashSalt());
                 } else {
                     throw new ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
                 }
