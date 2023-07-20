@@ -2990,6 +2990,9 @@ For instructions, please refer to this section of documentation and our
                     $this->deleteTree($sTenantSpacePath);
                 }
 
+                // Delete group
+                Group::where('TenantId', $oTenant->Id)->delete();
+
                 // Delete tenant itself.
                 return $this->getTenantsManager()->deleteTenant($oTenant);
             }
