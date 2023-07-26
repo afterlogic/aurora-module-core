@@ -602,7 +602,7 @@ For instructions, please refer to this section of documentation and our
         @ob_start();
 
         if (!is_writable(Api::DataPath())) {
-            throw new ApiException(Notifications::SystemNotConfigured);
+            throw new ApiException(Notifications::SystemNotConfigured, null, 'SystemNotConfigured');
         }
 
         $aResponseItem = null;
@@ -623,14 +623,18 @@ For instructions, please refer to this section of documentation and our
 
                     if ($this->oModuleSettings->CsrfTokenProtection && !Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
                         throw new ApiException(
-                            Notifications::InvalidToken
+                            Notifications::InvalidToken,
+                            null,
+                            'InvalidToken'
                         );
                     }
 
                     if (!empty($sModule) && !empty($sMethod)) {
                         if (!Api::validateAuthToken() && !$bIsEmptyAuthToken) {
                             throw new ApiException(
-                                Notifications::AuthError
+                                Notifications::AuthError,
+                                null,
+                                'AuthError'
                             );
                         }
 
@@ -639,6 +643,15 @@ For instructions, please refer to this section of documentation and our
                         $aParameters = [];
                         if (isset($sParameters) && \is_string($sParameters)) {
                             $aParameters = @\json_decode($sParameters, true);
+
+                            if (json_last_error() !== JSON_ERROR_NONE) {
+                                throw new ApiException(
+                                    Notifications::InvalidInputParameter,
+                                    null,
+                                    'InvalidInputParameter'
+                                );
+                            }
+
                             if (!\is_array($aParameters)) {
                                 $aParameters = array($aParameters);
                             }
@@ -668,7 +681,9 @@ For instructions, please refer to this section of documentation and our
 
                     if (!\is_array($aResponseItem)) {
                         throw new ApiException(
-                            Notifications::UnknownError
+                            Notifications::UnknownError,
+                            null,
+                            'UnknownError'
                         );
                     }
                 } catch (\Exception $oException) {
@@ -687,7 +702,9 @@ For instructions, please refer to this section of documentation and our
                 }
             } else {
                 $oException = new ApiException(
-                    Notifications::ModuleNotFound
+                    Notifications::ModuleNotFound,
+                    null,
+                    'ModuleNotFound'
                 );
                 $aResponseItem = $this->ExceptionResponse(
                     $sMethod,
@@ -696,7 +713,9 @@ For instructions, please refer to this section of documentation and our
             }
         } else {
             $oException = new ApiException(
-                Notifications::InvalidInputParameter
+                Notifications::InvalidInputParameter,
+                null,
+                'InvalidInputParameter'
             );
             $aResponseItem = $this->ExceptionResponse(
                 $sMethod,
@@ -1696,7 +1715,7 @@ For instructions, please refer to this section of documentation and our
 
             $oPdo = $container['connection']->getPdo();
             if ($oPdo && strpos($oPdo->getAttribute(\PDO::ATTR_CLIENT_VERSION), 'mysqlnd') === false) {
-                throw new ApiException(Enums\ErrorCodes::MySqlConfigError);
+                throw new ApiException(Enums\ErrorCodes::MySqlConfigError, null, 'MySqlConfigError');
             }
 
             $container['console']->setAutoExit(false);
@@ -1836,7 +1855,7 @@ For instructions, please refer to this section of documentation and our
             $oPdo = $capsule->getConnection()->getPdo();
 
             if ($oPdo && strpos($oPdo->getAttribute(\PDO::ATTR_CLIENT_VERSION), 'mysqlnd') === false) {
-                throw new ApiException(Enums\ErrorCodes::MySqlConfigError);
+                throw new ApiException(Enums\ErrorCodes::MySqlConfigError, null, 'MySqlConfigError');
             }
         }
 
@@ -2027,7 +2046,7 @@ For instructions, please refer to this section of documentation and our
                     // Super admin should be able to log in without connecting to DB.
                     $oTenant = Api::getTenantByWebDomain();
                     if ($oTenant && $oUser->IdTenant !== $oTenant->Id) {
-                        throw new ApiException(Notifications::AuthError);
+                        throw new ApiException(Notifications::AuthError, null, 'AuthError');
                     }
                 }
 
@@ -2047,7 +2066,7 @@ For instructions, please refer to this section of documentation and our
         } else {
             Api::LogEvent('login-failed', self::GetName());
             Api::GetModuleManager()->SetLastException(
-                new ApiException(Notifications::AuthError)
+                new ApiException(Notifications::AuthError, null, 'AuthError')
             );
         }
 
@@ -2426,7 +2445,7 @@ For instructions, please refer to this section of documentation and our
                 $mResult = $oChannel->Id;
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return $mResult;
@@ -2460,7 +2479,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getChannelsManager()->updateChannel($oChannel);
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -2484,7 +2503,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getChannelsManager()->deleteChannel($oChannel);
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -2649,7 +2668,7 @@ For instructions, please refer to this section of documentation and our
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $Id) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
@@ -2751,7 +2770,7 @@ For instructions, please refer to this section of documentation and our
                 }
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -2824,7 +2843,7 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
@@ -2851,7 +2870,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getTenantsManager()->updateTenant($oTenant);
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -2997,7 +3016,7 @@ For instructions, please refer to this section of documentation and our
                 return $this->getTenantsManager()->deleteTenant($oTenant);
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -3082,7 +3101,7 @@ For instructions, please refer to this section of documentation and our
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
             if ($oAuthenticatedUser->IdTenant !== $TenantId) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
@@ -3344,7 +3363,7 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         if (!UserRole::validateValue($Role)) {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         if ($TenantId === 0) {
@@ -3355,31 +3374,31 @@ For instructions, please refer to this section of documentation and our
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
         if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
         if (!$oTenant) {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         $PublicId = \trim($PublicId);
         if (substr_count($PublicId, '@') > 1) {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         if (!empty($TenantId) && !empty($PublicId)) {
             $oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
             if ($oUser instanceof Models\User) {
-                throw new ApiException(Notifications::UserAlreadyExists);
+                throw new ApiException(Notifications::UserAlreadyExists, null, 'UserAlreadyExists');
             } else {
                 if (class_exists('\Aurora\Modules\Licensing\Module')) {
                     $oLicense = \Aurora\Modules\Licensing\Module::Decorator();
                     if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
-                        throw new ApiException(Notifications::LicenseLimit);
+                        throw new ApiException(Notifications::LicenseLimit, null, 'LicenseLimit');
                     }
                 }
             }
@@ -3400,7 +3419,7 @@ For instructions, please refer to this section of documentation and our
                 return $oUser->Id;
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -3503,7 +3522,7 @@ For instructions, please refer to this section of documentation and our
                 return $mResult;
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return false;
@@ -3636,7 +3655,7 @@ For instructions, please refer to this section of documentation and our
 
         if ($oUser instanceof Models\User && $oAuthenticatedUser->Role === UserRole::TenantAdmin &&
             $oUser->IdTenant !== $oAuthenticatedUser->IdTenant) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
@@ -3649,7 +3668,7 @@ For instructions, please refer to this section of documentation and our
                 UserBlock::where('UserId', $UserId)->delete();
             }
         } else {
-            throw new ApiException(Notifications::InvalidInputParameter);
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
         return $bResult;
@@ -3774,7 +3793,7 @@ For instructions, please refer to this section of documentation and our
                 );
             }
         } catch (\Exception $oException) {
-            throw new ApiException(Notifications::FilesNotAllowed, $oException);
+            throw new ApiException(Notifications::FilesNotAllowed, $oException, $oException->getMessage());
         }
 
         return $mResult;
@@ -3850,14 +3869,14 @@ For instructions, please refer to this section of documentation and our
     public function CreateGroup($TenantId, $Name)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
 
         $oGroup = Group::firstWhere([
@@ -3894,7 +3913,7 @@ For instructions, please refer to this section of documentation and our
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
 
         $mResult = Group::firstWhere([
@@ -3920,7 +3939,7 @@ For instructions, please refer to this section of documentation and our
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
 
         $oGroup = Group::firstWhere([
@@ -3962,7 +3981,7 @@ For instructions, please refer to this section of documentation and our
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
 
         $query = Group::where('TenantId', $TenantId);
@@ -4023,7 +4042,7 @@ For instructions, please refer to this section of documentation and our
     public function UpdateGroup($GroupId, $Name)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = false;
@@ -4034,11 +4053,11 @@ For instructions, please refer to this section of documentation and our
         if ($oGroup && !$oGroup->IsAll) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
 
             if ($oGroup->Name !== $Name && Group::where(['TenantId' => $oGroup->TenantId, 'Name' => $Name])->count() > 0) {
-                throw new ApiException(ErrorCodes::GroupAlreadyExists);
+                throw new ApiException(ErrorCodes::GroupAlreadyExists, null, 'GroupAlreadyExists');
             } else {
                 $oGroup->Name = $Name;
                 $mResult = !!$oGroup->save();
@@ -4056,7 +4075,7 @@ For instructions, please refer to this section of documentation and our
     public function DeleteGroups($IdList)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
@@ -4076,7 +4095,7 @@ For instructions, please refer to this section of documentation and our
     public function DeleteGroup($GroupId)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = false;
@@ -4087,7 +4106,7 @@ For instructions, please refer to this section of documentation and our
         if ($oGroup && !$oGroup->IsAll) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
 
             $mResult = $oGroup->delete();
@@ -4102,7 +4121,7 @@ For instructions, please refer to this section of documentation and our
     public function GetGroupUsers($TenantId, $GroupId)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = [];
@@ -4113,7 +4132,7 @@ For instructions, please refer to this section of documentation and our
         if ($oGroup) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser && ($oUser->Role === UserRole::NormalUser || $oUser->Role === UserRole::TenantAdmin) && $oGroup->TenantId !== $oUser->IdTenant) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
 
             if ($oGroup->IsAll) {
@@ -4145,7 +4164,7 @@ For instructions, please refer to this section of documentation and our
     public function AddUsersToGroup($GroupId, $UserIds)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = false;
@@ -4156,7 +4175,7 @@ For instructions, please refer to this section of documentation and our
         if ($oGroup && !$oGroup->IsAll) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
 
             $oGroup->Users()->syncWithoutDetaching($UserIds);
@@ -4172,7 +4191,7 @@ For instructions, please refer to this section of documentation and our
     public function RemoveUsersFromGroup($GroupId, $UserIds)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = false;
@@ -4183,7 +4202,7 @@ For instructions, please refer to this section of documentation and our
         if ($oGroup) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser && $oUser->Role === UserRole::TenantAdmin && $oGroup->TenantId !== $oUser->IdTenant) {
-                throw new ApiException(Notifications::AccessDenied);
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
             }
 
             $oGroup->Users()->detach($UserIds);
@@ -4199,7 +4218,7 @@ For instructions, please refer to this section of documentation and our
     public function UpdateUserGroups($UserId, $GroupIds)
     {
         if (!$this->oModuleSettings->AllowGroups) {
-            throw new ApiException(Notifications::MethodAccessDenied);
+            throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
         $mResult = false;
@@ -4209,7 +4228,7 @@ For instructions, please refer to this section of documentation and our
         $oUser = User::find($UserId);
 
         if ($oAuthUser && $oAuthUser->Role === UserRole::TenantAdmin && $oAuthUser->IdTenant !== $oUser->IdTenant) {
-            throw new ApiException(Notifications::AccessDenied);
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
         if ($oUser) {
             $aGroupIds = Group::where('IsAll', false)->whereIn('Id', $GroupIds)->get(['Id'])->map(function ($oGroup) {
