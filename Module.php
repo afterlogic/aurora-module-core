@@ -641,7 +641,7 @@ For instructions, please refer to this section of documentation and our
                         Api::setTenantName($sTenantName);
 
                         $aParameters = [];
-                        if (isset($sParameters) && \is_string($sParameters)) {
+                        if (isset($sParameters) && \is_string($sParameters) && !empty($sParameters)) {
                             $aParameters = @\json_decode($sParameters, true);
 
                             if (json_last_error() !== JSON_ERROR_NONE) {
