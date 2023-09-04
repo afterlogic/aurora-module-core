@@ -2135,6 +2135,7 @@ For instructions, please refer to this section of documentation and our
         $sIp = \Aurora\System\Utils::getClientIp();
         $this->Decorator()->IsBlockedUser($Login, $sIp);
 
+        $Login = str_replace(" ", "", $Login);
         $aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
 
         if (!$aAuthData) {
