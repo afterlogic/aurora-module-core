@@ -70,7 +70,12 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     {
         $iResult = 0;
         try {
-            $iResult = Tenant::where('Name', 'like', '%'.$sSearch.'%')->count();
+            if (!empty($sSearch)) {
+                $query = Tenant::where('Name', 'like', '%' . $sSearch . '%');
+            } else {
+                $query = Tenant::query();
+            }
+            $iResult = $query->count();
         } catch(\Illuminate\Database\QueryException $oException) {
             $iResult = 0;
             \Aurora\Api::LogException($oException);
