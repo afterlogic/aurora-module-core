@@ -43,7 +43,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     {
         $oResult = collect();
         if (!empty($sSearch)) {
-            $query = Tenant::where('Name', 'like', '%'.$sSearch.'%');
+            $query = Tenant::where('Name', 'like', '%' . $sSearch . '%');
         } else {
             $query = Tenant::query();
         }

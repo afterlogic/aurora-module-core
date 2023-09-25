@@ -89,7 +89,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
         }
 
         if ($sSearchDesc !== '') {
-            $query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
+            $query = $query->where('PublicId', 'like', '%' . $sSearchDesc . '%');
         }
 
         try {
@@ -118,7 +118,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
             $query = isset($oFilters) ? $oFilters : User::query();
 
             if ($sSearchDesc !== '') {
-                $query = $query->where('PublicId', 'like', '%'.$sSearchDesc.'%');
+                $query = $query->where('PublicId', 'like', '%' . $sSearchDesc . '%');
             }
             if ($iOffset > 0) {
                 $query = $query->offset($iOffset);

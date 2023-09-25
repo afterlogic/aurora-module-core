@@ -41,7 +41,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     {
         $aResult = [];
         if (!empty($sSearchDesc)) {
-            $query = Channel::where('Login', 'like', '%'.$sSearchDesc.'%');
+            $query = Channel::where('Login', 'like', '%' . $sSearchDesc . '%');
         } else {
             $query = Channel::query();
         }
@@ -68,7 +68,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     {
         $iResult = 0;
         try {
-            $iResult = Channel::where('Login', 'like', '%'.$sSearchDesc.'%')->where('Description', 'like', '%'.$sSearchDesc.'%')->count();
+            $iResult = Channel::where('Login', 'like', '%' . $sSearchDesc . '%')->where('Description', 'like', '%' . $sSearchDesc . '%')->count();
         } catch (\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
         }
@@ -150,7 +150,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
         try {
             if ($oChannel->validate()) {
                 if (!$this->isExists($oChannel)) {
-                    $oChannel->Password = md5($oChannel->Login.mt_rand(1000, 9000).microtime(true));
+                    $oChannel->Password = md5($oChannel->Login . mt_rand(1000, 9000) . microtime(true));
 
                     if (!$oChannel->save()) {
                         throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelCreateFailed);

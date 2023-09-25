@@ -284,19 +284,19 @@ class Module extends \Aurora\System\Module\AbstractModule
         $aCompatibility['data.dir'] = $dataPath;
         $aCompatibility['data.dir.valid'] = (int) (@is_dir($aCompatibility['data.dir']) && @is_writable($aCompatibility['data.dir']));
 
-        $sTempPathName = '_must_be_deleted_'.md5(time());
+        $sTempPathName = '_must_be_deleted_' . md5(time());
 
         $aCompatibility['data.dir.create'] =
-            (int) @mkdir($aCompatibility['data.dir'].'/'.$sTempPathName);
+            (int) @mkdir($aCompatibility['data.dir'] . '/' . $sTempPathName);
         $aCompatibility['data.file.create'] =
-            (int) (bool) @fopen($aCompatibility['data.dir'].'/'.$sTempPathName.'/'.$sTempPathName.'.test', 'w+');
+            (int) (bool) @fopen($aCompatibility['data.dir'] . '/' . $sTempPathName . '/' . $sTempPathName . '.test', 'w+');
         $aCompatibility['data.file.delete'] =
-            (int) (bool) @unlink($aCompatibility['data.dir'].'/'.$sTempPathName.'/'.$sTempPathName.'.test');
+            (int) (bool) @unlink($aCompatibility['data.dir'] . '/' . $sTempPathName . '/' . $sTempPathName . '.test');
         $aCompatibility['data.dir.delete'] =
-            (int) @rmdir($aCompatibility['data.dir'].'/'.$sTempPathName);
+            (int) @rmdir($aCompatibility['data.dir'] . '/' . $sTempPathName);
 
 
-        $oSettings =& Api::GetSettings();
+        $oSettings = & Api::GetSettings();
 
         $aCompatibility['settings.file'] = $oSettings ? $oSettings->GetPath() : '';
 
@@ -310,7 +310,7 @@ class Module extends \Aurora\System\Module\AbstractModule
                 'Result' => $aCompatibility['php.version.valid'],
                 'Value' => $aCompatibility['php.version.valid']
                 ? 'OK'
-                : [$aCompatibility['php.version'].' detected, 7.2.5 or above required.',
+                : [$aCompatibility['php.version'] . ' detected, 7.2.5 or above required.',
 'You need to upgrade PHP engine installed on your server.
 If it\'s a dedicated or your local server, you can download the latest version of PHP from its
 <a href="http://php.net/downloads.php" target="_blank">official site</a> and install it yourself.
@@ -461,7 +461,7 @@ For instructions, please refer to this section of documentation and our
                 'Result' => $aCompatibility['settings.file.exist'],
                 'Value' => ($aCompatibility['settings.file.exist'])
                 ? 'Found'
-                : ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
+                : ['Not Found, can\'t find "' . $aCompatibility['settings.file'] . '" file.', '
 Make sure you completely copied the data directory with all its contents from installation package.
 By default, the data directory is webmail subdirectory, and if it\'s not the case make sure its location matches one specified in inc_settings_path.php file.']
             ],
@@ -470,7 +470,7 @@ By default, the data directory is webmail subdirectory, and if it\'s not the cas
                 'Result' => $aCompatibility['settings.file.read'] && $aCompatibility['settings.file.write'],
                 'Value' => ($aCompatibility['settings.file.read'] && $aCompatibility['settings.file.write'])
                 ? 'OK / OK'
-                : ['Not Found, can\'t find "'.$aCompatibility['settings.file'].'" file.', '
+                : ['Not Found, can\'t find "' . $aCompatibility['settings.file'] . '" file.', '
 You should grant read/write permission over settings file to your web server user.
 For instructions, please refer to this section of documentation and our
 <a href="https://afterlogic.com/docs/webmail-pro-8/troubleshooting/troubleshooting-issues-with-data-directory" target="_blank">FAQ</a>.']
@@ -502,8 +502,8 @@ For instructions, please refer to this section of documentation and our
             if ($rDirH) {
                 while (($sFile = @readdir($rDirH)) !== false) {
                     if ('.' !== $sFile && '..' !== $sFile) {
-                        if (@is_dir($sTempPath.'/'.$sFile)) {
-                            $this->removeDirByTime($sTempPath.'/'.$sFile, $iTime2Kill, $iNow);
+                        if (@is_dir($sTempPath . '/' . $sFile)) {
+                            $this->removeDirByTime($sTempPath . '/' . $sFile, $iTime2Kill, $iNow);
                         } else {
                             $iFileCount++;
                         }
@@ -539,8 +539,8 @@ For instructions, please refer to this section of documentation and our
             if ($rDirH) {
                 while (($sFile = @readdir($rDirH)) !== false) {
                     if ($sFile !== '.' && $sFile !== '..') {
-                        if ($iNow - filemtime($sTempPath.'/'.$sFile) > $iTime2Kill) {
-                            @unlink($sTempPath.'/'.$sFile);
+                        if ($iNow - filemtime($sTempPath . '/' . $sFile) > $iTime2Kill) {
+                            @unlink($sTempPath . '/' . $sFile);
                         } else {
                             $bResult = false;
                         }
@@ -554,7 +554,7 @@ For instructions, please refer to this section of documentation and our
 
     protected function redirectToHttps($sEntryName, $mResult)
     {
-        $oSettings =& \Aurora\Api::GetSettings();
+        $oSettings = &\Aurora\Api::GetSettings();
         if ($oSettings) {
             $bRedirectToHttps = $oSettings->RedirectToHttps;
 
@@ -749,7 +749,7 @@ For instructions, please refer to this section of documentation and our
         try {
             $sHash = $this->oHttp->GetRequest('hash');
             if (!empty($sHash)) {
-                $sData = Api::Cacher()->get('SSO:'.$sHash, true);
+                $sData = Api::Cacher()->get('SSO:' . $sHash, true);
                 $aData = Api::DecodeKeyValues($sData);
 
                 if (isset($aData['Password'], $aData['Email'])) {
@@ -883,7 +883,7 @@ For instructions, please refer to this section of documentation and our
      */
     protected function ClearTempFiles()
     {
-        $sTempPath =Api::DataPath().'/temp';
+        $sTempPath = Api::DataPath() . '/temp';
         if (@is_dir($sTempPath)) {
             $iNow = time();
 
@@ -892,13 +892,13 @@ For instructions, please refer to this section of documentation and our
             $sDataFile = $this->oModuleSettings->CronTimeFile;
 
             $iFiletTime = -1;
-            if (@file_exists(Api::DataPath().'/'.$sDataFile)) {
-                $iFiletTime = (int) @file_get_contents(Api::DataPath().'/'.$sDataFile);
+            if (@file_exists(Api::DataPath() . '/' . $sDataFile)) {
+                $iFiletTime = (int) @file_get_contents(Api::DataPath() . '/' . $sDataFile);
             }
 
             if ($iFiletTime === -1 || $iNow - $iFiletTime > $iTime2Run) {
                 $this->removeDirByTime($sTempPath, $iTime2Kill, $iNow);
-                @file_put_contents(Api::DataPath().'/'.$sDataFile, $iNow);
+                @file_put_contents(Api::DataPath() . '/' . $sDataFile, $iNow);
             }
         }
 
@@ -1372,7 +1372,7 @@ For instructions, please refer to this section of documentation and our
             $oApiIntegrator->clearLastErrorCode();
         }
 
-        $oSettings =& Api::GetSettings();
+        $oSettings = & Api::GetSettings();
 
         $aSettings = array(
             'AutodetectLanguage' => $this->oModuleSettings->AutodetectLanguage,
@@ -1557,7 +1557,7 @@ For instructions, please refer to this section of documentation and our
                 }
                 $this->saveModuleConfig();
             }
-            $oSettings =&Api::GetSettings();
+            $oSettings = &Api::GetSettings();
             if ($DbLogin !== null) {
                 $oSettings->DBLogin = $DbLogin;
             }
@@ -1625,7 +1625,7 @@ For instructions, please refer to this section of documentation and our
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $oSettings =&Api::GetSettings();
+        $oSettings = &Api::GetSettings();
 
         if ($EnableLogging !== null) {
             $oSettings->EnableLogging = $EnableLogging;
@@ -2877,7 +2877,7 @@ For instructions, please refer to this section of documentation and our
         return false;
     }
 
-        /**
+    /**
      * @api {post} ?/Api/ DeleteTenants
      * @apiName DeleteTenants
      * @apiGroup Core
@@ -3005,7 +3005,7 @@ For instructions, please refer to this section of documentation and our
 
             if ($oTenant) {
                 // Delete tenant config files.
-                $sTenantSpacePath = Api::GetModuleManager()->GetModulesSettingsPath().'tenants/'.$oTenant->Name;
+                $sTenantSpacePath = Api::GetModuleManager()->GetModulesSettingsPath() . 'tenants/' . $oTenant->Name;
                 if (@is_dir($sTenantSpacePath)) {
                     $this->deleteTree($sTenantSpacePath);
                 }
@@ -3703,7 +3703,7 @@ For instructions, please refer to this section of documentation and our
         if ($PublicId !== '') {
             $sLogFilePrefix = $PublicId . '-';
         }
-        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
 
         if (file_exists($sFileName)) {
             $mResult = fopen($sFileName, "r");
@@ -3734,7 +3734,7 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : '';
-        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
 
         $logData = '';
 
@@ -3757,7 +3757,7 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : '';
-        $sFileName = Api::GetLogFileDir().Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
 
         return Api::ClearLog($sFileName);
     }
@@ -3777,7 +3777,7 @@ For instructions, please refer to this section of documentation and our
 
         $sUUID = Api::getUserUUIDById($UserId);
         try {
-            $sTempName = md5($sUUID.$Content.$FileName);
+            $sTempName = md5($sUUID . $Content . $FileName);
             $oApiFileCache = new \Aurora\System\Managers\Filecache();
 
             if (!$oApiFileCache->isFileExists($sUUID, $sTempName)) {
@@ -4001,7 +4001,7 @@ For instructions, please refer to this section of documentation and our
                     ->where('Storage', StorageType::Team)->get()->map(
                         function (Contact $oContact) {
                             if (!empty($oContact->FullName)) {
-                                return '"' . $oContact->FullName .  '"' . '<' . $oContact->ViewEmail . '>';
+                                return '"' . $oContact->FullName . '"' . '<' . $oContact->ViewEmail . '>';
                             } else {
                                 return $oContact->ViewEmail;
                             }
@@ -4011,7 +4011,7 @@ For instructions, please refer to this section of documentation and our
                 $aEmails = $oGroup->Users->map(function ($oUser) {
                     $oContact = Contact::where('IdUser', $oUser->Id)->where('Storage', 'team')->first();
                     if (!empty($oContact->FullName)) {
-                        return '"' . $oContact->FullName .  '"' . '<' . $oUser->PublicId . '>';
+                        return '"' . $oContact->FullName . '"' . '<' . $oUser->PublicId . '>';
                     } else {
                         return $oUser->PublicId;
                     }
