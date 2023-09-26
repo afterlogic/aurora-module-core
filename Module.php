@@ -296,7 +296,7 @@ class Module extends \Aurora\System\Module\AbstractModule
             (int) @rmdir($aCompatibility['data.dir'] . '/' . $sTempPathName);
 
 
-        $oSettings = & Api::GetSettings();
+        $oSettings = &Api::GetSettings();
 
         $aCompatibility['settings.file'] = $oSettings ? $oSettings->GetPath() : '';
 
@@ -1372,7 +1372,7 @@ For instructions, please refer to this section of documentation and our
             $oApiIntegrator->clearLastErrorCode();
         }
 
-        $oSettings = & Api::GetSettings();
+        $oSettings = &Api::GetSettings();
 
         $aSettings = array(
             'AutodetectLanguage' => $this->oModuleSettings->AutodetectLanguage,
