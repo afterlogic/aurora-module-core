@@ -2579,14 +2579,14 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        $bTenant = $oAuthenticatedUser->Role === UserRole::TenantAdmin;
+        $bSuperadmin = $oAuthenticatedUser->Role === UserRole::SuperAdmin;
 
         $aTenantsFromDb = $this->getTenantsManager()->getTenantList($Offset, $Limit, $Search);
         $oSettings = $this->oModuleSettings;
         $aTenants = [];
 
         foreach ($aTenantsFromDb as $oTenant) {
-            if (!$bTenant || $oTenant->Id === $oAuthenticatedUser->IdTenant) {
+            if ($bSuperadmin || $oTenant->Id === $oAuthenticatedUser->IdTenant) {
                 $aTenants[] = [
                     'Id' => $oTenant->Id,
                     'Name' => $oTenant->Name,
@@ -2595,7 +2595,7 @@ For instructions, please refer to this section of documentation and our
             }
         }
 
-        $iTenantsCount = $Limit > 0 ? $this->getTenantsManager()->getTenantsCount($Search) : count($aTenantsFromDb);
+        $iTenantsCount = $Limit > 0 ? $this->getTenantsManager()->getTenantsCount($Search) : count($aTenants);
         return array(
             'Items' => $aTenants,
             'Count' => $iTenantsCount,
