@@ -10,6 +10,7 @@ namespace Aurora\Modules\Core;
 use Aurora\Api;
 use Aurora\Modules\Contacts\Enums\StorageType;
 use Aurora\Modules\Contacts\Models\Contact;
+use Aurora\Modules\Contacts\Module as ContactsModule;
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
@@ -4137,14 +4138,16 @@ For instructions, please refer to this section of documentation and our
             }
 
             if ($oGroup->IsAll) {
-                $mResult = Contact::where('IdTenant', $TenantId)
-                    ->where('Storage', StorageType::Team)->get()->map(function ($oContact) {
+                $teamContacts = ContactsModule::Decorator()->GetContacts($oUser->Id, StorageType::Team, 0, 0);
+                if (isset($teamContacts['List'])) {
+                    $mResult = array_map(function ($item) {
                         return [
-                            'UserId' => $oContact->IdUser,
-                            'Name' => $oContact->FullName,
-                            'PublicId' => $oContact->ViewEmail
+                            'UserId' => $item['UserId'],
+                            'Name' => $item['FullName'],
+                            'PublicId' => $item['ViewEmail']
                         ];
-                    })->toArray();
+                    }, $teamContacts['List']);
+                }
             } else {
                 $mResult = $oGroup->Users()->get()->map(function ($oUser) {
                     return [
