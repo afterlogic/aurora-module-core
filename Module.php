@@ -1838,6 +1838,11 @@ For instructions, please refer to this section of documentation and our
         if (!function_exists('mysqli_fetch_all')) {
             throw new ApiException(0, null, 'Please make sure your PHP/MySQL environment meets the minimal system requirements.');
         }
+
+        if (empty($DbName) || empty($DbHost) || empty($DbLogin)) {
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+        }
+
         $oPdo = null;
         $oSettings = &Api::GetSettings();
         if ($oSettings) {
