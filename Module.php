@@ -3999,30 +3999,20 @@ For instructions, please refer to this section of documentation and our
             });
         }
 
-        $this->GetAllGroup($TenantId);
+        $aGroups = $query->get()->map(function ($oGroup) use ($oUser) {
 
-        $aGroups = $query->get()->map(function ($oGroup) {
-            if ($oGroup->IsAll) {
-                $aEmails = Contact::where('IdTenant', $oGroup->TenantId)
-                    ->where('Storage', StorageType::Team)->get()->map(
-                        function (Contact $oContact) {
-                            if (!empty($oContact->FullName)) {
-                                return '"' . $oContact->FullName . '"' . '<' . $oContact->ViewEmail . '>';
-                            } else {
-                                return $oContact->ViewEmail;
-                            }
-                        }
-                    )->toArray();
-            } else {
-                $aEmails = $oGroup->Users->map(function ($oUser) {
-                    $oContact = Contact::where('IdUser', $oUser->Id)->where('Storage', 'team')->first();
-                    if (!empty($oContact->FullName)) {
-                        return '"' . $oContact->FullName . '"' . '<' . $oUser->PublicId . '>';
-                    } else {
-                        return $oUser->PublicId;
-                    }
-                })->toArray();
+            $aArgs = [
+                'User' => $oUser,
+                'Group' => $oGroup
+            ];
+            $mResult = false;
+            $this->broadcastEvent('GetGroupContactsEmails', $aArgs, $mResult);
+
+            $aEmails = [];
+            if (is_array($mResult)) {
+                $aEmails = $mResult;
             }
+
             return [
                 'Id' => $oGroup->Id,
                 'Name' => $oGroup->getName(),
