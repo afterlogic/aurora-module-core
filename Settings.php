@@ -163,13 +163,13 @@ class Settings extends \Aurora\System\Module\Settings
                 'Setting to true enables feature of blocking user after a number of failed login attempts'
             ),
             'LoginBlockAvailableTriesCount' => new SettingsProperty(
-                3,
+                10,
                 'int',
                 null,
                 'Number of failed login attempts which will result in blocking user'
             ),
             'LoginBlockDurationMinutes' => new SettingsProperty(
-                30,
+                3,
                 'int',
                 null,
                 'Number of minutes user will be blocked for upon multiple failed login attempts'
