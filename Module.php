@@ -4006,7 +4006,11 @@ For instructions, please refer to this section of documentation and our
                 'Group' => $oGroup
             ];
             $mResult = false;
-            $this->broadcastEvent('GetGroupContactsEmails', $aArgs, $mResult);
+
+            try {
+                $this->broadcastEvent('GetGroupContactsEmails', $aArgs, $mResult);
+            } catch (\Exception $oException) {
+            }
 
             $aEmails = [];
             if (is_array($mResult)) {
