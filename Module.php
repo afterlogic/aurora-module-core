@@ -3698,7 +3698,7 @@ For instructions, please refer to this section of documentation and our
         $aData['EventLogFileName'] = $sEventFileName;
         $aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
 
-        $sErrorFileName = Api::GetLogFileName('error-');
+        $sErrorFileName = Api::GetLogFileName(Logger::$sExceptionLogPrefix);
         $sErrorFilePath = Api::GetLogFileDir() . $sErrorFileName;
         $aData['ErrorLogFileName'] = $sErrorFileName;
         $aData['ErrorLogSizeBytes'] = file_exists($sErrorFilePath) ? filesize($sErrorFilePath) : 0;
@@ -3706,11 +3706,10 @@ For instructions, please refer to this section of documentation and our
         return $aData;
     }
 
-    public function GetLogFile($EventsLog = false, $ErrorsLog = false, $PublicId = '')
+    public function GetLogFile($sLogFilePrefix = '', $PublicId = '')
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : ($ErrorsLog ? 'error-' : '');
         if ($PublicId !== '') {
             $sLogFilePrefix = $PublicId . '-';
         }
@@ -3740,11 +3739,10 @@ For instructions, please refer to this section of documentation and our
     /**
      *
      */
-    public function GetLog($EventsLog, $ErrorsLog = false, $PartSize = 10240)
+    public function GetLog($sLogFilePrefix = '', $PartSize = 10240)
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : ($ErrorsLog ? 'error-' : '');
         $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
 
         $logData = '';
@@ -3763,11 +3761,10 @@ For instructions, please refer to this section of documentation and our
      * @param bool $EventsLog
      * @return bool
      */
-    public function ClearLog($EventsLog, $ErrorsLog = false)
+    public function ClearLog($sLogFilePrefix = '')
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sLogFilePrefix = $EventsLog ? Logger::$sEventLogPrefix : ($ErrorsLog ? 'error-' : '');
         $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
 
         return Api::ClearLog($sFileName);
