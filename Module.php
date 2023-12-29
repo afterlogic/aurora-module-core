@@ -3698,7 +3698,7 @@ For instructions, please refer to this section of documentation and our
         $aData['EventLogFileName'] = $sEventFileName;
         $aData['EventLogSizeBytes'] = file_exists($sEventFilePath) ? filesize($sEventFilePath) : 0;
 
-        $sErrorFileName = Api::GetLogFileName(Logger::$sExceptionLogPrefix);
+        $sErrorFileName = Api::GetLogFileName(Logger::$sErrorLogPrefix);
         $sErrorFilePath = Api::GetLogFileDir() . $sErrorFileName;
         $aData['ErrorLogFileName'] = $sErrorFileName;
         $aData['ErrorLogSizeBytes'] = file_exists($sErrorFilePath) ? filesize($sErrorFilePath) : 0;
@@ -3706,14 +3706,14 @@ For instructions, please refer to this section of documentation and our
         return $aData;
     }
 
-    public function GetLogFile($sLogFilePrefix = '', $PublicId = '')
+    public function GetLogFile($FilePrefix = '', $PublicId = '')
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         if ($PublicId !== '') {
-            $sLogFilePrefix = $PublicId . '-';
+            $FilePrefix = $PublicId . '-';
         }
-        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($FilePrefix);
 
         if (file_exists($sFileName)) {
             $mResult = fopen($sFileName, "r");
@@ -3739,11 +3739,11 @@ For instructions, please refer to this section of documentation and our
     /**
      *
      */
-    public function GetLog($sLogFilePrefix = '', $PartSize = 10240)
+    public function GetLog($FilePrefix = '', $PartSize = 10240)
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($FilePrefix);
 
         $logData = '';
 
@@ -3761,11 +3761,11 @@ For instructions, please refer to this section of documentation and our
      * @param bool $EventsLog
      * @return bool
      */
-    public function ClearLog($sLogFilePrefix = '')
+    public function ClearLog($FilePrefix = '')
     {
         Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($sLogFilePrefix);
+        $sFileName = Api::GetLogFileDir() . Api::GetLogFileName($FilePrefix);
 
         return Api::ClearLog($sFileName);
     }
