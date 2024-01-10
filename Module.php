@@ -9,7 +9,6 @@ namespace Aurora\Modules\Core;
 
 use Aurora\Api;
 use Aurora\Modules\Contacts\Enums\StorageType;
-use Aurora\Modules\Contacts\Models\Contact;
 use Aurora\Modules\Contacts\Module as ContactsModule;
 use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
