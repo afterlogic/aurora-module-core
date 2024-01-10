@@ -3757,7 +3757,7 @@ For instructions, please refer to this section of documentation and our
 
     /**
      *
-     * @param bool $EventsLog
+     * @param string $FilePrefix
      * @return bool
      */
     public function ClearLog($FilePrefix = '')
