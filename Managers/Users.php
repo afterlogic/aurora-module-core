@@ -200,17 +200,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function isExists(\Aurora\Modules\Core\Classes\User $oUser)
 	{
-		$bResult = false;
-
-		$oResult = $this->oEavManager->getEntity($oUser->EntityId, \Aurora\Modules\Core\Classes\User::class);
-		
-		if (!empty($oResult) && isset($oResult->IdTenant) && $oResult->IdTenant === $oUser->IdTenant)
-		{
-			$bResult = true;
-		}
-
-		return $bResult;
-	}
+		return !!self::getUser($oUser->EntityId);
+}
 	
 	/**
 	 * @param Aurora\Modules\Core\Classes\Channel $oChannel
