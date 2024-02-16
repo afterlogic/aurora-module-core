@@ -36,6 +36,8 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	static $oDefaultTenant = null;
 
+	public static $tenantsCache = [];
+
 	/**
 	 * Creates a new instance of the object.
 	 *
@@ -143,6 +145,10 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getTenantById($mTenantId)
 	{
+		if (isset(self::$tenantsCache[$mTenantId])) {
+			return self::$tenantsCache[$mTenantId];
+		}
+
 		$oTenant = null;
 		try
 		{
@@ -151,6 +157,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			if (!empty($oResult))
 			{
 				$oTenant = $oResult;
+				self::$tenantsCache[$oTenant->EntityId] = $oTenant;
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -174,6 +181,13 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 		{
 			if (!empty($sTenantName))
 			{
+				$tenantsCache = array_filter(self::$tenantsCache, function($tenant) use ($sTenantName) {
+					return $tenant->Name === $sTenantName;
+				});
+				if (count($tenantsCache) > 0) {
+					return current($tenantsCache);
+				}
+
 				$oFilterBy = array('Name' => $sTenantName);
 //				if (null !== $sTenantPassword)
 //				{
@@ -197,6 +211,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 				if (isset($aResultTenants[0]) && $aResultTenants[0] instanceOf \Aurora\Modules\Core\Classes\Tenant)
 				{
 					$oTenant = $aResultTenants[0];
+					self::$tenantsCache[$oTenant->EntityId] = $oTenant;
 				}
 			}
 		}
@@ -240,8 +255,8 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function isTenantExists(\Aurora\Modules\Core\Classes\Tenant $oTenant)
 	{
-		//TODO
-//		$bResult = $oTenant->IsDefault;
+		// TODO
+		// $bResult = $oTenant->IsDefault;
 
 		$bResult = false;
 
@@ -354,6 +369,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			if ($oTenant->validate() && $oTenant->EntityId !== 0)
 			{
 				$bResult = $this->oEavManager->saveEntity($oTenant);
+				if ($bResult) {
+					self::$tenantsCache[$oTenant->EntityId] = $oTenant;
+				}
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -454,6 +472,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 			if ($oTenant)
 			{
 				$bResult = $this->oEavManager->deleteEntity($oTenant->EntityId, \Aurora\Modules\Core\Classes\Tenant::class);
+				if ($bResult && isset(self::$tenantsCache[$oTenant->EntityId])) {
+					unset(self::$tenantsCache[$oTenant->EntityId]);
+				}
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
