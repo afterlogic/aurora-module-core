@@ -7,6 +7,8 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use Aurora\System\Api;
+
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
  * @license https://afterlogic.com/products/common-licensing Afterlogic Software License
@@ -256,6 +258,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
 				}
+				Api::$usersCache[$oUser->EntityId] = $oUser;
 			}
 
 			$bResult = true;
