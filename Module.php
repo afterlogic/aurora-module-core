@@ -1893,16 +1893,21 @@ For instructions, please refer to this section of documentation and our
     {
         Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
-        $aArgs = array(
-            'AuthToken' => $AuthToken
-        );
-        $aResult = [];
+        $aUserInfo = Api::getAuthenticatedUserInfo($AuthToken);
 
-        $this->broadcastEvent(
-            'GetAccounts',
-            $aArgs,
-            $aResult
-        );
+        $aResult = [];
+        if (isset($aUserInfo['userId'])) {
+            $aArgs = array(
+                'UserId' => $aUserInfo['userId']
+            );
+
+            $this->broadcastEvent(
+                'GetAccounts',
+                $aArgs,
+                $aResult
+            );
+        }
+
         if (!empty($Type)) {
             $aTempResult = [];
             foreach ($aResult as $aItem) {
@@ -1912,6 +1917,51 @@ For instructions, please refer to this section of documentation and our
             }
             $aResult = $aTempResult;
         }
+
+        return $aResult;
+    }
+
+    /**
+     * Obtains all accounts from all modules by user.
+     *
+     * @param int $UserId
+     * @param string $Type
+     * @return array
+     */
+    public function GetUserAccounts($UserId, $Type = '')
+    {
+        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+        $aResult = [];
+
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+
+        // reset user id to authenticated user id if authenticated user exist
+        // if user is not authenticated then checkUserRoleIsAtLeast will throw exception
+        if ($oAuthenticatedUser) {
+            $UserId = $oAuthenticatedUser->Id;
+        }
+
+        if ($UserId) {
+            $aArgs = array(
+                'UserId' => $UserId
+            );
+
+            $this->broadcastEvent(
+                'GetAccounts',
+                $aArgs,
+                $aResult
+            );
+            if (!empty($Type)) {
+                $aTempResult = [];
+                foreach ($aResult as $aItem) {
+                    if ($aItem['Type'] === $Type) {
+                        $aTempResult[] = $aItem;
+                    }
+                }
+                $aResult = $aTempResult;
+            }
+        }
+
         return $aResult;
     }
 
