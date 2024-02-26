@@ -11,7 +11,7 @@ use Aurora\Modules\Core\Module as CoreModule;
 use Aurora\System\Exceptions\Errs;
 use Aurora\System\Exceptions\ErrorCodes;
 use Aurora\Modules\Core\Models\Tenant;
-use Aurora\Modules\Core\Models\Сhannel;
+use Aurora\Modules\Core\Models\Channel;
 use Aurora\System\Enums\SortOrder;
 
 /**
@@ -195,7 +195,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
 
                         $oChannelsManager = CoreModule::getInstance()->getChannelsManager();
                         if ($oChannelsManager) {
-                            /* @var $oChannel Сhannel */
+                            /* @var $oChannel Channel */
                             $oChannel = $oChannelsManager->getChannelById($oTenant->IdChannel);
                             if (!$oChannel) {
                                 throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::ChannelDoesNotExist);
