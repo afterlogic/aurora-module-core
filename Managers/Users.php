@@ -22,6 +22,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 * @var \Aurora\System\Managers\Eav
 	 */
 	public $oEavManager = null;
+
+	public static $usersCache = [];
 	
 	/**
 	 * 
@@ -43,8 +45,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
 	 */
 	public function getUser($mUserId)
 	{
-		if (isset(Api::$usersCache[$mUserId])) {
-			return Api::$usersCache[$mUserId];
+		if (isset(self::$usersCache[$mUserId])) {
+			return self::$usersCache[$mUserId];
 		}
 
 		$oUser = false;
@@ -52,7 +54,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		{
 			$oUser = $this->oEavManager->getEntity($mUserId, \Aurora\Modules\Core\Classes\User::class);
 			if ($oUser) {
-				Api::$usersCache[$mUserId] = $oUser;
+				self::$usersCache[$mUserId] = $oUser;
 			}
 		}
 		catch (\Aurora\System\Exceptions\BaseException $oException)
@@ -60,6 +62,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			$oUser = false;
 			$this->setLastException($oException);
 		}
+		
 		return $oUser;
 	}
 
@@ -69,7 +72,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 		
 		if ($sUserPublicId)
 		{
-			$usersCache = array_filter(Api::$usersCache, function($user) use ($UserPublicId) {
+			$usersCache = array_filter(self::$usersCache, function($user) use ($UserPublicId) {
 				return $user->PublicId === $UserPublicId;
 			});
 			if (count($usersCache) > 0) {
@@ -80,7 +83,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			if (count($aUsers) > 0)
 			{
 				$user = $aUsers[0];
-				Api::$usersCache[$user->EntityId] = $user;
+				self::$usersCache[$user->EntityId] = $user;
 				return $user;
 			}
 		}
@@ -265,7 +268,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
 				{
 					throw new \Aurora\System\Exceptions\ManagerException(Errs::UsersManager_UserCreateFailed);
 				}
-				Api::$usersCache[$oUser->EntityId] = $oUser;
+
+				self::$usersCache[$oUser->EntityId] = $oUser;
 			}
 
 			$bResult = true;
@@ -305,8 +309,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
 			$this->setLastException($oException);
 		}
 
-		if (isset(Api::$usersCache[$oUser->EntityId])) {
-			unset(Api::$usersCache[$oUser->EntityId]);
+		if (isset(self::$usersCache[$oUser->EntityId])) {
+			unset(self::$usersCache[$oUser->EntityId]);
 		}
 
 		return $bResult;
