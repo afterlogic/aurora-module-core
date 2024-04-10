@@ -154,6 +154,7 @@ class Module extends \Aurora\System\Module\AbstractModule
         );
 
         $this->denyMethodsCallByWebApi([
+            'Authenticate',
             'UpdateUserObject',
             'GetUserByUUID',
             'GetUserByPublicId',
