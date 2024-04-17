@@ -3541,16 +3541,17 @@ For instructions, please refer to this section of documentation and our
      * @param int $Role New user role.
      * @param bool $WriteSeparateLog New value of indicator if user's logs should be in a separate file.
      * @param array $GroupIds List of system group ids user belogs to.
+     * @param string $Note User text note.
      * @return bool
      * @throws ApiException
      */
-    public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null)
+    public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null, $Note = null)
     {
         $PublicId = \trim($PublicId);
 
         if (!empty($TenantId) || !empty($PublicId)) {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-        } elseif ($Role !== null || $WriteSeparateLog !== null || $GroupIds !== null) {
+        } elseif ($Role !== null || $WriteSeparateLog !== null || $GroupIds !== null || $Note !== null) {
             Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         } elseif ($UserId === Api::getAuthenticatedUserId()) {
             Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
@@ -3575,6 +3576,9 @@ For instructions, please refer to this section of documentation and our
                 }
                 if ($WriteSeparateLog !== null) {
                     $oUser->WriteSeparateLog = $WriteSeparateLog;
+                }
+                if ($Note !== null) {
+                    $oUser->Note = (string) $Note;
                 }
 
                 $mResult = $this->getUsersManager()->updateUser($oUser);

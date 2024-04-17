@@ -47,6 +47,7 @@ use Aurora\Modules\Core\Models\Tenant;
  * @property string $DefaultTimeZone    Default time zone set for this user
  * @property int    $TokensValidFromTimestamp   Timestamp the token is valid since
  * @property array  $Properties     Custom properties for use by other modules
+ * @property string $Note           User text note
  * @property \Illuminate\Support\Carbon|null $CreatedAt
  * @property \Illuminate\Support\Carbon|null $UpdatedAt
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \Aurora\Modules\Core\Models\Group> $Groups
@@ -150,7 +151,8 @@ class User extends Model
         'WriteSeparateLog',
         'DefaultTimeZone',
         'TokensValidFromTimestamp',
-        'Properties'
+        'Properties',
+        'Note',
     ];
 
     /**
