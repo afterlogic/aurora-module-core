@@ -3540,16 +3540,22 @@ For instructions, please refer to this section of documentation and our
      * @param int $TenantId Identifier of tenant that will contain the user.
      * @param int $Role New user role.
      * @param bool $WriteSeparateLog New value of indicator if user's logs should be in a separate file.
+     * @param array $GroupIds List of system group ids user belogs to.
      * @return bool
      * @throws ApiException
      */
     public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null)
     {
         $PublicId = \trim($PublicId);
-        if (!empty($PublicId) && empty($TenantId) && $UserId === Api::getAuthenticatedUserId()) {
+
+        if (!empty($TenantId) || !empty($PublicId)) {
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+        } elseif ($Role !== null || $WriteSeparateLog !== null || $GroupIds !== null) {
+            Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        } elseif ($UserId === Api::getAuthenticatedUserId()) {
             Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
         } else {
-            Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
         if ($UserId > 0) {
