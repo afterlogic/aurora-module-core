@@ -3195,7 +3195,8 @@ For instructions, please refer to this section of documentation and our
                 'Name' => $oUser->Name,
                 'PublicId' => $oUser->PublicId,
                 'Role' => $oUser->Role,
-                'Groups' => $aGroups
+                'IsDisabled' => $oUser->IsDisabled,
+                'Groups' => $aGroups,
             ];
         }
 
@@ -3539,19 +3540,20 @@ For instructions, please refer to this section of documentation and our
      * @param string $PublicId New user name.
      * @param int $TenantId Identifier of tenant that will contain the user.
      * @param int $Role New user role.
+     * @param bool|null $Disabled Disbles the user
      * @param bool $WriteSeparateLog New value of indicator if user's logs should be in a separate file.
      * @param array $GroupIds List of system group ids user belogs to.
      * @param string $Note User text note.
      * @return bool
      * @throws ApiException
      */
-    public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $WriteSeparateLog = null, $GroupIds = null, $Note = null)
+    public function UpdateUser($UserId, $PublicId = '', $TenantId = 0, $Role = -1, $Disabled = null, $WriteSeparateLog = null, $GroupIds = null, $Note = null)
     {
         $PublicId = \trim($PublicId);
 
         if (!empty($TenantId) || !empty($PublicId)) {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-        } elseif ($Role !== null || $WriteSeparateLog !== null || $GroupIds !== null || $Note !== null) {
+        } elseif ($Role !== -1 || $Disabled !== null || $WriteSeparateLog !== null || $GroupIds !== null || $Note !== null) {
             Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         } elseif ($UserId === Api::getAuthenticatedUserId()) {
             Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
@@ -3573,6 +3575,9 @@ For instructions, please refer to this section of documentation and our
                 }
                 if (UserRole::validateValue($Role)) {
                     $oUser->Role = $Role;
+                }
+                if ($Disabled !== null) {
+                    $oUser->IsDisabled = (bool) $Disabled;
                 }
                 if ($WriteSeparateLog !== null) {
                     $oUser->WriteSeparateLog = $WriteSeparateLog;
