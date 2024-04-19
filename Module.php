@@ -2096,28 +2096,31 @@ For instructions, please refer to this section of documentation and our
 
                 //this will store user data in static variable of Api class for later usage
                 $oUser = Api::getAuthenticatedUser($sAuthToken, true);
-
-                if ($oUser && $oUser->Role !== UserRole::SuperAdmin) {
-                    // If User is super admin don't try to detect tenant. It will try to connect to DB.
-                    // Super admin should be able to log in without connecting to DB.
-                    $oTenant = Api::getTenantByWebDomain();
-                    if ($oTenant && $oUser->IdTenant !== $oTenant->Id) {
-                        throw new ApiException(Notifications::AuthError, null, 'AuthError');
+                if ($oUser) {
+                    if ($oUser->Role !== UserRole::SuperAdmin) {
+                        // If User is super admin don't try to detect tenant. It will try to connect to DB.
+                        // Super admin should be able to log in without connecting to DB.
+                        $oTenant = Api::getTenantByWebDomain();
+                        if ($oTenant && $oUser->IdTenant !== $oTenant->Id) {
+                            throw new ApiException(Notifications::AuthError, null, 'AuthError');
+                        }
                     }
+
+                    if ($Language !== '' && $oUser->Language !== $Language) {
+                        $oUser->Language = $Language;
+                    }
+
+                    $oUser->LastLogin = date('Y-m-d H:i:s');
+                    $oUser->LoginsCount =  $oUser->LoginsCount + 1;
+
+                    $this->getUsersManager()->updateUser($oUser);
+                    Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
+                    $mResult = [
+                        'AuthToken' => $sAuthToken
+                    ];
+                } else {
+                    throw new ApiException(Notifications::AuthError, null, 'AuthError');
                 }
-
-                if ($Language !== '' && $oUser && $oUser->Language !== $Language) {
-                    $oUser->Language = $Language;
-                }
-
-                $oUser->LastLogin = date('Y-m-d H:i:s');
-                $oUser->LoginsCount =  $oUser->LoginsCount + 1;
-
-                $this->getUsersManager()->updateUser($oUser);
-                Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
-                $mResult = [
-                    'AuthToken' => $sAuthToken
-                ];
             }
         } else {
             Api::LogEvent('login-failed', self::GetName());
