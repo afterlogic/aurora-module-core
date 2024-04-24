@@ -13,7 +13,7 @@ class AlterUsersTableAddNoteColumn extends Migration
     public function up()
     {
         $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::connection()->statement("ALTER TABLE {$prefix}core_users ADD COLUMN `Note` TEXT NOT NULL AFTER `LoginsCount`");
+        Capsule::connection()->statement("ALTER TABLE {$prefix}core_users ADD COLUMN `Note` TEXT NOT NULL DEFAULT '' AFTER `LoginsCount`");
     }
 
     /**
