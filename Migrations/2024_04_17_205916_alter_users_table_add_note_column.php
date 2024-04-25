@@ -1,29 +1,32 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
 class AlterUsersTableAddNoteColumn extends Migration
 {
     /**
-     * Run the migrations.
+     * Performing the migration.
      *
      * @return void
      */
     public function up()
     {
-        $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::connection()->statement("ALTER TABLE {$prefix}core_users ADD COLUMN `Note` TEXT NOT NULL AFTER `LoginsCount`");
+        Capsule::schema()->table('core_users', function (Blueprint $table) {
+            $table->text('Note')->nullable()->after('LoginsCount');
+        });
     }
 
     /**
-     * Reverse the migrations.
+     * Rolling back the migration.
      *
      * @return void
      */
     public function down()
     {
-        $prefix = Capsule::connection()->getTablePrefix();
-        Capsule::connection()->statement("ALTER TABLE {$prefix}core_users DROP COLUMN `Note`");
+        Capsule::schema()->table('core_users', function (Blueprint $table) {
+            $table->dropColumn('Note');
+        });
     }
 }
