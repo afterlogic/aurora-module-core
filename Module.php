@@ -3367,7 +3367,7 @@ For instructions, please refer to this section of documentation and our
      * @return int|false
      * @throws ApiException
      */
-    public function CreateUser($TenantId = 0, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
+    public function CreateUser($TenantId = null, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
     {
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
@@ -3375,16 +3375,18 @@ For instructions, please refer to this section of documentation and our
             throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
-        if ($TenantId === 0) {
-            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-            $aTenants = $this->getTenantsManager()->getTenantList(0, 1, '');
-            $TenantId = count($aTenants) === 1 ? $aTenants[0]->Id : 0;
+        // in case of multi tenancy is turned off we need to get default tenant
+        if ($TenantId === null) {
+            if(!\Aurora\Api::GetSettings()->GetValue('EnableMultiTenant')) {
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+                $TenantId = $this->getTenantsManager()->getDefaultGlobalTenant();
+            } else {
+                throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+            }
         }
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $TenantId) {
-            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
-        } else {
+        if (!($oAuthenticatedUser instanceof User && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId)) {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 

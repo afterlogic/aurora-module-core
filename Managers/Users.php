@@ -215,7 +215,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oUser->validate()) {
+            if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
                 if (!$this->isExists($oUser)) {
                     $oUser->UUID = $oUser->generateUUID();
 
