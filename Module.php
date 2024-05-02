@@ -1064,14 +1064,6 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * @deprecated since version 8.3.7
-     */
-    public function GetTenantById($Id)
-    {
-        return self::Decorator()->GetTenant($Id);
-    }
-
-    /**
      * !Not public
      * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
      *
@@ -2449,34 +2441,6 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     * @deprecated since version 8.3.7
-     */
-    public function GetEntityList($Type, $Offset = 0, $Limit = 0, $Search = '', $TenantId = 0, $Filters = [])
-    {
-        switch ($Type) {
-            case 'Tenant':
-                return self::Decorator()->GetTenants($Offset, $Limit, $Search);
-            case 'User':
-                return self::Decorator()->GetUsers($TenantId, $Offset, $Limit, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, $Search, $Filters);
-        }
-        return null;
-    }
-
-    /**
-     * @deprecated since version 8.3.7
-     */
-    public function GetEntity($Type, $Id)
-    {
-        switch ($Type) {
-            case 'Tenant':
-                return self::Decorator()->GetTenant($Id);
-            case 'User':
-                return self::Decorator()->GetUser($Id);
-        }
-        return null;
-    }
-
-    /**
      * Creates channel with specified login and description.
      *
      * @param string $Login New channel login.
@@ -2659,14 +2623,6 @@ For instructions, please refer to this section of documentation and our
             'Items' => $aTenants,
             'Count' => $iTenantsCount,
         );
-    }
-
-    /**
-     * @deprecated since version 8.3.7
-     */
-    public function GetTenantList($Offset = 0, $Limit = 0, $Search = '')
-    {
-        return self::Decorator()->GetTenants($Offset, $Limit, $Search);
     }
 
     /**
@@ -3204,14 +3160,6 @@ For instructions, please refer to this section of documentation and our
         }
 
         return $aResult;
-    }
-
-    /**
-     * @deprecated since version 8.3.7
-     */
-    public function GetUserList($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = [])
-    {
-        return self::Decorator()->GetUsers($TenantId, $Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters);
     }
 
     /**
