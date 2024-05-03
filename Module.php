@@ -3377,7 +3377,7 @@ For instructions, please refer to this section of documentation and our
 
         // in case of multi tenancy is turned off we need to get default tenant
         if ($TenantId === null) {
-            if(!\Aurora\Api::GetSettings()->GetValue('EnableMultiTenant')) {
+            if(!Api::GetSettings()->GetValue('EnableMultiTenant')) {
                 Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
                 $TenantId = $this->getTenantsManager()->getDefaultGlobalTenant();
             } else {
