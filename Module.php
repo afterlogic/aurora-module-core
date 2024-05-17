@@ -982,13 +982,15 @@ For instructions, please refer to this section of documentation and our
      *
      * Creates and returns user with super administrator role.
      *
+     * @deprecated sinse version 9.7.8
+     *
      * @return Models\User
      */
     public function GetAdminUser()
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        return $this->getIntegratorManager()->GetAdminUser();
+        return $this->getUsersManager()->getAdminUser();
     }
 
     /**

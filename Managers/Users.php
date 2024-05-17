@@ -24,6 +24,8 @@ use Aurora\System\Managers\Integrator;
  */
 class Users extends \Aurora\System\Managers\AbstractManager
 {
+    public static $usersCache = [];
+
     /**
      *
      * @param \Aurora\System\Module\AbstractModule $oModule
@@ -40,8 +42,12 @@ class Users extends \Aurora\System\Managers\AbstractManager
      *
      * @return User | false
      */
-    public function getUser($mUserId)
+    public function getUser($mUserId, $bForce = false)
     {
+        if (isset(self::$usersCache[$mUserId]) && !$bForce) {
+            return self::$usersCache[$mUserId];
+        }
+
         $oUser = false;
         if ($mUserId !== -1) {
             try {
@@ -50,9 +56,24 @@ class Users extends \Aurora\System\Managers\AbstractManager
                 $oUser = false;
             }
         } else {
-            $oUser = Integrator::GetAdminUser();
+            $oUser = self::getAdminUser();
         }
+
+        if ($oUser) {
+            self::$usersCache[$oUser->Id] = $oUser;
+        }
+
         return $oUser;
+    }
+
+    public function getAdminUser()
+    {
+        return new \Aurora\Modules\Core\Models\User([
+            'Id' => -1,
+            'Role' => \Aurora\System\Enums\UserRole::SuperAdmin,
+            'PublicId' => 'Administrator',
+            'TokensValidFromTimestamp' => 0
+        ]);
     }
 
     public function getUserByPublicId($UserPublicId)
@@ -61,12 +82,24 @@ class Users extends \Aurora\System\Managers\AbstractManager
         $sUserPublicId = trim((string)$UserPublicId);
 
         if ($sUserPublicId) {
+            $usersCache = array_filter(self::$usersCache, function ($user) use ($UserPublicId) {
+                return $user->PublicId === $UserPublicId;
+            });
+            if (count($usersCache) > 0) {
+                return current($usersCache);
+            }
+
             try {
                 $oUser = User::firstWhere('PublicId', $sUserPublicId);
+
+                if ($oUser) {
+                    self::$usersCache[$oUser->Id] = $oUser;
+                }
             } catch (\Illuminate\Database\QueryException $oEx) {
                 \Aurora\Api::LogException($oEx);
             }
         }
+
         return $oUser;
     }
 
@@ -249,6 +282,8 @@ class Users extends \Aurora\System\Managers\AbstractManager
                 if (!$oUser->update()) {
                     throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
                 }
+
+                self::$usersCache[$oUser->Id] = $oUser;
             }
 
             $bResult = true;
@@ -283,11 +318,20 @@ class Users extends \Aurora\System\Managers\AbstractManager
             $this->setLastException($oException);
         }
 
+        if (isset(self::$usersCache[$oUser->Id])) {
+            unset(self::$usersCache[$oUser->Id]);
+        }
+
         return $bResult;
     }
 
     public function deleteUserById($id)
     {
-        return User::find($id)->delete();
+        $bResult = User::find($id)->delete();
+
+        if ($bResult && isset(self::$usersCache[$id])) {
+            unset(self::$usersCache[$id]);
+        }
+        return $bResult;
     }
 }
