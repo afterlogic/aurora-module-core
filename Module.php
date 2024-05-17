@@ -3379,7 +3379,8 @@ For instructions, please refer to this section of documentation and our
         if ($TenantId === null) {
             if(!Api::GetSettings()->GetValue('EnableMultiTenant')) {
                 Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-                $TenantId = $this->getTenantsManager()->getDefaultGlobalTenant();
+                $oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
+                $TenantId = $oTenant ? $oTenant->Id : null;
             } else {
                 throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
             }
