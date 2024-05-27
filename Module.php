@@ -23,6 +23,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Aurora\System\Logger;
+use Aurora\System\Managers\Integrator;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -990,7 +991,7 @@ For instructions, please refer to this section of documentation and our
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        return $this->getUsersManager()->getAdminUser();
+        return Integrator::GetAdminUser();
     }
 
     /**
