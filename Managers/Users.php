@@ -13,7 +13,6 @@ use Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
 use Illuminate\Database\Eloquent\Builder;
 use Aurora\System\Enums\SortOrder;
-use Aurora\System\Managers\Integrator;
 
 /**
  * @license https://www.gnu.org/licenses/agpl-3.0.html AGPL-3.0
@@ -24,8 +23,6 @@ use Aurora\System\Managers\Integrator;
  */
 class Users extends \Aurora\System\Managers\AbstractManager
 {
-    public static $usersCache = [];
-
     /**
      *
      * @param \Aurora\System\Module\AbstractModule $oModule
@@ -42,65 +39,14 @@ class Users extends \Aurora\System\Managers\AbstractManager
      *
      * @return User | false
      */
-    public function getUser($mUserId, $bForce = false)
+    public function getUser($mUserId)
     {
-        if (isset(self::$usersCache[$mUserId]) && !$bForce) {
-            return self::$usersCache[$mUserId];
-        }
-
-        $oUser = false;
-        if ($mUserId !== -1) {
-            try {
-                $oUser = User::findOrFail($mUserId);
-            } catch (\Exception $oException) {
-                $oUser = false;
-            }
-        } else {
-            $oUser = self::getAdminUser();
-        }
-
-        if ($oUser) {
-            self::$usersCache[$oUser->Id] = $oUser;
-        }
-
-        return $oUser;
-    }
-
-    public function getAdminUser()
-    {
-        return new \Aurora\Modules\Core\Models\User([
-            'Id' => -1,
-            'Role' => \Aurora\System\Enums\UserRole::SuperAdmin,
-            'PublicId' => 'Administrator',
-            'TokensValidFromTimestamp' => 0
-        ]);
+        return \Aurora\Api::getUserById($mUserId);
     }
 
     public function getUserByPublicId($UserPublicId)
     {
-        $oUser = null;
-        $sUserPublicId = trim((string)$UserPublicId);
-
-        if ($sUserPublicId) {
-            $usersCache = array_filter(self::$usersCache, function ($user) use ($UserPublicId) {
-                return $user->PublicId === $UserPublicId;
-            });
-            if (count($usersCache) > 0) {
-                return current($usersCache);
-            }
-
-            try {
-                $oUser = User::firstWhere('PublicId', $sUserPublicId);
-
-                if ($oUser) {
-                    self::$usersCache[$oUser->Id] = $oUser;
-                }
-            } catch (\Illuminate\Database\QueryException $oEx) {
-                \Aurora\Api::LogException($oEx);
-            }
-        }
-
-        return $oUser;
+        return \Aurora\Api::getUserByPublicId($UserPublicId);
     }
 
     /**
@@ -278,12 +224,11 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
+            if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
                 if (!$oUser->update()) {
                     throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
                 }
-
-                self::$usersCache[$oUser->Id] = $oUser;
+                \Aurora\Api::removeUserFromCache($oUser->Id);
             }
 
             $bResult = true;
@@ -304,13 +249,11 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            //			if ($oUser->validate())
-            //			{
             if (!$oUser->delete()) {
                 throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
             }
             UserBlock::where('UserId', $oUser->Id)->delete();
-            //			}
+            \Aurora\Api::removeUserFromCache($oUser->Id);
 
             $bResult = true;
         } catch (\Aurora\System\Exceptions\BaseException $oException) {
@@ -318,20 +261,18 @@ class Users extends \Aurora\System\Managers\AbstractManager
             $this->setLastException($oException);
         }
 
-        if (isset(self::$usersCache[$oUser->Id])) {
-            unset(self::$usersCache[$oUser->Id]);
-        }
-
         return $bResult;
     }
 
     public function deleteUserById($id)
     {
-        $bResult = User::find($id)->delete();
+        $result = false;
+        if (User::find($id)->delete()) {
+            \Aurora\Api::removeUserFromCache($id);
 
-        if ($bResult && isset(self::$usersCache[$id])) {
-            unset(self::$usersCache[$id]);
+            $result = true;
         }
-        return $bResult;
+
+        return $result;
     }
 }

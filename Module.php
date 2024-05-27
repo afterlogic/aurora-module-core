@@ -3369,7 +3369,7 @@ For instructions, please refer to this section of documentation and our
      * @return int|false
      * @throws ApiException
      */
-    public function CreateUser($TenantId = null, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
+    public function CreateUser($TenantId = 0, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
     {
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
@@ -3377,15 +3377,13 @@ For instructions, please refer to this section of documentation and our
             throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
-        // in case of multi tenancy is turned off we need to get default tenant
-        if ($TenantId === null) {
-            if(!Api::GetSettings()->GetValue('EnableMultiTenant')) {
-                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-                $oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
-                $TenantId = $oTenant ? $oTenant->Id : null;
-            } else {
-                throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
-            }
+        $oTenant = null;
+
+        // if $TenantId === 0  we need to get default tenant
+        if ($TenantId === 0) {
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+            $oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
+            $TenantId = $oTenant ? $oTenant->Id : null;
         }
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
@@ -3393,9 +3391,11 @@ For instructions, please refer to this section of documentation and our
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
-        $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
         if (!$oTenant) {
-            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+            $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
+            if (!$oTenant) {
+                throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+            }
         }
 
         $PublicId = \trim($PublicId);
