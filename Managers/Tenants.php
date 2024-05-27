@@ -110,18 +110,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
      */
     public function getTenantById($mTenantId)
     {
-        $oTenant = null;
-        try {
-            $oResult = Tenant::find($mTenantId);
-
-            if ($oResult) {
-                $oTenant = $oResult;
-            }
-        } catch(\Illuminate\Database\QueryException $oException) {
-            \Aurora\Api::LogException($oException);
-        }
-
-        return $oTenant;
+        return \Aurora\Api::getTenantById($mTenantId);
     }
 
     /**
@@ -230,6 +219,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
         try {
             if ($oTenant->validate() && $oTenant->Id !== 0) {
                 $bResult = $oTenant->save();
+                if ($bResult) {
+                    \Aurora\Api::removeTenantFromCache($oTenant->Id);
+                }
             }
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
@@ -304,6 +296,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
         try {
             if ($oTenant) {
                 $bResult = $oTenant->delete();
+                if ($bResult) {
+                    \Aurora\Api::removeTenantFromCache($oTenant->Id);
+                }
             }
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
