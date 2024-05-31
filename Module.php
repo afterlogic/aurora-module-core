@@ -3367,7 +3367,7 @@ For instructions, please refer to this section of documentation and our
      * @return int|false
      * @throws ApiException
      */
-    public function CreateUser($TenantId = 0, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false)
+    public function CreateUser($TenantId = 0, $PublicId = '', $Role = UserRole::NormalUser, $WriteSeparateLog = false, $IsDisabled = false, $Note = null)
     {
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
@@ -3426,6 +3426,10 @@ For instructions, please refer to this section of documentation and our
             $oUser->TimeFormat = $this->oModuleSettings->TimeFormat;
             $oUser->DateFormat = $this->oModuleSettings->DateFormat;
             $oUser->DefaultTimeZone = '';
+
+
+            $oUser->IsDisabled = $IsDisabled;
+            $oUser->Note = $Note;
 
             if ($this->getUsersManager()->createUser($oUser)) {
                 return $oUser->Id;
