@@ -3505,53 +3505,52 @@ For instructions, please refer to this section of documentation and our
     {
         $PublicId = \trim($PublicId);
 
-        if (!empty($TenantId) || !empty($PublicId)) {
-            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-        } elseif ($Role !== -1 || $IsDisabled !== null || $WriteSeparateLog !== null || $GroupIds !== null || $Note !== null) {
-            Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-        } elseif ($UserId === Api::getAuthenticatedUserId()) {
-            Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
-        } else {
-            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-        }
-
+        $oUser = null;
         if ($UserId > 0) {
-            $oUser = $this->getUsersManager()->getUser($UserId);
-
-            if ($oUser) {
-                Api::checkUserAccess($oUser);
-
-                if (!empty($PublicId)) {
-                    $oUser->PublicId = $PublicId;
-                }
-                if (!empty($TenantId)) {
-                    $oUser->IdTenant = $TenantId;
-                }
-                if (UserRole::validateValue($Role)) {
-                    $oUser->Role = $Role;
-                }
-                if ($IsDisabled !== null) {
-                    $oUser->IsDisabled = (bool) $IsDisabled;
-                }
-                if ($WriteSeparateLog !== null) {
-                    $oUser->WriteSeparateLog = $WriteSeparateLog;
-                }
-                if ($Note !== null) {
-                    $oUser->Note = (string) $Note;
-                }
-
-                $mResult = $this->getUsersManager()->updateUser($oUser);
-                if ($mResult && $this->oModuleSettings->AllowGroups && $GroupIds !== null) {
-                    self::Decorator()->UpdateUserGroups($UserId, $GroupIds);
-                }
-
-                return $mResult;
+            $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+        }
+        if ($oUser) {
+            if ((!empty($TenantId) && $oUser->IdTenant != $TenantId) || (!empty($PublicId) && $oUser->PublicId != $PublicId)) {
+                // Only super administrator can edit users TenantId and PublicId
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+            } elseif ($Role !== -1 || $IsDisabled !== null || $WriteSeparateLog !== null || $GroupIds !== null || $Note !== null) {
+                Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+            } elseif ($UserId === Api::getAuthenticatedUserId()) {
+                Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+            } else {
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
             }
+
+            Api::checkUserAccess($oUser);
+
+            if (!empty($PublicId)) {
+                $oUser->PublicId = $PublicId;
+            }
+            if (!empty($TenantId)) {
+                $oUser->IdTenant = $TenantId;
+            }
+            if (UserRole::validateValue($Role)) {
+                $oUser->Role = $Role;
+            }
+            if ($IsDisabled !== null) {
+                $oUser->IsDisabled = (bool) $IsDisabled;
+            }
+            if ($WriteSeparateLog !== null) {
+                $oUser->WriteSeparateLog = $WriteSeparateLog;
+            }
+            if ($Note !== null) {
+                $oUser->Note = (string) $Note;
+            }
+
+            $mResult = $this->getUsersManager()->updateUser($oUser);
+            if ($mResult && $this->oModuleSettings->AllowGroups && $GroupIds !== null) {
+                self::Decorator()->UpdateUserGroups($UserId, $GroupIds);
+            }
+
+            return $mResult;
         } else {
             throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
-
-        return false;
     }
 
     /**
@@ -3683,7 +3682,11 @@ For instructions, please refer to this section of documentation and our
             $oUser->IdTenant !== $oAuthenticatedUser->IdTenant) {
             throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         } else {
-            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+            if ($oUser->IdTenant === $oAuthenticatedUser->IdTenant) {
+                Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+            } else {
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+            }
         }
 
         $bResult = false;
