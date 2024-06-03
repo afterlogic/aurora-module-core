@@ -183,7 +183,8 @@ class User extends Model
         'SipEnable' => 'boolean',
         'DesktopNotifications' => 'boolean',
         'FilesEnable' => 'boolean',
-        'WriteSeparateLog' => 'boolean'
+        'WriteSeparateLog' => 'boolean',
+        'LastLogin' => 'datetime'
     ];
 
     protected $attributes = [
