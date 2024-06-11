@@ -23,6 +23,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Aurora\System\Logger;
+use Aurora\System\Managers\Integrator;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -982,13 +983,15 @@ For instructions, please refer to this section of documentation and our
      *
      * Creates and returns user with super administrator role.
      *
+     * @deprecated sinse version 9.7.8
+     *
      * @return Models\User
      */
     public function GetAdminUser()
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        return $this->getIntegratorManager()->GetAdminUser();
+        return Integrator::GetAdminUser();
     }
 
     /**
