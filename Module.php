@@ -633,6 +633,7 @@ For instructions, please refer to this section of documentation and our
 
                     if (!empty($sModule) && !empty($sMethod)) {
                         if (!Api::validateAuthToken() && !$bIsEmptyAuthToken) {
+                            Api::Log('AuthError - AuthToken: ' . Api::getAuthToken(), \Aurora\System\Enums\LogLevel::Full, 'sso-');
                             throw new ApiException(
                                 Notifications::AuthError,
                                 null,
@@ -750,15 +751,19 @@ For instructions, please refer to this section of documentation and our
     {
         try {
             $sHash = $this->oHttp->GetRequest('hash');
+
+            Api::Log('EntrySso - hash: ' . $sHash, \Aurora\System\Enums\LogLevel::Full, 'sso-');
             if (!empty($sHash)) {
                 $sData = Api::Cacher()->get('SSO:' . $sHash, true);
                 $aData = Api::DecodeKeyValues($sData);
 
                 if (isset($aData['Password'], $aData['Email'])) {
+                    Api::Log('Email: ' . $aData['Email'], \Aurora\System\Enums\LogLevel::Full, 'sso-');
                     $sLanguage = $this->oHttp->GetRequest('lang');
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
 
                     if (is_array($aResult) && isset($aResult['AuthToken'])) {
+                        Api::Log('AuthToken: ' . $aResult['AuthToken'], \Aurora\System\Enums\LogLevel::Full, 'sso-');
                         $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
                         @\setcookie(
                             \Aurora\System\Application::AUTH_TOKEN_KEY,
@@ -769,14 +774,18 @@ For instructions, please refer to this section of documentation and our
                             Api::getCookieSecure()
                         );
                     } else {
+                        Api::Log('Login failed', \Aurora\System\Enums\LogLevel::Full, 'sso-');
                         @\setcookie(
                             \Aurora\System\Application::AUTH_TOKEN_KEY,
                             null,
                             -1
                         );
                     }
+                } else {
+                    Api::Log('Invalid hash data', \Aurora\System\Enums\LogLevel::Full, 'sso-');
                 }
             } else {
+                Api::Log('Hash is empty, logout', \Aurora\System\Enums\LogLevel::Full, 'sso-');
                 self::Decorator()->Logout();
             }
         } catch (\Exception $oExc) {
@@ -2097,6 +2106,7 @@ For instructions, please refer to this section of documentation and our
                         // Super admin should be able to log in without connecting to DB.
                         $oTenant = Api::getTenantByWebDomain();
                         if ($oTenant && $oUser->IdTenant !== $oTenant->Id) {
+                            Api::Log('AuthError - Invalid Tenant - User.IdTenant: ' . $oUser->IdTenant . ', Tenant: ' . $oTenant->Id, \Aurora\System\Enums\LogLevel::Full, 'sso-');
                             throw new ApiException(Notifications::AuthError, null, 'AuthError');
                         }
                     }
@@ -2114,11 +2124,13 @@ For instructions, please refer to this section of documentation and our
                         'AuthToken' => $sAuthToken
                     ];
                 } else {
+                    Api::Log('AuthError - Invalid Authenticated User', \Aurora\System\Enums\LogLevel::Full, 'sso-');
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
                 }
             }
         } else {
             Api::LogEvent('login-failed', self::GetName());
+            Api::Log('AuthError - Invalid Auth Data', \Aurora\System\Enums\LogLevel::Full, 'sso-');
             Api::GetModuleManager()->SetLastException(
                 new ApiException(Notifications::AuthError, null, 'AuthError')
             );
