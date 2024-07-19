@@ -1580,12 +1580,13 @@ For instructions, please refer to this section of documentation and our
 
             $sAdminPassword = $oSettings->AdminPassword;
             if ((empty($sAdminPassword) && empty($Password) || !empty($Password)) && !empty($NewPassword)) {
-                if (empty($sAdminPassword) || crypt(trim($Password), Api::GetHashSalt()) === $sAdminPassword) {
-                    $oSettings->AdminPassword = crypt(trim($NewPassword), Api::GetHashSalt());
+                if (empty($sAdminPassword) || password_verify($Password, $sAdminPassword)) {
+                    $oSettings->AdminPassword = password_hash(trim($NewPassword), PASSWORD_BCRYPT);
                 } else {
-                    throw new ApiException(\Aurora\System\Exceptions\Errs::UserManager_AccountOldPasswordNotCorrect);
+                    throw new ApiException(Notifications::AccountOldPasswordNotCorrect);
                 }
             }
+
             if ($AdminLanguage !== null) {
                 $oSettings->AdminLanguage = $AdminLanguage;
             }
