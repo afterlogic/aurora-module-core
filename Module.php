@@ -3801,44 +3801,6 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     *
-     * @param int $UserId
-     * @param string $Content
-     * @param string $FileName
-     * @return array|bool
-     * @throws ApiException
-     */
-    public function SaveContentAsTempFile($UserId, $Content, $FileName)
-    {
-        $mResult = false;
-        Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
-
-        $sUUID = Api::getUserUUIDById($UserId);
-        try {
-            $sTempName = md5($sUUID . $Content . $FileName);
-            $oApiFileCache = new \Aurora\System\Managers\Filecache();
-
-            if (!$oApiFileCache->isFileExists($sUUID, $sTempName)) {
-                $oApiFileCache->put($sUUID, $sTempName, $Content);
-            }
-
-            if ($oApiFileCache->isFileExists($sUUID, $sTempName)) {
-                $mResult = \Aurora\System\Utils::GetClientFileResponse(
-                    null,
-                    $UserId,
-                    $FileName,
-                    $sTempName,
-                    $oApiFileCache->fileSize($sUUID, $sTempName)
-                );
-            }
-        } catch (\Exception $oException) {
-            throw new ApiException(Notifications::FilesNotAllowed, $oException, $oException->getMessage());
-        }
-
-        return $mResult;
-    }
-
-    /**
      * Updates user Timezone.
      *
      * @param string $Timezone New Timezone.
