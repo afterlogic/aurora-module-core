@@ -175,7 +175,8 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetBlockedUser',
             'BlockUser',
             'CheckIsBlockedUser',
-            'GetAllGroup'
+            'GetAllGroup',
+            'IsBlockedByIp'
         ]);
     }
 
@@ -1982,6 +1983,7 @@ For instructions, please refer to this section of documentation and our
                         if ($iBlockTime > $iLoginBlockDurationMinutes) {
                             $oBlockedUser->delete();
                         } else {
+                            $this->BlockUser($sEmail, $sIp);
                             throw new ApiException(
                                 1000,
                                 null,
@@ -1992,6 +1994,12 @@ For instructions, please refer to this section of documentation and our
                             );
                         }
                     }
+                } elseif ($this->IsBlockedByIp($sIp)) {
+                    $this->BlockUser($sEmail, $sIp, true);
+
+                    throw new ApiException(
+                        1000
+                    );
                 }
             } catch (\Aurora\System\Exceptions\DbException $oEx) {
                 Api::LogException($oEx);
@@ -2016,12 +2024,28 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
-    public function BlockUser($sEmail, $sIp)
+    public function IsBlockedByIp($sIp)
+    {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
+        $mResult = false;
+
+        if ($this->oModuleSettings->EnableFailedLoginBlock) {
+            $iLoginBlockAvailableTriesCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
+
+            $count = Models\UserBlock::where('IpAddress', $sIp)->where('ErrorLoginsCount', '>=', $iLoginBlockAvailableTriesCount)->count();
+
+            $mResult = $count >= $this->oModuleSettings->LoginBlockIpReputationThreshold;
+        }
+
+        return $mResult;
+    }
+
+    public function BlockUser($sEmail, $sIp, $bMaxErrorLoginsCount = false)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         if ($this->oModuleSettings->EnableFailedLoginBlock) {
-            $iLoginBlockAvailableTriesCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
 
             try {
                 $oBlockedUser = $this->GetBlockedUser($sEmail, $sIp);
@@ -2031,9 +2055,13 @@ For instructions, please refer to this section of documentation and our
                     $oBlockedUser->IpAddress = $sIp;
                 }
                 $iUserId = Api::getUserIdByPublicId($sEmail);
-                if ($iUserId && $oBlockedUser->ErrorLoginsCount < $iLoginBlockAvailableTriesCount) {
+                if ($iUserId) {
                     $oBlockedUser->UserId = $iUserId;
-                    $oBlockedUser->ErrorLoginsCount = $oBlockedUser->ErrorLoginsCount + 1;
+                    if ($bMaxErrorLoginsCount) {
+                        $oBlockedUser->ErrorLoginsCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
+                    } else {
+                        $oBlockedUser->ErrorLoginsCount++;
+                    }
                     $oBlockedUser->Time = time();
 
                     $oBlockedUser->save();

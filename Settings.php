@@ -35,6 +35,7 @@ use Aurora\System\Enums;
  * @property int $LoginBlockAvailableTriesCount
  * @property bool $LoginBlockDurationMinutes
  * @property bool $AllowGroups
+ * @property int $LoginBlockIpReputationThreshold
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -179,6 +180,12 @@ class Settings extends \Aurora\System\Module\Settings
                 'bool',
                 null,
                 'Setting to true enables user groups which can be managed in adminpanel'
+            ),
+            'LoginBlockIpReputationThreshold ' => new SettingsProperty(
+                10,
+                'int',
+                null,
+                'LoginBlockIpReputationThreshold'
             ),
         ];
     }
