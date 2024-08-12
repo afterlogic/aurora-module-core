@@ -175,17 +175,17 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 'Number of minutes user will be blocked for upon multiple failed login attempts'
             ),
+            'LoginBlockIpReputationThreshold ' => new SettingsProperty(
+                0,
+                'int',
+                null,
+                'The setting determines the number of different users that need to be blocked from a specific IP address before that IP is considered to have a bad reputation and blocks any further login attempts from it.'
+            ),
             'AllowGroups' => new SettingsProperty(
                 false,
                 'bool',
                 null,
                 'Setting to true enables user groups which can be managed in adminpanel'
-            ),
-            'LoginBlockIpReputationThreshold ' => new SettingsProperty(
-                10,
-                'int',
-                null,
-                'LoginBlockIpReputationThreshold'
             ),
         ];
     }

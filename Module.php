@@ -174,9 +174,9 @@ class Module extends \Aurora\System\Module\AbstractModule
             'IsModuleDisabledForObject',
             'GetBlockedUser',
             'BlockUser',
-            'CheckIsBlockedUser',
+            'IsBlockedUser',
             'GetAllGroup',
-            'IsBlockedByIp'
+            'CheckIpReputation'
         ]);
     }
 
@@ -1994,11 +1994,13 @@ For instructions, please refer to this section of documentation and our
                             );
                         }
                     }
-                } elseif ($this->IsBlockedByIp($sIp)) {
+                } elseif ($this->CheckIpReputation($sIp)) {
                     $this->BlockUser($sEmail, $sIp, true);
 
                     throw new ApiException(
-                        1000
+                        1000,
+                        null,
+                        $this->i18N("BLOCKED_USER_IP_REPUTATION_MESSAGE_ERROR")
                     );
                 }
             } catch (\Aurora\System\Exceptions\DbException $oEx) {
@@ -2024,13 +2026,13 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
-    public function IsBlockedByIp($sIp)
+    public function CheckIpReputation($sIp)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $mResult = false;
 
-        if ($this->oModuleSettings->EnableFailedLoginBlock) {
+        if ($this->oModuleSettings->EnableFailedLoginBlock && is_numeric($this->oModuleSettings->LoginBlockIpReputationThreshold) && $this->oModuleSettings->LoginBlockIpReputationThreshold > 0) {
             $iLoginBlockAvailableTriesCount = $this->oModuleSettings->LoginBlockAvailableTriesCount;
 
             $count = Models\UserBlock::where('IpAddress', $sIp)->where('ErrorLoginsCount', '>=', $iLoginBlockAvailableTriesCount)->count();
