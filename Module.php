@@ -1964,7 +1964,10 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
+     * @param string $sEmail
+     * @param string $sIp
      *
+     * @throws ApiException
      */
     public function IsBlockedUser($sEmail, $sIp)
     {
@@ -2009,6 +2012,12 @@ For instructions, please refer to this section of documentation and our
         }
     }
 
+    /**
+    * @param string $sEmail
+    * @param string $sIp
+    *
+    * @return Models\UserBlock|false
+    */
     public function GetBlockedUser($sEmail, $sIp)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
@@ -2026,6 +2035,11 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+    * @param string $sIp
+    *
+    * @return bool
+    */
     public function CheckIpReputation($sIp)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
@@ -2043,6 +2057,11 @@ For instructions, please refer to this section of documentation and our
         return $mResult;
     }
 
+    /**
+    * @param string $sIp
+    * @param string $sIp
+    * @param bool $bMaxErrorLoginsCount
+    */
     public function BlockUser($sEmail, $sIp, $bMaxErrorLoginsCount = false)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
@@ -2075,10 +2094,16 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     *
-     */
+    * @param string $Login
+    * @param string $Password
+    * @param bool $SignMe
+    *
+    * @return mixed
+    */
     public function Authenticate($Login, $Password, $SignMe = false)
     {
+        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
+
         $mResult = false;
 
         $aArgs = array(
