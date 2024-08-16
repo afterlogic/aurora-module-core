@@ -18,7 +18,6 @@ use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
 use Illuminate\Database\Eloquent\Builder;
-use stdClass;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
@@ -575,6 +574,23 @@ For instructions, please refer to this section of documentation and our
         }
     }
 
+    protected function setAuthTokenCookie($authToken)
+    {
+        $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
+        @\setcookie(
+            \Aurora\System\Application::AUTH_TOKEN_KEY,
+            $authToken,
+            [
+                'expires' => ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime("+$iAuthTokenCookieExpireTime days"),
+                'path' => Api::getCookiePath(),
+                'domain' => null,
+                'secure' => Api::getCookieSecure(),
+                'httponly' => true,
+                'samesite' => 'Strict' // None || Lax  || Strict
+            ]
+        );
+    }
+
     /***** private functions *****/
 
     /***** static functions *****/
@@ -760,15 +776,7 @@ For instructions, please refer to this section of documentation and our
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
 
                     if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                        $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
-                        @\setcookie(
-                            \Aurora\System\Application::AUTH_TOKEN_KEY,
-                            $aResult['AuthToken'],
-                            ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
-                            Api::getCookiePath(),
-                            null,
-                            Api::getCookieSecure()
-                        );
+                        $this->setAuthTokenCookie($aResult['AuthToken']);
                     } else {
                         @\setcookie(
                             \Aurora\System\Application::AUTH_TOKEN_KEY,
@@ -803,15 +811,7 @@ For instructions, please refer to this section of documentation and our
 
             $aResult = self::Decorator()->Login($sLogin, $sPassword);
             if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
-                @\setcookie(
-                    \Aurora\System\Application::AUTH_TOKEN_KEY,
-                    $aResult['AuthToken'],
-                    ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime('+' . $iAuthTokenCookieExpireTime . ' days'),
-                    Api::getCookiePath(),
-                    null,
-                    Api::getCookieSecure()
-                );
+                $this->setAuthTokenCookie($aResult['AuthToken']);
             }
 
             Api::Location('./');
@@ -2169,6 +2169,8 @@ For instructions, please refer to this section of documentation and our
                     $mResult = [
                         'AuthToken' => $sAuthToken
                     ];
+
+                    $this->setAuthTokenCookie($sAuthToken);
                 } else {
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
                 }
@@ -2495,6 +2497,8 @@ For instructions, please refer to this section of documentation and our
         Api::UserSession()->Delete(
             Api::getAuthToken()
         );
+
+        @\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', -1, Api::getCookiePath());
 
         return true;
     }
