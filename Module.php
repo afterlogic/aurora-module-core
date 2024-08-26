@@ -3087,6 +3087,10 @@ For instructions, please refer to this section of documentation and our
                 // Delete group
                 Group::where('TenantId', $oTenant->Id)->delete();
 
+                // Delete users
+                $userIds = User::where('IdTenant', $oTenant->Id)->select('Id')->pluck('Id')->toArray();
+                self::Decorator()->DeleteUsers($userIds);
+
                 // Delete tenant itself.
                 return $this->getTenantsManager()->deleteTenant($oTenant);
             }
