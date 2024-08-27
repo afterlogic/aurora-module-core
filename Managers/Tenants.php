@@ -196,6 +196,10 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
                         $oTenant->IdChannel = 0;
                     }
 
+                    if (Tenant::count() === 0) {
+                        $oTenant->IsDefault = true;
+                    }
+
                     return $oTenant->save();
                 } else {
                     throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::TenantAlreadyExists);
