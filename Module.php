@@ -1329,8 +1329,8 @@ For instructions, please refer to this section of documentation and our
      * @apiSuccess {string} [Result.Result.AdminLogin] Super administrator login is returned only if super administrator is authenticated.
      * @apiSuccess {bool} [Result.Result.AdminHasPassword] Indicates if super administrator has set up password. It is returned only if super administrator is authenticated.
      * @apiSuccess {string} [Result.Result.AdminLanguage] Super administrator language is returned only if super administrator is authenticated.
-     * @apiSuccess {bool} [Result.Result.IsSystemConfigured] Indicates if 'data' folder exist and writable and salt was generated.
-     * @apiSuccess {bool} [Result.Result.SaltNotEmpty] Indicates if salt was generated. It is returned only if super administrator is authenticated.
+     * @apiSuccess {bool} [Result.Result.IsSystemConfigured] Indicates if 'data' folder exist and writable and encryption key was generated.
+     * @apiSuccess {bool} [Result.Result.EncryptionKeyNotEmpty] Indicates if encryption key was generated. It is returned only if super administrator is authenticated.
      * @apiSuccess {bool} [Result.Result.EnableLogging] Indicates if logging is enabled. It is returned only if super administrator is authenticated.
      * @apiSuccess {bool} [Result.Result.EnableEventLogging] Indicates if event logging is enabled. It is returned only if super administrator is authenticated.
      * @apiSuccess {string} [Result.Result.LoggingLevel] Value of logging level. It is returned only if super administrator is authenticated.
@@ -1388,7 +1388,7 @@ For instructions, please refer to this section of documentation and our
             'TimeFormat' => $this->oModuleSettings->TimeFormat,
             'UserId' => Api::getAuthenticatedUserId(),
             'IsSystemConfigured' => is_writable(Api::DataPath()) &&
-                (file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath()))),
+                (file_exists(Api::GetEncryptionKeyPath()) && strlen(@file_get_contents(Api::GetEncryptionKeyPath()))),
             'Version' => Api::VersionFull(),
             'ProductName' => $this->oModuleSettings->ProductName,
             'PasswordMinLength' => $oSettings->PasswordMinLength,
@@ -1413,7 +1413,7 @@ For instructions, please refer to this section of documentation and our
                 'AdminHasPassword' => !empty($sAdminPassword),
                 'AdminLanguage' => $oSettings->AdminLanguage,
                 'CommonLanguage' => $this->oModuleSettings->Language,
-                'SaltNotEmpty' => file_exists(Api::GetSaltPath()) && strlen(@file_get_contents(Api::GetSaltPath())),
+                'EncryptionKeyNotEmpty' => file_exists(Api::GetEncryptionKeyPath()) && strlen(@file_get_contents(Api::GetEncryptionKeyPath())),
                 'EnableLogging' => $oSettings->EnableLogging,
                 'EnableEventLogging' => $oSettings->EnableEventLogging,
                 'LoggingLevel' => $oSettings->LoggingLevel,
