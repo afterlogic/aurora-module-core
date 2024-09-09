@@ -621,7 +621,7 @@ For instructions, please refer to this section of documentation and our
         @ob_start();
 
         if (!is_writable(Api::DataPath())) {
-            throw new ApiException(Notifications::SystemNotConfigured, null, 'SystemNotConfigured');
+            throw new ApiException(Notifications::SystemNotConfigured, null, 'Check the write permission of the data folder');
         }
 
         $aResponseItem = null;
@@ -723,7 +723,7 @@ For instructions, please refer to this section of documentation and our
                 $oException = new ApiException(
                     Notifications::ModuleNotFound,
                     null,
-                    'ModuleNotFound'
+                    'Module not found'
                 );
                 $aResponseItem = $this->ExceptionResponse(
                     $sMethod,
@@ -734,7 +734,7 @@ For instructions, please refer to this section of documentation and our
             $oException = new ApiException(
                 Notifications::InvalidInputParameter,
                 null,
-                'InvalidInputParameter'
+                'Invalid input parameter'
             );
             $aResponseItem = $this->ExceptionResponse(
                 $sMethod,
