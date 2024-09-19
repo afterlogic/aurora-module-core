@@ -34,8 +34,9 @@ use Aurora\System\Enums;
  * @property bool $AllowPostLogin
  * @property int $LoginBlockAvailableTriesCount
  * @property bool $LoginBlockDurationMinutes
- * @property bool $AllowGroups
  * @property int $LoginBlockIpReputationThreshold
+ * @property bool $AllowGroups
+ * @property string $AuthTokenCookieSameSite
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -186,6 +187,12 @@ class Settings extends \Aurora\System\Module\Settings
                 'bool',
                 null,
                 'Setting to true enables user groups which can be managed in adminpanel'
+            ),
+            'AuthTokenCookieSameSite' => new SettingsProperty(
+                'Strict',
+                'string',
+                null,
+                'Sets the SameSite value of the AuthToken cookie. Possible values: None, Lax, or Strict'
             ),
         ];
     }

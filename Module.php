@@ -577,16 +577,18 @@ For instructions, please refer to this section of documentation and our
     protected function setAuthTokenCookie($authToken)
     {
         $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
+        $sSameSite = self::getInstance()->oModuleSettings->AuthTokenCookieSameSite ?? 'Strict';
+
         @\setcookie(
             \Aurora\System\Application::AUTH_TOKEN_KEY,
             $authToken,
             [
                 'expires' => ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime("+$iAuthTokenCookieExpireTime days"),
                 'path' => Api::getCookiePath(),
-                'domain' => null,
-                'secure' => Api::getCookieSecure(),
+                'domain' => '',
                 'httponly' => true,
-                'samesite' => 'Strict' // None || Lax  || Strict
+                'secure' => Api::getCookieSecure(),
+                'samesite' => $sSameSite // None || Lax || Strict
             ]
         );
     }
