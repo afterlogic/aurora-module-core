@@ -2106,8 +2106,10 @@ For instructions, please refer to this section of documentation and our
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
-        $mResult = false;
+        $sIp = \Aurora\System\Utils::getClientIp();
+        $this->Decorator()->IsBlockedUser($Login, $sIp);
 
+        $mResult = false;
         $aArgs = array(
             'Login' => $Login,
             'Password' => $Password,
@@ -2122,6 +2124,16 @@ For instructions, please refer to this section of documentation and our
             );
         } catch (\Exception $oException) {
             Api::GetModuleManager()->SetLastException($oException);
+        }
+
+        if (!$mResult) {
+            $this->Decorator()->BlockUser($Login, $sIp);
+            $this->Decorator()->IsBlockedUser($Login, $sIp);
+        } else {
+            $oBlockedUser = $this->Decorator()->GetBlockedUser($Login, $sIp);
+            if ($oBlockedUser) {
+                $oBlockedUser->delete();
+            }
         }
 
         return $mResult;
@@ -2246,21 +2258,9 @@ For instructions, please refer to this section of documentation and our
     {
         Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
 
-        $sIp = \Aurora\System\Utils::getClientIp();
-        $this->Decorator()->IsBlockedUser($Login, $sIp);
-
         $Login = str_replace(" ", "", $Login);
         $aAuthData = $this->Decorator()->Authenticate($Login, $Password, $SignMe);
 
-        if (!$aAuthData) {
-            $this->Decorator()->BlockUser($Login, $sIp);
-            $this->Decorator()->IsBlockedUser($Login, $sIp);
-        } else {
-            $oBlockedUser = $this->Decorator()->GetBlockedUser($Login, $sIp);
-            if ($oBlockedUser) {
-                $oBlockedUser->delete();
-            }
-        }
         return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
     }
 
