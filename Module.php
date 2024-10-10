@@ -3937,9 +3937,12 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     *
+     * Returns a user group
+     * @param int $GroupId 
+     * 
+     * @return Group|false
      */
-    public function GetGroup($TenantId, $GroupId)
+    public function GetGroup($GroupId)
     {
         if (!$this->oModuleSettings->AllowGroups) {
             return false;
@@ -3950,14 +3953,12 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
 
         $oUser = Api::getAuthenticatedUser();
-        if ($oUser && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser)  && $oUser->IdTenant !== $TenantId) {
+        $oGroup = Group::firstWhere([ 'Id' => $GroupId ]);
+        if ($oUser && $oGroup && ($oUser->Role === UserRole::TenantAdmin || $oUser->Role === UserRole::NormalUser) && $oUser->IdTenant !== $oGroup->TenantId) {
             throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
 
-        $mResult = Group::firstWhere([
-            'TenantId' => $TenantId,
-            'Id' => $GroupId
-        ]);
+        $mResult = $oGroup;
 
         return $mResult;
     }
