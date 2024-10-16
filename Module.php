@@ -2184,7 +2184,11 @@ For instructions, please refer to this section of documentation and our
                         'AuthToken' => $sAuthToken
                     ];
 
-                    $this->setAuthTokenCookie($sAuthToken);
+                    // Set cookie in browser only
+                    $sXClientHeader = $this->oHttp->GetHeader('X-Client');
+                    if (strtolower($sXClientHeader) === 'webclient') {
+                        $this->setAuthTokenCookie($sAuthToken);
+                    }
                 } else {
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
                 }
