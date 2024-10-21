@@ -593,6 +593,24 @@ For instructions, please refer to this section of documentation and our
         );
     }
 
+    protected function unsetAuthTokenCookie()
+    {
+        $sSameSite = self::getInstance()->oModuleSettings->AuthTokenCookieSameSite ?? 'Strict';
+
+        @\setcookie(
+            \Aurora\System\Application::AUTH_TOKEN_KEY,
+            '',
+            [
+                'expires' => -1,
+                'path' => Api::getCookiePath(),
+                'domain' => '',
+                'httponly' => true,
+                'secure' => Api::getCookieSecure(),
+                'samesite' => $sSameSite // None || Lax || Strict
+            ]
+        );
+    }
+
     /***** private functions *****/
 
     /***** static functions *****/
@@ -780,11 +798,7 @@ For instructions, please refer to this section of documentation and our
                     if (is_array($aResult) && isset($aResult['AuthToken'])) {
                         $this->setAuthTokenCookie($aResult['AuthToken']);
                     } else {
-                        @\setcookie(
-                            \Aurora\System\Application::AUTH_TOKEN_KEY,
-                            null,
-                            -1
-                        );
+                        $this->unsetAuthTokenCookie();
                     }
                 }
             } else {
@@ -2504,7 +2518,7 @@ For instructions, please refer to this section of documentation and our
             Api::getAuthToken()
         );
 
-        @\setcookie(\Aurora\System\Application::AUTH_TOKEN_KEY, '', -1, Api::getCookiePath());
+        $this->unsetAuthTokenCookie();
 
         return true;
     }
