@@ -573,44 +573,6 @@ For instructions, please refer to this section of documentation and our
             }
         }
     }
-
-    protected function setAuthTokenCookie($authToken)
-    {
-        $iAuthTokenCookieExpireTime = (int) self::getInstance()->oModuleSettings->AuthTokenCookieExpireTime;
-        $sSameSite = self::getInstance()->oModuleSettings->AuthTokenCookieSameSite ?? 'Strict';
-
-        @\setcookie(
-            \Aurora\System\Application::AUTH_TOKEN_KEY,
-            $authToken,
-            [
-                'expires' => ($iAuthTokenCookieExpireTime === 0) ? 0 : \strtotime("+$iAuthTokenCookieExpireTime days"),
-                'path' => Api::getCookiePath(),
-                'domain' => '',
-                'httponly' => true,
-                'secure' => Api::getCookieSecure(),
-                'samesite' => $sSameSite // None || Lax || Strict
-            ]
-        );
-    }
-
-    protected function unsetAuthTokenCookie()
-    {
-        $sSameSite = self::getInstance()->oModuleSettings->AuthTokenCookieSameSite ?? 'Strict';
-
-        @\setcookie(
-            \Aurora\System\Application::AUTH_TOKEN_KEY,
-            '',
-            [
-                'expires' => -1,
-                'path' => Api::getCookiePath(),
-                'domain' => '',
-                'httponly' => true,
-                'secure' => Api::getCookieSecure(),
-                'samesite' => $sSameSite // None || Lax || Strict
-            ]
-        );
-    }
-
     /***** private functions *****/
 
     /***** static functions *****/
@@ -796,9 +758,9 @@ For instructions, please refer to this section of documentation and our
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
 
                     if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                        $this->setAuthTokenCookie($aResult['AuthToken']);
+                        Api::setAuthTokenCookie($aResult['AuthToken']);
                     } else {
-                        $this->unsetAuthTokenCookie();
+                        Api::unsetAuthTokenCookie();
                     }
                 }
             } else {
@@ -827,7 +789,7 @@ For instructions, please refer to this section of documentation and our
 
             $aResult = self::Decorator()->Login($sLogin, $sPassword);
             if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                $this->setAuthTokenCookie($aResult['AuthToken']);
+                Api::setAuthTokenCookie($aResult['AuthToken']);
             }
 
             Api::Location('./');
@@ -1190,14 +1152,6 @@ For instructions, please refer to this section of documentation and our
     {
         Api::checkUserRoleIsAtLeast(UserRole::Customer);
         $result = true;
-
-        $iUserId = Api::getAuthenticatedUserId();
-
-        $oApiIntegrator = $this->getIntegratorManager();
-
-        if ($iUserId && $oApiIntegrator) {
-            $oApiIntegrator->resetCookies();
-        }
 
         $oCacher = Api::Cacher();
 
@@ -2201,7 +2155,7 @@ For instructions, please refer to this section of documentation and our
                     // Set cookie in browser only
                     $sXClientHeader = $this->oHttp->GetHeader('X-Client');
                     if (strtolower($sXClientHeader) === 'webclient') {
-                        $this->setAuthTokenCookie($sAuthToken);
+                        Api::setAuthTokenCookie($sAuthToken);
                     }
                 } else {
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
@@ -2518,7 +2472,7 @@ For instructions, please refer to this section of documentation and our
             Api::getAuthToken()
         );
 
-        $this->unsetAuthTokenCookie();
+        Api::unsetAuthTokenCookie();
 
         return true;
     }
