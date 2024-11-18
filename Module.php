@@ -595,7 +595,7 @@ For instructions, please refer to this section of documentation and our
     /***** public functions *****/
     /**
      *
-     * @return string
+     * @return array
      * @throws ApiException
      */
     public function EntryApi()
@@ -728,7 +728,7 @@ For instructions, please refer to this section of documentation and our
             unset($aResponseItem['Parameters']);
         }
 
-        return \Aurora\System\Managers\Response::GetJsonFromObject($sFormat, $aResponseItem);
+        return $aResponseItem;
     }
 
     /**
@@ -2151,12 +2151,6 @@ For instructions, please refer to this section of documentation and our
                     $mResult = [
                         'AuthToken' => $sAuthToken
                     ];
-
-                    // Set cookie in browser only
-                    $sXClientHeader = $this->oHttp->GetHeader('X-Client');
-                    if (strtolower($sXClientHeader) === 'webclient') {
-                        Api::setAuthTokenCookie($sAuthToken);
-                    }
                 } else {
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
                 }
@@ -2471,8 +2465,6 @@ For instructions, please refer to this section of documentation and our
         Api::UserSession()->Delete(
             Api::getAuthToken()
         );
-
-        Api::unsetAuthTokenCookie();
 
         return true;
     }
