@@ -3930,8 +3930,8 @@ For instructions, please refer to this section of documentation and our
 
     /**
      * Returns a user group
-     * @param int $GroupId 
-     * 
+     * @param int $GroupId
+     *
      * @return Group|false
      */
     public function GetGroup($GroupId)
