@@ -2149,7 +2149,7 @@ For instructions, please refer to this section of documentation and our
                     $this->getUsersManager()->updateUser($oUser);
                     Api::LogEvent('login-success: ' . $oUser->PublicId, self::GetName());
                     $mResult = [
-                        'AuthToken' => $sAuthToken
+                        \Aurora\System\Application::AUTH_TOKEN_KEY => $sAuthToken
                     ];
                 } else {
                     throw new ApiException(Notifications::AuthError, null, 'AuthError');
