@@ -595,7 +595,7 @@ For instructions, please refer to this section of documentation and our
     /***** public functions *****/
     /**
      *
-     * @return array
+     * @return string
      * @throws ApiException
      */
     public function EntryApi()
@@ -728,7 +728,7 @@ For instructions, please refer to this section of documentation and our
             unset($aResponseItem['Parameters']);
         }
 
-        return $aResponseItem;
+        return \Aurora\System\Managers\Response::GetJsonFromObject($sFormat, $aResponseItem);
     }
 
     /**
@@ -757,11 +757,11 @@ For instructions, please refer to this section of documentation and our
                     $sLanguage = $this->oHttp->GetRequest('lang');
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
 
-                    if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                        Api::setAuthTokenCookie($aResult['AuthToken']);
-                    } else {
-                        Api::unsetAuthTokenCookie();
-                    }
+                    // if (is_array($aResult) && isset($aResult['AuthToken'])) {
+                    //     Api::setAuthTokenCookie($aResult['AuthToken']);
+                    // } else {
+                    //     Api::unsetAuthTokenCookie();
+                    // }
                 }
             } else {
                 self::Decorator()->Logout();
@@ -788,9 +788,9 @@ For instructions, please refer to this section of documentation and our
             }
 
             $aResult = self::Decorator()->Login($sLogin, $sPassword);
-            if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                Api::setAuthTokenCookie($aResult['AuthToken']);
-            }
+            // if (is_array($aResult) && isset($aResult['AuthToken'])) {
+            //     Api::setAuthTokenCookie($aResult['AuthToken']);
+            // }
 
             Api::Location('./');
         }
