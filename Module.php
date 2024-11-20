@@ -620,25 +620,9 @@ For instructions, please refer to this section of documentation and our
                     Api::Log(" ");
                     Api::Log(" ===== API: " . $sModule . '::' . $sMethod);
 
-                    $bIsEmptyAuthToken = !Api::getAuthTokenFromHeaders();
+                    Api::validateAuthToken();
 
-                    if ($this->oModuleSettings->CsrfTokenProtection && !Api::validateCsrfToken()/* && !$bIsEmptyAuthToken*/) {
-                        throw new ApiException(
-                            Notifications::InvalidToken,
-                            null,
-                            'InvalidToken'
-                        );
-                    }
-
-                    if (!empty($sModule) && !empty($sMethod)) {
-                        if (!Api::validateAuthToken() && !$bIsEmptyAuthToken) {
-                            throw new ApiException(
-                                Notifications::AuthError,
-                                null,
-                                'AuthError'
-                            );
-                        }
-
+                    if (!empty($sMethod)) {
                         Api::setTenantName($sTenantName);
 
                         $aParameters = [];
@@ -692,6 +676,15 @@ For instructions, please refer to this section of documentation and our
 
                     $aAdditionalParams = null;
                     if ($oException instanceof ApiException) {
+                        if (!$oException->GetModule()) {
+                            $oException = new ApiException(
+                                $oException->getCode(), 
+                                $oException->getPrevious(), 
+                                $oException->getMessage(), 
+                                $oException->GetObjectParams(), 
+                                $oModule
+                            );
+                        }
                         $aAdditionalParams = $oException->GetObjectParams();
                     }
 
@@ -1022,21 +1015,17 @@ For instructions, please refer to this section of documentation and our
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $sTenant = '';
-        $sAuthToken = Api::getAuthToken();
-        if (!empty($sAuthToken)) {
-            $iUserId = Api::getAuthenticatedUserId();
-            if ($iUserId !== false && $iUserId > 0) {
-                $oUser = self::Decorator()->GetUserWithoutRoleCheck($iUserId);
-                if ($oUser) {
-                    $oTenant = self::Decorator()->GetTenantWithoutRoleCheck($oUser->IdTenant);
-                    if ($oTenant) {
-                        $sTenant = $oTenant->Name;
-                    }
+
+        $oUser = Api::getAuthenticatedUser();
+        if ($oUser) {
+            $oTenant = self::Decorator()->GetTenantWithoutRoleCheck($oUser->IdTenant);
+            if ($oTenant) {
+                $sTenant = $oTenant->Name;
+
+                $sPostTenant = $this->oHttp->GetPost('TenantName', '');
+                if (!empty($sPostTenant) && !empty($sTenant) && $sPostTenant !== $sTenant) {
+                    $sTenant = '';
                 }
-            }
-            $sPostTenant = $this->oHttp->GetPost('TenantName', '');
-            if (!empty($sPostTenant) && !empty($sTenant) && $sPostTenant !== $sTenant) {
-                $sTenant = '';
             }
         } else {
             $sTenant = $this->oHttp->GetRequest('tenant', '');
@@ -2289,10 +2278,9 @@ For instructions, please refer to this section of documentation and our
         Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
         $mResult = false;
         $bResult = false;
-        $sAuthToken = Api::getAuthToken();
-        $oApiIntegrator = $this->getIntegratorManager();
 
-        $aUserInfo = $oApiIntegrator->getAuthenticatedUserInfo($sAuthToken);
+        $oApiIntegrator = $this->getIntegratorManager();
+        $aUserInfo = $oApiIntegrator->getAuthenticatedUserInfo(Api::getAuthToken());
         if (isset($aUserInfo['account']) && isset($aUserInfo['accountType'])) {
             $r = new \ReflectionClass($aUserInfo['accountType']);
             $oQuery = $r->getMethod('query')->invoke(null);
