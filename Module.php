@@ -678,10 +678,10 @@ For instructions, please refer to this section of documentation and our
                     if ($oException instanceof ApiException) {
                         if (!$oException->GetModule()) {
                             $oException = new ApiException(
-                                $oException->getCode(), 
-                                $oException->getPrevious(), 
-                                $oException->getMessage(), 
-                                $oException->GetObjectParams(), 
+                                $oException->getCode(),
+                                $oException->getPrevious(),
+                                $oException->getMessage(),
+                                $oException->GetObjectParams(),
                                 $oModule
                             );
                         }
@@ -2697,11 +2697,9 @@ For instructions, please refer to this section of documentation and our
      */
     public function GetTenant($Id)
     {
-        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant !== $Id) {
-            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
+        if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->IdTenant === $Id) {
+            Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         } else {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
