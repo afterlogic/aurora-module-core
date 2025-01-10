@@ -271,9 +271,15 @@ trait Users
     */
    public function GetTotalUsersCount()
    {
-       Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-
-       return $this->getUsersManager()->getTotalUsersCount();
+        $count = 0;
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        $oUser = Api::getAuthenticatedUser();
+        if ($oUser->isAdmin()) {
+            $count = $this->getUsersManager()->getTotalUsersCount();
+        } else {
+            $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+        }
+        return $count;
    }
 
    /**
