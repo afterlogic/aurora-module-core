@@ -138,7 +138,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $mResult = 0;
         try {
-            $mResult = User::where('IdTenent', $iTenantId)->count();
+            $mResult = User::where('IdTenant', $iTenantId)->count();
         } catch (\Illuminate\Database\QueryException $oEx) {
             $mResult = 0;
             \Aurora\Api::LogException($oEx);
