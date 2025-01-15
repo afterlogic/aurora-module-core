@@ -3182,19 +3182,19 @@ For instructions, please refer to this section of documentation and our
     }
 
     /**
-     *
+     * Getting the total number of users
      */
     public function GetTotalUsersCount()
     {
-         $count = 0;
-         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-         $oUser = Api::getAuthenticatedUser();
-         if ($oUser->isAdmin()) {
-             $count = $this->getUsersManager()->getTotalUsersCount();
-         } else {
-             $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
-         }
-         return $count;
+        $count = 0;
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        $oUser = Api::getAuthenticatedUser();
+        if (!$oUser || $oUser->isAdmin()) {
+            $count = $this->getUsersManager()->getTotalUsersCount();
+        } else {
+            $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+        }
+        return $count;
     }
 
     /**
