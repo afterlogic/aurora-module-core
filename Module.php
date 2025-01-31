@@ -159,12 +159,10 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetUserByUUID',
             'GetUserByPublicId',
             'GetAdminUser',
-            'GetTenantWithoutRoleCheck',
             'GetTenantName',
             'GetTenantIdByName',
             'GetDefaultGlobalTenant',
             'UpdateTenantObject',
-            'GetUserWithoutRoleCheck',
             'UpdateTokensValidFromTimestamp',
             'GetAccountUsedToAuthorize',
             'GetDigestHash',
@@ -901,24 +899,6 @@ For instructions, please refer to this section of documentation and our
      *
      * Returns user object.
      *
-     * @param int|string $UserId User identifier or UUID.
-     * @return Models\User
-     */
-    public function GetUserWithoutRoleCheck($UserId = '')
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oUser = $this->getUsersManager()->getUser($UserId);
-
-        return $oUser ? $oUser : null;
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Returns user object.
-     *
      * @param int $UUID User uuid identifier.
      * @return Models\User
      */
@@ -970,24 +950,6 @@ For instructions, please refer to this section of documentation and our
      * !Not public
      * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
      *
-     * Returns tenant object by identifier.
-     *
-     * @param int $Id Tenant identifier.
-     * @return Models\Tenant|null
-     */
-    public function GetTenantWithoutRoleCheck($Id)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oTenant = $this->getTenantsManager()->getTenantById($Id);
-
-        return $oTenant ? $oTenant : null;
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
      * Returns tenant identifier by tenant name.
      *
      * @param string $TenantName Tenant name.
@@ -1018,7 +980,7 @@ For instructions, please refer to this section of documentation and our
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser) {
-            $oTenant = self::Decorator()->GetTenantWithoutRoleCheck($oUser->IdTenant);
+            $oTenant = \Aurora\Api::getTenantById($oUser->IdTenant);
             if ($oTenant) {
                 $sTenant = $oTenant->Name;
 
@@ -2704,7 +2666,7 @@ For instructions, please refer to this section of documentation and our
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
-        return $this->GetTenantWithoutRoleCheck($Id);
+        return \Aurora\Api::getTenantById($Id);
     }
 
     /**
@@ -3536,7 +3498,7 @@ For instructions, please refer to this section of documentation and our
 
         $oUser = null;
         if ($UserId > 0) {
-            $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+            $oUser = \Aurora\Api::getUserById($UserId);
         }
         if ($oUser) {
             if ((!empty($TenantId) && $oUser->IdTenant != $TenantId) || (!empty($PublicId) && $oUser->PublicId != $PublicId)) {
@@ -3703,7 +3665,7 @@ For instructions, please refer to this section of documentation and our
     {
         $oAuthenticatedUser = Api::getAuthenticatedUser();
 
-        $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+        $oUser = \Aurora\Api::getUserById($UserId);
 
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
