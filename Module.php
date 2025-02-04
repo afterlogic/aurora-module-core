@@ -2181,34 +2181,6 @@ For instructions, please refer to this section of documentation and our
         return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
     }
 
-    /**
-     *
-     * @param string $Login
-     * @param string $Realm
-     * @param string $Type
-     * @return void
-     */
-    public function GetDigestHash($Login, $Realm, $Type)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $mResult = null;
-
-        $aArgs = array(
-            'Login' => $Login,
-            'Realm' => $Realm,
-            'Type' => $Type
-        );
-
-        $this->broadcastEvent(
-            'GetDigestHash',
-            $aArgs,
-            $mResult
-        );
-
-        return $mResult;
-    }
-
     public function GetAccountUsedToAuthorize($Login)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
