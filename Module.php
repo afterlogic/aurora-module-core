@@ -162,7 +162,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetTenantName',
             'GetTenantIdByName',
             'GetDefaultGlobalTenant',
-            'UpdateTenantObject',
             'UpdateTokensValidFromTimestamp',
             'GetAccountUsedToAuthorize',
             'GetDigestHash',
@@ -1011,22 +1010,6 @@ For instructions, please refer to this section of documentation and our
         $oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
 
         return $oTenant ? $oTenant : null;
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Updates tenant.
-     *
-     * @param Models\Tenant $oTenant
-     * @return bool
-     */
-    public function UpdateTenantObject($oTenant)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        return $this->getTenantsManager()->updateTenant($oTenant);
     }
 
     /**
