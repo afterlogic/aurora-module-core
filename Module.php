@@ -167,7 +167,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetDigestHash',
             'VerifyPassword',
             'SetAuthDataAndGetAuthToken',
-            'IsModuleDisabledForObject',
             'GetBlockedUser',
             'BlockUser',
             'IsBlockedUser',
@@ -3767,14 +3766,6 @@ For instructions, please refer to this section of documentation and our
     public function GetCompatibilities()
     {
         return [];
-    }
-
-    /**
-     *
-     */
-    public function IsModuleDisabledForObject($oObject, $sModuleName)
-    {
-        return ($oObject instanceof \Aurora\System\Classes\Model) ? $oObject->isModuleDisabled($sModuleName) : false;
     }
 
     /**
