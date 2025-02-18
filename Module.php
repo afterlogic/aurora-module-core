@@ -745,12 +745,7 @@ For instructions, please refer to this section of documentation and our
                 if (isset($aData['Password'], $aData['Email'])) {
                     $sLanguage = $this->oHttp->GetRequest('lang');
                     $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
-
-                    // if (is_array($aResult) && isset($aResult['AuthToken'])) {
-                    //     Api::setAuthTokenCookie($aResult['AuthToken']);
-                    // } else {
-                    //     Api::unsetAuthTokenCookie();
-                    // }
+                    return \Aurora\System\Managers\Response::GetJsonFromObject('Json', ['Result' => self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage)]);
                 }
             } else {
                 self::Decorator()->Logout();
@@ -758,8 +753,6 @@ For instructions, please refer to this section of documentation and our
         } catch (\Exception $oExc) {
             Api::LogException($oExc);
         }
-
-        Api::Location('./');
     }
 
     /**
@@ -776,12 +769,7 @@ For instructions, please refer to this section of documentation and our
                 $sLogin = $sEmail;
             }
 
-            $aResult = self::Decorator()->Login($sLogin, $sPassword);
-            // if (is_array($aResult) && isset($aResult['AuthToken'])) {
-            //     Api::setAuthTokenCookie($aResult['AuthToken']);
-            // }
-
-            Api::Location('./');
+            return \Aurora\System\Managers\Response::GetJsonFromObject('Json', ['Result' => self::Decorator()->Login($sLogin, $sPassword)]);
         }
     }
 
