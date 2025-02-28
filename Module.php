@@ -139,8 +139,6 @@ class Module extends \Aurora\System\Module\AbstractModule
                 'ping' => [$this, 'EntryPing'],
                 'pull' => [$this, 'EntryPull'],
                 'mobile' => [$this, 'EntryMobile'],
-                'sso' => [$this, 'EntrySso'],
-                'postlogin' => [$this, 'EntryPostlogin'],
                 'file-cache' => [$this, 'EntryFileCache']
             ]
         );
@@ -729,48 +727,6 @@ For instructions, please refer to this section of documentation and our
         $oApiIntegrator->setMobile(true);
 
         Api::Location('./');
-    }
-
-    /**
-     * @ignore
-     */
-    public function EntrySso()
-    {
-        try {
-            $sHash = $this->oHttp->GetRequest('hash');
-            if (!empty($sHash)) {
-                $sData = Api::Cacher()->get('SSO:' . $sHash, true);
-                $aData = Api::DecodeKeyValues($sData);
-
-                if (isset($aData['Password'], $aData['Email'])) {
-                    $sLanguage = $this->oHttp->GetRequest('lang');
-                    $aResult = self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
-                    return \Aurora\System\Managers\Response::GetJsonFromObject('Json', ['Result' => self::Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage)]);
-                }
-            } else {
-                self::Decorator()->Logout();
-            }
-        } catch (\Exception $oExc) {
-            Api::LogException($oExc);
-        }
-    }
-
-    /**
-     * @ignore
-     */
-    public function EntryPostlogin()
-    {
-        if ($this->oModuleSettings->AllowPostLogin) {
-            $sEmail = trim((string) $this->oHttp->GetRequest('Email', ''));
-            $sLogin = (string) $this->oHttp->GetRequest('Login', '');
-            $sPassword = (string) $this->oHttp->GetRequest('Password', '');
-
-            if ($sLogin === '') {
-                $sLogin = $sEmail;
-            }
-
-            return \Aurora\System\Managers\Response::GetJsonFromObject('Json', ['Result' => self::Decorator()->Login($sLogin, $sPassword)]);
-        }
     }
 
     public function EntryFileCache()
