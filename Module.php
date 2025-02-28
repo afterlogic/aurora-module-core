@@ -154,7 +154,6 @@ class Module extends \Aurora\System\Module\AbstractModule
         $this->denyMethodsCallByWebApi([
             'Authenticate',
             'UpdateUserObject',
-            'GetUserByUUID',
             'GetUserByPublicId',
             'GetAdminUser',
             'GetTenantName',
@@ -833,24 +832,6 @@ For instructions, please refer to this section of documentation and our
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         return $this->getUsersManager()->updateUser($oUser);
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Returns user object.
-     *
-     * @param int $UUID User uuid identifier.
-     * @return Models\User
-     */
-    public function GetUserByUUID($UUID)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oUser = $this->getUsersManager()->getUser($UUID);
-
-        return $oUser ? $oUser : null;
     }
 
     /**
