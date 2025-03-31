@@ -202,7 +202,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
                         throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
                     }
                 } else {
-                    throw new \Aurora\System\Exceptions\ApiException(\Aurora\System\Notifications::UserAlreadyExists);
+                    throw new \Aurora\System\Exceptions\ApiException(ErrorCodes::UserAlreadyExists);
                 }
             }
 
@@ -226,7 +226,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
         try {
             if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
                 if (!$oUser->update()) {
-                    throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\ErrorCodes::UsersManager_UserCreateFailed);
+                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserUpdateFailed);
                 }
                 \Aurora\Api::removeUserFromCache($oUser->Id);
             }

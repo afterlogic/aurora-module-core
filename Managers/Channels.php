@@ -7,6 +7,7 @@
 
 namespace Aurora\Modules\Core\Managers;
 
+use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Channel;
 use Aurora\System\Enums\SortOrder;
 
@@ -153,10 +154,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
                     $oChannel->Password = md5($oChannel->Login . mt_rand(1000, 9000) . microtime(true));
 
                     if (!$oChannel->save()) {
-                        throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelCreateFailed);
+                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::ChannelCreateFailed);
                     }
                 } else {
-                    throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelAlreadyExists);
+                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::ChannelAlreadyExists);
                 }
             }
 
@@ -181,10 +182,10 @@ class Channels extends \Aurora\System\Managers\AbstractManager
             if ($oChannel->validate()) {
                 if (!$this->isExists($oChannel)) {
                     if (!$oChannel->save()) {
-                        throw new \Aurora\System\Exceptions\ManagerException(\Aurora\System\Exceptions\Errs::ChannelsManager_ChannelUpdateFailed);
+                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::ChannelUpdateFailed);
                     }
                 } else {
-                    throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::ChannelDoesNotExist);
+                    throw new \Aurora\Modules\Core\Exceptions\Exception(ErrorCodes::ChannelDoesNotExist);
                 }
             }
 
