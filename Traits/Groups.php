@@ -36,7 +36,10 @@ trait Groups
     }
 
     /**
+     * Creates a user group
      *
+     * @param int $TenantId Tetant id the groups will be created in
+     * @param string $Name Group name
      */
     public function CreateGroup($TenantId, $Name)
     {
@@ -45,6 +48,10 @@ trait Groups
         }
 
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+
+        if (empty($TenantId) || empty($Name)) {
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+        }
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser->Role === UserRole::TenantAdmin && $oUser->IdTenant !== $TenantId) {
