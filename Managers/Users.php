@@ -202,7 +202,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
                         throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
                     }
                 } else {
-                    throw new \Aurora\System\Exceptions\ApiException(ErrorCodes::UserAlreadyExists);
+                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserAlreadyExists);
                 }
             }
 
