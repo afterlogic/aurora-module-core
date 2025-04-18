@@ -27,7 +27,9 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait Users
 {
-    public function initTrait()
+    protected $oUsersManager = null;
+
+    public function initUsersTrait()
     {
         $this->denyMethodsCallByWebApi([
             'UpdateUserObject',
@@ -763,13 +765,7 @@ trait Users
         if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
             $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->IdTenant);
         }
-
-        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
-        $aUsers = [];
-        foreach ($aResults as $aUser) {
-            $aUsers[] = $aUser['PublicId'];
-        }
-        return $aUsers;
+        return $Filters->select('PublicId')->where('WriteSeparateLog', true)->orderBy('PublicId')->pluck('PublicId');
     }
 
     /**

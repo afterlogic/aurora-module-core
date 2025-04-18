@@ -28,8 +28,9 @@ use Aurora\System\Notifications;
  */
 trait Groups
 {
-    public function initTrait()
+    public function initGroupsTrait()
     {
+        $this->aErrors[ErrorCodes::GroupAlreadyExists] = $this->i18N('ERROR_GROUP_ALREADY_EXISTS');
         $this->denyMethodsCallByWebApi([
             'GetAllGroup'
         ]);

@@ -15,9 +15,6 @@ use Aurora\System\Enums;
  * @property bool $AllowCapa
  * @property bool $AllowPostLogin
  * @property bool $CsrfTokenProtection
- * @property int $CronTimeToRunSeconds
- * @property int $CronTimeToKillSeconds
- * @property string $CronTimeFile
  * @property bool $UserSelectsDateFormat
  * @property Enums\DateFormat $DateFormat
  * @property array $DateFormatList
@@ -67,24 +64,6 @@ class Settings extends \Aurora\System\Module\Settings
                 'bool',
                 null,
                 'If set to true, CSRF protection is enabled'
-            ),
-            'CronTimeToRunSeconds' => new SettingsProperty(
-                10800,
-                'int',
-                null,
-                'Defines intervals in seconds to run a routine of deleting temporary files'
-            ),
-            'CronTimeToKillSeconds' => new SettingsProperty(
-                10800,
-                'int',
-                null,
-                'Defines minimal age in seconds of temporary files to be deleted'
-            ),
-            'CronTimeFile' => new SettingsProperty(
-                '.clear.dat',
-                'string',
-                null,
-                'Defines filename for storing last timestamp when routine of deleting temporary files was run'
             ),
             'UserSelectsDateFormat' => new SettingsProperty(
                 false,

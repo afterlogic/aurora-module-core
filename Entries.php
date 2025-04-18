@@ -31,8 +31,6 @@ class Entries extends \Aurora\System\Module\AbstractEntries
 
         $this->entries = [
             'api' => [$this, 'EntryApi'],
-            'ping' => [$this, 'EntryPing'],
-            'pull' => [$this, 'EntryPull'],
             'mobile' => [$this, 'EntryMobile'],
             'file-cache' => [$this, 'EntryFileCache']
         ];

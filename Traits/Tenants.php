@@ -14,6 +14,7 @@ use Aurora\Modules\Core\Models\User;
 use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
+use Aurora\Modules\Core\Enums\ErrorCodes;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -26,8 +27,11 @@ use Aurora\System\Notifications;
  */
 trait Tenants
 {
-    public function initTrait()
+    protected $oTenantsManager = null;
+
+    public function initTenantsTrait()
     {
+        $this->aErrors[ErrorCodes::TenantAlreadyExists] = $this->i18N('ERROR_TENANT_ALREADY_EXISTS');
         $this->denyMethodsCallByWebApi([
             'GetTenantName',
             'GetTenantIdByName',
