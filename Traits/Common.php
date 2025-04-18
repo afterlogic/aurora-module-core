@@ -814,21 +814,6 @@ trait Common
     }
 
     /**
-     * Obtains authenticated account.
-     *
-     * @param string $AuthToken
-     */
-    public function GetAuthenticatedAccount($AuthToken)
-    {
-        Api::checkUserRoleIsAtLeast(UserRole::Anonymous);
-
-        $aUserInfo = Api::getAuthenticatedUserInfo($AuthToken);
-        $oAccount = call_user_func_array([$aUserInfo['accountType'], 'find'], [(int)$aUserInfo['account']]);
-
-        return $oAccount;
-    }
-
-    /**
      * Obtains all accounts from all modules for authenticated user.
      *
      * @param string $AuthToken
