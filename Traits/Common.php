@@ -1193,6 +1193,12 @@ trait Common
         return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
     }
 
+    /**
+     * Obtains an account with specified login. The account must be allowed to authenticate its user
+     *
+     * @param mixed $Login
+     * @return \Aurora\System\Classes\Account|null
+     */
     public function GetAccountUsedToAuthorize($Login)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
