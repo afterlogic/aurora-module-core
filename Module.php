@@ -3025,15 +3025,19 @@ For instructions, please refer to this section of documentation and our
     /**
      * Getting the total number of users
      */
-    public function GetTotalUsersCount()
+    public function GetTotalUsersCount($TenantId = 0)
     {
         $count = 0;
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         $oUser = Api::getAuthenticatedUser();
-        if (!$oUser || $oUser->isAdmin()) {
-            $count = $this->getUsersManager()->getTotalUsersCount();
-        } else {
-            $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+        if ($oUser) {
+            if ($oUser->isAdmin()) {
+                $count = $this->getUsersManager()->getTotalUsersCount();
+            } else {
+                $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+            }
+        } elseif ($TenantId > 0) {
+            $count = $this->getUsersManager()->getUsersCountForTenant($TenantId);
         }
         return $count;
     }
@@ -3274,7 +3278,7 @@ For instructions, please refer to this section of documentation and our
             } else {
                 if (class_exists('\Aurora\Modules\Licensing\Module')) {
                     $oLicense = \Aurora\Modules\Licensing\Module::Decorator();
-                    if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
+                    if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount($TenantId)) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
                         throw new ApiException(Notifications::LicenseLimit, null, 'LicenseLimit');
                     }
