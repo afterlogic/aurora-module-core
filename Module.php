@@ -1006,7 +1006,7 @@ For instructions, please refer to this section of documentation and our
      *
      * @return bool
      */
-    public function DoServerInitializations($Timezone = '')
+    public function DoServerInitializations()
     {
         Api::checkUserRoleIsAtLeast(UserRole::Customer);
         $result = true;
