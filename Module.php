@@ -3278,7 +3278,8 @@ For instructions, please refer to this section of documentation and our
             } else {
                 if (class_exists('\Aurora\Modules\Licensing\Module')) {
                     $oLicense = \Aurora\Modules\Licensing\Module::Decorator();
-                    if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount($TenantId)) || !$oLicense->ValidatePeriod()) {
+                    $totalUsersCount = $this->getUsersManager()->getTotalUsersCount();
+                    if (!$oLicense->ValidateUsersCount($totalUsersCount) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
                         throw new ApiException(Notifications::LicenseLimit, null, 'LicenseLimit');
                     }
