@@ -14,6 +14,7 @@ use Aurora\Modules\Core\Enums\ErrorCodes;
 use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
+use Aurora\System\Application;
 use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
@@ -147,7 +148,8 @@ class Module extends \Aurora\System\Module\AbstractModule
             [
                 ['CreateAccount', [$this, 'onCreateAccount'], 100],
                 ['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
-                ['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100]
+                ['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100],
+                ['Login::before', [$this, 'onBeforeLogin'], 90]
             ]
         );
 
@@ -480,6 +482,62 @@ For instructions, please refer to this section of documentation and our
         \Aurora\Api::removeOldLogs();
 
         return $this->redirectToHttps($aArgs['EntryName'], $mResult);
+    }
+
+    public function onBeforeLogin($aArgs, &$mResult)
+    {
+        $appCheckToken = $this->oHttp->GetHeader('X-Firebase-AppCheck');
+
+        if ($appCheckToken) {
+            $aFirebaseAppCheck = $this->getConfig('FirebaseAppCheck');
+
+            if (is_array($aFirebaseAppCheck) && count($aFirebaseAppCheck) > 0) {
+                try {
+                    $jwksUri = 'https://firebaseappcheck.googleapis.com/v1/jwks';
+                    $jwksJson = file_get_contents($jwksUri);
+                    $jwks = json_decode($jwksJson, true);
+
+                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks), ['RS256']);
+                    $payload = (array) $decoded;
+                    $header = (array) \Firebase\JWT\JWT::jsonDecode(\Firebase\JWT\JWT::urlsafeB64Decode(explode('.', $appCheckToken)[0]));
+
+                    $valid = false;
+
+                    foreach ($aFirebaseAppCheck as $projectConfig) {
+                        $projectNumber = $projectConfig['ProjectNumber'] ?? null;
+                        $allowedAppIds = array_filter($projectConfig['AppIds'] ?? []);
+
+                        if (!$projectNumber || empty($allowedAppIds)) {
+                            continue;
+                        }
+
+                        if (
+                            ($header['alg'] ?? '') === 'RS256' &&
+                            ($header['typ'] ?? '') === 'JWT' &&
+                            ($payload['iss'] ?? '') === "https://firebaseappcheck.googleapis.com/{$projectNumber}" &&
+                            ($payload['exp'] ?? 0) > time() &&
+                            in_array("projects/{$projectNumber}", (array) ($payload['aud'] ?? []), true) &&
+                            !empty($payload['sub']) &&
+                            in_array($payload['sub'], $allowedAppIds, true)
+                        ) {
+                            $valid = true;
+                            break;
+                        }
+                    }
+                    if (!$valid) {
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, 'Invalid App Check token');
+                    }
+
+                } catch (\Exception $e) {
+                    if (!($e instanceof ApiException)) {
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, 'Invalid App Check token');
+                    } else {
+                        throw $e;
+                    }
+                }
+                Application::$mobileAppChecked = true;
+            }
+        }
     }
 
     /**

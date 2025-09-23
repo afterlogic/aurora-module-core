@@ -25,7 +25,7 @@ class ErrorCodes
     public const ChannelCreateFailed = 1009;
     public const ChannelUpdateFailed = 1010;
     public const UserUpdateFailed = 1011;
-
+    public const AppCheckError = 1012;
 
     /**
      * @var array
@@ -40,5 +40,8 @@ class ErrorCodes
         'UserCreateFailed' => self::UserCreateFailed,
         'UserDeleteFailed' => self::UserDeleteFailed,
         'UserUpdateFailed' => self::UserUpdateFailed,
+        'AppCheckError' => self::AppCheckError,
+        'UserAlreadyExists' => self::UserAlreadyExists,
+        'MySqlConfigError' => self::MySqlConfigError,
     ];
 }
