@@ -15,6 +15,7 @@ use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
 use Aurora\System\Application;
+use Aurora\System\Enums\LogLevel;
 use Aurora\System\Enums\UserRole;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
@@ -486,20 +487,36 @@ For instructions, please refer to this section of documentation and our
 
     public function onBeforeLogin($aArgs, &$mResult)
     {
+        // Firebase App Check
         $appCheckToken = $this->oHttp->GetHeader('X-Firebase-AppCheck');
 
         if ($appCheckToken) {
             $aFirebaseAppCheck = $this->getConfig('FirebaseAppCheck');
 
             if (is_array($aFirebaseAppCheck) && count($aFirebaseAppCheck) > 0) {
+                $sErrorMessage = 'Invalid App Check token';
                 try {
-                    $jwksUri = 'https://firebaseappcheck.googleapis.com/v1/jwks';
-                    $jwksJson = file_get_contents($jwksUri);
+                    $jwksJson = @file_get_contents('https://firebaseappcheck.googleapis.com/v1/jwks');
+                    if ($jwksJson === false) { // Unable to fetch JWKS
+                        Api::Log('Unable to fetch JWKS from Firebase', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
                     $jwks = json_decode($jwksJson, true);
+                    if ($jwks === null) { // Invalid JSON
+                        Api::Log('Invalid JWKS JSON from Firebase', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
 
                     $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks), ['RS256']);
                     $payload = (array) $decoded;
-                    $header = (array) \Firebase\JWT\JWT::jsonDecode(\Firebase\JWT\JWT::urlsafeB64Decode(explode('.', $appCheckToken)[0]));
+
+                    $parts = explode('.', $appCheckToken);
+                    if (count($parts) !== 3) { // Invalid JWT structure
+                        Api::Log('Invalid JWT structure for App Check token', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
+
+                    $header = (array) \Firebase\JWT\JWT::jsonDecode(\Firebase\JWT\JWT::urlsafeB64Decode($parts[0]));
 
                     $valid = false;
 
@@ -525,12 +542,13 @@ For instructions, please refer to this section of documentation and our
                         }
                     }
                     if (!$valid) {
-                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, 'Invalid App Check token');
+                        Api::Log('App Check token validation failed', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
                     }
 
                 } catch (\Exception $e) {
                     if (!($e instanceof ApiException)) {
-                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, 'Invalid App Check token');
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, $e, $sErrorMessage);
                     } else {
                         throw $e;
                     }
