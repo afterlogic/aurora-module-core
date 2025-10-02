@@ -3480,7 +3480,9 @@ For instructions, please refer to this section of documentation and our
             if (!empty($TenantId)) {
                 $oUser->IdTenant = $TenantId;
             }
-            if (UserRole::validateValue($Role)) {
+
+            $authUser = Api::getAuthenticatedUser();
+            if (UserRole::validateValue($Role) && $authUser->Role === UserRole::SuperAdmin) { // Only super administrator can edit user role
                 $oUser->Role = $Role;
             }
             if ($IsDisabled !== null) {
