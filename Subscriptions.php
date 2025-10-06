@@ -8,6 +8,9 @@
 namespace Aurora\Modules\Core;
 
 use Aurora\Api;
+use Aurora\System\Application;
+use Aurora\System\Enums\LogLevel;
+use Aurora\System\Exceptions\ApiException;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -17,7 +20,7 @@ use Aurora\Api;
  * @copyright Copyright (c) 2023, Afterlogic Corp.
  *
  * @property Module $module
- * 
+ *
  * @package Modules
  */
 class Subscriptions extends \Aurora\System\Module\AbstractSubscriptions
@@ -327,6 +330,79 @@ For instructions, please refer to this section of documentation and our
         Api::removeOldLogs();
 
         return $this->redirectToHttps($aArgs['EntryName'], $mResult);
+    }
+
+    public function onBeforeLogin($aArgs, &$mResult)
+    {
+        // Firebase App Check
+        $appCheckToken = $this->module->oHttp->GetHeader('X-Firebase-AppCheck');
+
+        if ($appCheckToken) {
+            $aFirebaseAppCheck = $this->module->getConfig('FirebaseAppCheck');
+
+            if (is_array($aFirebaseAppCheck) && count($aFirebaseAppCheck) > 0) {
+                $sErrorMessage = 'Invalid App Check token';
+                try {
+                    $jwksJson = @file_get_contents('https://firebaseappcheck.googleapis.com/v1/jwks');
+                    if ($jwksJson === false) { // Unable to fetch JWKS
+                        Api::Log('Unable to fetch JWKS from Firebase', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
+                    $jwks = json_decode($jwksJson, true);
+                    if ($jwks === null) { // Invalid JSON
+                        Api::Log('Invalid JWKS JSON from Firebase', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
+
+                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks), ['RS256']);
+                    $payload = (array) $decoded;
+
+                    $parts = explode('.', $appCheckToken);
+                    if (count($parts) !== 3) { // Invalid JWT structure
+                        Api::Log('Invalid JWT structure for App Check token', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
+
+                    $header = (array) \Firebase\JWT\JWT::jsonDecode(\Firebase\JWT\JWT::urlsafeB64Decode($parts[0]));
+
+                    $valid = false;
+
+                    foreach ($aFirebaseAppCheck as $projectConfig) {
+                        $projectNumber = $projectConfig['ProjectNumber'] ?? null;
+                        $allowedAppIds = array_filter($projectConfig['AppIds'] ?? []);
+
+                        if (!$projectNumber || empty($allowedAppIds)) {
+                            continue;
+                        }
+
+                        if (
+                            ($header['alg'] ?? '') === 'RS256' &&
+                            ($header['typ'] ?? '') === 'JWT' &&
+                            ($payload['iss'] ?? '') === "https://firebaseappcheck.googleapis.com/{$projectNumber}" &&
+                            ($payload['exp'] ?? 0) > time() &&
+                            in_array("projects/{$projectNumber}", (array) ($payload['aud'] ?? []), true) &&
+                            !empty($payload['sub']) &&
+                            in_array($payload['sub'], $allowedAppIds, true)
+                        ) {
+                            $valid = true;
+                            break;
+                        }
+                    }
+                    if (!$valid) {
+                        Api::Log('App Check token validation failed', LogLevel::Error);
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
+                    }
+
+                } catch (\Exception $e) {
+                    if (!($e instanceof ApiException)) {
+                        throw new ApiException(Enums\ErrorCodes::AppCheckError, $e, $sErrorMessage);
+                    } else {
+                        throw $e;
+                    }
+                }
+                Application::$mobileAppChecked = true;
+            }
+        }
     }
 
     protected function redirectToHttps($sEntryName, $mResult)

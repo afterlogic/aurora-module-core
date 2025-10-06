@@ -24,6 +24,8 @@ use Aurora\System\Notifications;
  */
 trait Channels
 {
+    protected $oChannelsManager = null;
+
     /**
      * @return \Aurora\Modules\Core\Managers\Channels
      */
@@ -36,7 +38,7 @@ trait Channels
         return $this->oChannelsManager;
     }
 
-     /**
+    /**
      * Creates channel with specified login and description.
      *
      * @param string $Login New channel login.

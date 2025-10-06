@@ -34,8 +34,6 @@ class Entries extends \Aurora\System\Module\AbstractEntries
             'ping' => [$this, 'EntryPing'],
             'pull' => [$this, 'EntryPull'],
             'mobile' => [$this, 'EntryMobile'],
-            'sso' => [$this, 'EntrySso'],
-            'postlogin' => [$this, 'EntryPostlogin'],
             'file-cache' => [$this, 'EntryFileCache']
         ];
     }
@@ -190,59 +188,6 @@ class Entries extends \Aurora\System\Module\AbstractEntries
         $oApiIntegrator->setMobile(true);
 
         Api::Location('./');
-    }
-
-    /**
-     * @ignore
-     */
-    public function EntrySso()
-    {
-        try {
-            $sHash = $this->module->oHttp->GetRequest('hash');
-            if (!empty($sHash)) {
-                $sData = Api::Cacher()->get('SSO:' . $sHash, true);
-                $aData = Api::DecodeKeyValues($sData);
-
-                if (isset($aData['Password'], $aData['Email'])) {
-                    $sLanguage = $this->module->oHttp->GetRequest('lang');
-                    $aResult = $this->module->Decorator()->Login($aData['Email'], $aData['Password'], $sLanguage);
-
-                    if (!is_array($aResult) || (is_array($aResult) && !isset($aResult['AuthToken']))) {
-                        @\setcookie(
-                            \Aurora\System\Application::AUTH_TOKEN_KEY,
-                            '',
-                            -1
-                        );
-                    }
-                }
-            } else {
-                $this->module->Decorator()->Logout();
-            }
-        } catch (\Exception $oExc) {
-            Api::LogException($oExc);
-        }
-
-        Api::Location('./');
-    }
-
-    /**
-     * @ignore
-     */
-    public function EntryPostlogin()
-    {
-        if ($this->module->oModuleSettings->AllowPostLogin) {
-            $sEmail = trim((string) $this->module->oHttp->GetRequest('Email', ''));
-            $sLogin = (string) $this->module->oHttp->GetRequest('Login', '');
-            $sPassword = (string) $this->module->oHttp->GetRequest('Password', '');
-
-            if ($sLogin === '') {
-                $sLogin = $sEmail;
-            }
-
-            $this->module->Decorator()->Login($sLogin, $sPassword);
-
-            Api::Location('./');
-        }
     }
 
     public function EntryFileCache()

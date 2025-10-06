@@ -27,6 +27,8 @@ use Illuminate\Database\Eloquent\Builder;
  */
 trait Users
 {
+    protected $oUsersManager = null;
+
     /**
      * @return \Aurora\Modules\Core\Managers\Users
      */
@@ -53,42 +55,6 @@ trait Users
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         return $this->getUsersManager()->updateUser($oUser);
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Returns user object.
-     *
-     * @param int|string $UserId User identifier or UUID.
-     * @return User
-     */
-    public function GetUserWithoutRoleCheck($UserId = '')
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oUser = $this->getUsersManager()->getUser($UserId);
-
-        return $oUser ? $oUser : null;
-    }
-
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Returns user object.
-     *
-     * @param int $UUID User uuid identifier.
-     * @return User
-     */
-    public function GetUserByUUID($UUID)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oUser = $this->getUsersManager()->getUser($UUID);
-
-        return $oUser ? $oUser : null;
     }
 
     /**
@@ -199,166 +165,170 @@ trait Users
     *	ErrorCode: 102
     * }
     */
-   /**
-    * Returns user list.
-    *
-    * @param int $TenantId Tenant identifier.
-    * @param int $Offset Offset of user list.
-    * @param int $Limit Limit of result user list.
-    * @param string $OrderBy Name of field order by.
-    * @param int $OrderType Order type.
-    * @param string $Search Search string.
-    * @param array $Filters Filters.
-    * @return array {
-    *		*array* **Items** User list.
-    *		*int* **Count** Users count.
-    * }
-    */
-   public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null, $GroupId = -1)
-   {
-       Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+    /**
+     * Returns user list.
+     *
+     * @param int $TenantId Tenant identifier.
+     * @param int $Offset Offset of user list.
+     * @param int $Limit Limit of result user list.
+     * @param string $OrderBy Name of field order by.
+     * @param int $OrderType Order type.
+     * @param string $Search Search string.
+     * @param array $Filters Filters.
+     * @return array {
+     *		*array* **Items** User list.
+     *		*int* **Count** Users count.
+     * }
+     */
+    public function GetUsers($TenantId = 0, $Offset = 0, $Limit = 0, $OrderBy = 'PublicId', $OrderType = \Aurora\System\Enums\SortOrder::ASC, $Search = '', $Filters = null, $GroupId = -1)
+    {
+        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
-       $oAuthenticatedUser = Api::getAuthenticatedUser();
-       if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
-           if ($oAuthenticatedUser->IdTenant !== $TenantId) {
-               throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
-           }
-       } else {
-           Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-       }
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
+        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
+            if ($oAuthenticatedUser->IdTenant !== $TenantId) {
+                throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
+            }
+        } else {
+            Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+        }
 
-       $aResult = [
-           'Items' => [],
-           'Count' => 0,
-       ];
+        $aResult = [
+            'Items' => [],
+            'Count' => 0,
+        ];
 
-       $Filters = ($Filters instanceof Builder) ? $Filters : User::query();
-       if ($TenantId !== 0) {
-           $Filters = $Filters->where('IdTenant', $TenantId);
-       }
+        $Filters = ($Filters instanceof Builder) ? $Filters : User::query();
+        if ($TenantId !== 0) {
+            $Filters = $Filters->where('IdTenant', $TenantId);
+        }
 
-       $aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters, $GroupId);
-       $aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters, $GroupId);
-       foreach ($aUsers as $oUser) {
-           $aGroups = [];
-           if ($this->oModuleSettings->AllowGroups) {
-               foreach ($oUser->Groups as $oGroup) {
-                   if (!$oGroup->IsAll) {
-                       $aGroups[] = [
-                           'Id' => $oGroup->Id,
-                           'TenantId' => $oGroup->TenantId,
-                           'Name' => $oGroup->Name
-                       ];
-                   }
-               }
-           }
-           $aResult['Items'][] = [
-               'Id' => $oUser->Id,
-               'UUID' => $oUser->UUID,
-               'Name' => $oUser->Name,
-               'PublicId' => $oUser->PublicId,
-               'Role' => $oUser->Role,
-               'IsDisabled' => $oUser->IsDisabled,
-               'Groups' => $aGroups,
-           ];
-       }
+        $aResult['Count'] = $this->getUsersManager()->getUsersCount($Search, $Filters, $GroupId);
+        $aUsers = $this->getUsersManager()->getUserList($Offset, $Limit, $OrderBy, $OrderType, $Search, $Filters, $GroupId);
+        foreach ($aUsers as $oUser) {
+            $aGroups = [];
+            if ($this->oModuleSettings->AllowGroups) {
+                foreach ($oUser->Groups as $oGroup) {
+                    if (!$oGroup->IsAll) {
+                        $aGroups[] = [
+                            'Id' => $oGroup->Id,
+                            'TenantId' => $oGroup->TenantId,
+                            'Name' => $oGroup->Name
+                        ];
+                    }
+                }
+            }
+            $aResult['Items'][] = [
+                'Id' => $oUser->Id,
+                'UUID' => $oUser->UUID,
+                'Name' => $oUser->Name,
+                'PublicId' => $oUser->PublicId,
+                'Role' => $oUser->Role,
+                'IsDisabled' => $oUser->IsDisabled,
+                'Groups' => $aGroups,
+            ];
+        }
 
-       return $aResult;
-   }
+        return $aResult;
+    }
 
-   /**
-    *
-    */
-   public function GetTotalUsersCount()
-   {
+    /**
+     * Getting the total number of users
+     */
+    public function GetTotalUsersCount($TenantId = 0)
+    {
         $count = 0;
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
         $oUser = Api::getAuthenticatedUser();
-        if ($oUser->isAdmin()) {
-            $count = $this->getUsersManager()->getTotalUsersCount();
-        } else {
-            $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+        if ($oUser) {
+            if ($oUser->isAdmin()) {
+                $count = $this->getUsersManager()->getTotalUsersCount();
+            } else {
+                $count = $this->getUsersManager()->getUsersCountForTenant($oUser->IdTenant);
+            }
+        } elseif ($TenantId > 0) {
+            $count = $this->getUsersManager()->getUsersCountForTenant($TenantId);
         }
         return $count;
-   }
+    }
 
-   /**
-    * @api {post} ?/Api/ GetUser
-    * @apiName GetUser
-    * @apiGroup Core
-    * @apiDescription Returns user data.
-    *
-    * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
-    * @apiHeaderExample {json} Header-Example:
-    *	{
-    *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
-    *	}
-    *
-    * @apiParam {string=Core} Module Module name.
-    * @apiParam {string=GetUser} Method Method name.
-    * @apiParam {string} Parameters JSON.stringified object <br>
-    * {<br>
-    * &emsp; **UserId** *string* User identifier.<br>
-    * }
-    *
-    * @apiParamExample {json} Request-Example:
-    * {
-    *	Module: 'Core',
-    *	Method: 'GetUser',
-    *	Parameters: '{ "Id": 17 }'
-    * }
-    *
-    * @apiSuccess {object[]} Result Array of response objects.
-    * @apiSuccess {string} Result.Module Module name.
-    * @apiSuccess {string} Result.Method Method name.
-    * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
-    * @apiSuccess {int} [Result.ErrorCode] Error code.
-    *
-    * @apiSuccessExample {json} Success response example:
-    * {
-    *	Module: 'Core',
-    *	Method: 'GetUser',
-    *	Result: {
-    *		'Name': '',
-    *		'PublicId': 'mail@domain.com',
-    *		'Role': 2,
-    *		'WriteSeparateLog': false
-    *	}
-    * }
-    *
-    * @apiSuccessExample {json} Error response example:
-    * {
-    *	Module: 'Core',
-    *	Method: 'GetUser',
-    *	Result: false,
-    *	ErrorCode: 102
-    * }
-    */
-   /**
-    * Returns user object.
-    *
-    * @param int|string $Id User identifier or UUID.
-    * @return User|null
-    */
-   public function GetUser($Id = '')
-   {
-       $oUser = $this->getUsersManager()->getUser($Id);
-       $oAuthenticatedUser = Api::getAuthenticatedUser();
+    /**
+     * @api {post} ?/Api/ GetUser
+     * @apiName GetUser
+     * @apiGroup Core
+     * @apiDescription Returns user data.
+     *
+     * @apiHeader {string} Authorization "Bearer " + Authentication token which was received as the result of Core.Login method.
+     * @apiHeaderExample {json} Header-Example:
+     *	{
+     *		"Authorization": "Bearer 32b2ecd4a4016fedc4abee880425b6b8"
+     *	}
+     *
+     * @apiParam {string=Core} Module Module name.
+     * @apiParam {string=GetUser} Method Method name.
+     * @apiParam {string} Parameters JSON.stringified object <br>
+     * {<br>
+     * &emsp; **UserId** *string* User identifier.<br>
+     * }
+     *
+     * @apiParamExample {json} Request-Example:
+     * {
+     *	Module: 'Core',
+     *	Method: 'GetUser',
+     *	Parameters: '{ "Id": 17 }'
+     * }
+     *
+     * @apiSuccess {object[]} Result Array of response objects.
+     * @apiSuccess {string} Result.Module Module name.
+     * @apiSuccess {string} Result.Method Method name.
+     * @apiSuccess {bool} Result.Result Indicates if test of database connection was successful.
+     * @apiSuccess {int} [Result.ErrorCode] Error code.
+     *
+     * @apiSuccessExample {json} Success response example:
+     * {
+     *	Module: 'Core',
+     *	Method: 'GetUser',
+     *	Result: {
+     *		'Name': '',
+     *		'PublicId': 'mail@domain.com',
+     *		'Role': 2,
+     *		'WriteSeparateLog': false
+     *	}
+     * }
+     *
+     * @apiSuccessExample {json} Error response example:
+     * {
+     *	Module: 'Core',
+     *	Method: 'GetUser',
+     *	Result: false,
+     *	ErrorCode: 102
+     * }
+     */
+    /**
+     * Returns user object.
+     *
+     * @param int|string $Id User identifier or UUID.
+     * @return User|null
+     */
+    public function GetUser($Id = '')
+    {
+        $oUser = $this->getUsersManager()->getUser($Id);
+        $oAuthenticatedUser = Api::getAuthenticatedUser();
 
-       if ($oUser) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
-           if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
-               Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
-           } elseif (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
-               Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
-           } else {
-               Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-           }
+        if ($oUser) { // User may be needed for anonymous on reset password or register screens. It can be obtained after using skipCheckUserRole method.
+            if (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::NormalUser && $oAuthenticatedUser->Id === $oUser->Id) {
+                Api::checkUserRoleIsAtLeast(UserRole::NormalUser);
+            } elseif (($oAuthenticatedUser instanceof User) && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $oUser->IdTenant) {
+                Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+            } else {
+                Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+            }
 
-           return $oUser;
-       }
+            return $oUser;
+        }
 
-       return null;
-   }
+        return null;
+    }
 
     /**
      * @api {post} ?/Api/ CreateUser
@@ -432,7 +402,7 @@ trait Users
         // if $TenantId === 0  we need to get default tenant
         if ($TenantId === 0) {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
-            $oTenant = $this->GetDefaultGlobalTenant();
+            $oTenant = $this->getTenantsManager()->getDefaultGlobalTenant();
             $TenantId = $oTenant ? $oTenant->Id : null;
         }
 
@@ -442,7 +412,7 @@ trait Users
         }
 
         if (!$oTenant) {
-            $oTenant = $this->GetTenant($TenantId);
+            $oTenant = $this->getTenantsManager()->getTenantById($TenantId);
             if (!$oTenant) {
                 throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
             }
@@ -460,7 +430,8 @@ trait Users
             } else {
                 if (class_exists('\Aurora\Modules\Licensing\Module')) {
                     $oLicense = \Aurora\Modules\Licensing\Module::Decorator();
-                    if (!$oLicense->ValidateUsersCount($this->GetTotalUsersCount()) || !$oLicense->ValidatePeriod()) {
+                    $totalUsersCount = $this->getUsersManager()->getTotalUsersCount();
+                    if (!$oLicense->ValidateUsersCount($totalUsersCount) || !$oLicense->ValidatePeriod()) {
                         Api::Log("Error: License limit");
                         throw new ApiException(Notifications::LicenseLimit, null, 'LicenseLimit');
                     }
@@ -563,7 +534,7 @@ trait Users
 
         $oUser = null;
         if ($UserId > 0) {
-            $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+            $oUser = Api::getUserById($UserId);
         }
         if ($oUser) {
             if ((!empty($TenantId) && $oUser->IdTenant != $TenantId) || (!empty($PublicId) && $oUser->PublicId != $PublicId)) {
@@ -585,7 +556,9 @@ trait Users
             if (!empty($TenantId)) {
                 $oUser->IdTenant = $TenantId;
             }
-            if (UserRole::validateValue($Role)) {
+
+            $authUser = Api::getAuthenticatedUser();
+            if (UserRole::validateValue($Role) && $authUser->Role === UserRole::SuperAdmin) { // Only super administrator can edit user role
                 $oUser->Role = $Role;
             }
             if ($IsDisabled !== null) {
@@ -730,7 +703,7 @@ trait Users
     {
         $oAuthenticatedUser = Api::getAuthenticatedUser();
 
-        $oUser = self::Decorator()->GetUserWithoutRoleCheck($UserId);
+        $oUser = Api::getUserById($UserId);
 
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
 
@@ -834,7 +807,7 @@ trait Users
     public function GetUserSessions()
     {
         $aResult = [];
-        if (\Aurora\Api::GetSettings()->StoreAuthTokenInDB) {
+        if (Api::GetSettings()->StoreAuthTokenInDB) {
             $oUser = Api::getAuthenticatedUser();
             if ($oUser) {
                 $aUserSessions = Api::UserSession()->GetUserSessionsFromDB($oUser->Id);

@@ -26,6 +26,8 @@ use Aurora\System\Notifications;
  */
 trait Tenants
 {
+    protected $oTenantsManager = null;
+
     /**
      * @return \Aurora\Modules\Core\Managers\Tenants
      */
@@ -36,24 +38,6 @@ trait Tenants
         }
 
         return $this->oTenantsManager;
-    }
-    
-    /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Returns tenant object by identifier.
-     *
-     * @param int $Id Tenant identifier.
-     * @return Tenant|null
-     */
-    public function GetTenantWithoutRoleCheck($Id)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oTenant = $this->getTenantsManager()->getTenantById($Id);
-
-        return $oTenant ? $oTenant : null;
     }
 
     /**
@@ -90,7 +74,7 @@ trait Tenants
 
         $oUser = Api::getAuthenticatedUser();
         if ($oUser) {
-            $oTenant = self::Decorator()->GetTenantWithoutRoleCheck($oUser->IdTenant);
+            $oTenant = Api::getTenantById($oUser->IdTenant);
             if ($oTenant) {
                 $sTenant = $oTenant->Name;
 
@@ -293,7 +277,7 @@ trait Tenants
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
-        return $this->GetTenantWithoutRoleCheck($Id);
+        return Api::getTenantById($Id);
     }
 
     /**
@@ -645,4 +629,5 @@ trait Tenants
 
         return false;
     }
+
 }

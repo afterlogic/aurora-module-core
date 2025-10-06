@@ -37,6 +37,7 @@ use Aurora\System\Enums;
  * @property int $LoginBlockIpReputationThreshold
  * @property bool $AllowGroups
  * @property string $CookieSameSite
+ * @property array $FirebaseAppCheck
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -194,6 +195,21 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 'Sets the SameSite value of system cookies such as AuthToken cookie. Possible values: None, Lax, or Strict'
             ),
+            "FirebaseAppCheck" => new SettingsProperty(
+                [
+                    [
+                        'ProjectNumber' => '',
+                        'AppIds' => [
+                            'ios' => '',
+                            'android' => '',
+                            'web' => ''
+                        ]
+                        ],
+                ],
+                "array",
+                null,
+                "Setting Firebase App Check"
+            )
         ];
     }
 }
