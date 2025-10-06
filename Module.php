@@ -2164,14 +2164,15 @@ For instructions, please refer to this section of documentation and our
         return $this->Decorator()->SetAuthDataAndGetAuthToken($aAuthData, $Language, $SignMe);
     }
 
-    public function GetAccountUsedToAuthorize($Login)
+    public function GetAccountUsedToAuthorize($Login, $Disabled = false)
     {
         /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
 
         $mResult = null;
 
         $aArgs = array(
-            'Login' => $Login
+            'Login' => $Login,
+            'Disabled' => $Disabled,
         );
 
         $this->broadcastEvent(
