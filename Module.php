@@ -507,7 +507,7 @@ For instructions, please refer to this section of documentation and our
                         throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
                     }
 
-                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks), ['RS256']);
+                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks));
                     $payload = (array) $decoded;
 
                     $parts = explode('.', $appCheckToken);
