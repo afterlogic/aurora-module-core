@@ -4,7 +4,7 @@
 	"require": {
 		"php": ">=5.4.0",
 		"afterlogic/aurora-framework": "^0.10.122",
-		"firebase/php-jwt": "~5.0"
+		"firebase/php-jwt": "^6.0"
 	},
 	"autoload": {
 		"classmap": ["/"]
