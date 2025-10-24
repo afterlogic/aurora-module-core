@@ -42,6 +42,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     {
         $aResult = [];
         if (!empty($sSearchDesc)) {
+            $sSearchDesc = str_replace(['%', '_'], ['\%', '\_'], $sSearchDesc);
             $query = Channel::where('Login', 'like', '%' . $sSearchDesc . '%');
         } else {
             $query = Channel::query();
@@ -69,6 +70,7 @@ class Channels extends \Aurora\System\Managers\AbstractManager
     {
         $iResult = 0;
         try {
+            $sSearchDesc = str_replace(['%', '_'], ['\%', '\_'], $sSearchDesc);
             $iResult = Channel::where('Login', 'like', '%' . $sSearchDesc . '%')->where('Description', 'like', '%' . $sSearchDesc . '%')->count();
         } catch (\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);

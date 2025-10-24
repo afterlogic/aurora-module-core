@@ -152,6 +152,7 @@ trait Groups
 
         $query = Group::where('TenantId', $TenantId);
         if (!empty($Search)) {
+            $Search = str_replace(['%', '_'], ['\%', '\_'], $Search);
             $query = $query->where(function ($q) use ($Search) {
                 $q->where('Name', 'LIKE', '%' . $Search . '%');
                 $q->orWhere('IsAll', true);

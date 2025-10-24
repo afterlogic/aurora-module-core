@@ -40,6 +40,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     {
         $oResult = collect();
         if (!empty($sSearch)) {
+            $sSearch = str_replace(['%', '_'], ['\%', '\_'], $sSearch);
             $query = Tenant::where('Name', 'like', '%' . $sSearch . '%');
         } else {
             $query = Tenant::query();
@@ -68,6 +69,7 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
         $iResult = 0;
         try {
             if (!empty($sSearch)) {
+                $sSearch = str_replace(['%', '_'], ['\%', '\_'], $sSearch);
                 $query = Tenant::where('Name', 'like', '%' . $sSearch . '%');
             } else {
                 $query = Tenant::query();
