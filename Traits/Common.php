@@ -907,7 +907,8 @@ trait Common
                 $DbName,
                 $oSettings->DBPrefix,
                 $DbLogin,
-                $DbPassword
+                $DbPassword,
+                $oSettings->DBEngine
             ));
             $oPdo = $capsule->getConnection()->getPdo();
 
