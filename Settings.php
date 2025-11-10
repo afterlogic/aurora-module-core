@@ -130,7 +130,7 @@ class Settings extends \Aurora\System\Module\Settings
                 'Setting to true enables language autodetection'
             ),
             'PostLoginErrorRedirectUrl' => new SettingsProperty(
-                './',
+                '',
                 'string',
                 null,
                 'If login credentials were supplied with POST method, this setting defines redirect URL used when authentication error occurs'
