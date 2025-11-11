@@ -74,7 +74,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetTenantIdByName',
             'GetDefaultGlobalTenant',
             'UpdateTenantObject',
-            'UpdateTokensValidFromTimestamp',
             'GetAccountUsedToAuthorize',
             'GetDigestHash',
             'VerifyPassword',

@@ -45,7 +45,6 @@ use Aurora\Modules\Core\Models\Tenant;
  * @property string $PasswordResetHash  @Deprecated since 9.7.0
  * @property bool   $WriteSeparateLog   If set to true, a separate log file is recorded for the user
  * @property string $DefaultTimeZone    Default time zone set for this user
- * @property int    $TokensValidFromTimestamp   Timestamp the token is valid since
  * @property array  $Properties     Custom properties for use by other modules
  * @property string $Note           User text note
  * @property \Illuminate\Support\Carbon|null $CreatedAt
@@ -89,7 +88,6 @@ use Aurora\Modules\Core\Models\Tenant;
  * @method static \Illuminate\Database\Eloquent\Builder|User whereSipImpi($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereSipPassword($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereTimeFormat($value)
- * @method static \Illuminate\Database\Eloquent\Builder|User whereTokensValidFromTimestamp($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUUID($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereUpdatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|User whereWriteSeparateLog($value)
@@ -150,7 +148,6 @@ class User extends Model
         'PasswordResetHash',
         'WriteSeparateLog',
         'DefaultTimeZone',
-        'TokensValidFromTimestamp',
         'Properties',
         'Note',
     ];

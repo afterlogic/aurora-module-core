@@ -93,22 +93,6 @@ trait Users
     }
 
     /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * @param User $oUser
-     * @return int
-     */
-    public function UpdateTokensValidFromTimestamp($oUser)
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        $oUser->TokensValidFromTimestamp = time();
-        $this->getUsersManager()->updateUser($oUser);
-        return $oUser->TokensValidFromTimestamp;
-    }
-
-    /**
     * @api {post} ?/Api/ GetUsers
     * @apiName GetUsers
     * @apiGroup Core
