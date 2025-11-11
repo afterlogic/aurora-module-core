@@ -1531,7 +1531,7 @@ trait Common
      */
     public function ClearSeparateLogs()
     {
-        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
         Api::RemoveSeparateLogs();
 
@@ -1543,6 +1543,8 @@ trait Common
      */
     public function GetLogFilesData()
     {
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
+
         $aData = [];
 
         $sFileName = Api::GetLogFileName();

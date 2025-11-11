@@ -721,15 +721,9 @@ trait Users
      */
     public function GetUsersWithSeparateLog()
     {
-        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $Filters = User::query();
-        $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
-            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->IdTenant);
-        }
-
-        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
+        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', User::where('WriteSeparateLog', true));
         $aUsers = [];
         foreach ($aResults as $aUser) {
             $aUsers[] = $aUser['PublicId'];
@@ -742,15 +736,9 @@ trait Users
      */
     public function TurnOffSeparateLogs()
     {
-        Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
+        Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
 
-        $Filters = User::query();
-        $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if ($oAuthenticatedUser->Role === UserRole::TenantAdmin) {
-            $Filters = $Filters->where('IdTenant', $oAuthenticatedUser->IdTenant);
-        }
-
-        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', $Filters->where('WriteSeparateLog', true));
+        $aResults = $this->getUsersManager()->getUserList(0, 0, 'PublicId', \Aurora\System\Enums\SortOrder::ASC, '', User::where('WriteSeparateLog', true));
         foreach ($aResults as $aUser) {
             $oUser = self::Decorator()->GetUser($aUser['EntityId']);
             if ($oUser) {
