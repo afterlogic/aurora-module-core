@@ -938,6 +938,8 @@ trait Common
     /**
      * Obtains all accounts from all modules for authenticated user.
      *
+     * @deprecated since version 9.8.4
+     *
      * @param string $AuthToken
      * @param string $Type
      * @return array
