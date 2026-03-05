@@ -11,6 +11,7 @@ use Aurora\Api;
 use Aurora\System\Exceptions\ApiException;
 use Aurora\System\Notifications;
 use Aurora\System\Enums\UserRole;
+use Aurora\System\Facades\Http;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -30,11 +31,11 @@ class Entries extends \Aurora\System\Module\AbstractEntries
         parent::__construct($module);
 
         $this->entries = [
-            'api' => [$this, 'EntryApi'],
-            'ping' => [$this, 'EntryPing'],
-            'pull' => [$this, 'EntryPull'],
-            'mobile' => [$this, 'EntryMobile'],
-            'file-cache' => [$this, 'EntryFileCache']
+            'api' => 'EntryApi',
+            'ping' => 'EntryPing',
+            'pull' => 'EntryPull',
+            'mobile' => 'EntryMobile',
+            'file-cache' => 'EntryFileCache'
         ];
     }
 
@@ -73,11 +74,11 @@ class Entries extends \Aurora\System\Module\AbstractEntries
         Api::validateAuthToken();
 
         $aResponseItem = null;
-        $sModule = $this->module->oHttp->GetPost('Module', null);
-        $sMethod = $this->module->oHttp->GetPost('Method', null);
-        $sParameters = $this->module->oHttp->GetPost('Parameters', null);
-        $sFormat = $this->module->oHttp->GetPost('Format', null);
-        $sTenantName = $this->module->oHttp->GetPost('TenantName', null);
+        $sModule = Http::GetPost('Module', null);
+        $sMethod = Http::GetPost('Method', null);
+        $sParameters = Http::GetPost('Parameters', null);
+        $sFormat = Http::GetPost('Format', null);
+        $sTenantName = Http::GetPost('TenantName', null);
 
         if (isset($sModule, $sMethod)) {
             $oModule = Api::GetModule($sModule);
