@@ -76,23 +76,6 @@ trait Users
     }
 
     /**
-     * !Not public
-     * This method is restricted to be called by web API (see denyMethodsCallByWebApi method).
-     *
-     * Creates and returns user with super administrator role.
-     *
-     * @deprecated sinse version 9.7.8
-     *
-     * @return User
-     */
-    public function GetAdminUser()
-    {
-        /** This method is restricted to be called by web API (see denyMethodsCallByWebApi method). **/
-
-        return Integrator::GetAdminUser();
-    }
-
-    /**
     * @api {post} ?/Api/ GetUsers
     * @apiName GetUsers
     * @apiGroup Core

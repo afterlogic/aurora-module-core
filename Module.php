@@ -69,7 +69,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             'Authenticate',
             'UpdateUserObject',
             'GetUserByPublicId',
-            'GetAdminUser',
             'GetTenantName',
             'GetTenantIdByName',
             'GetDefaultGlobalTenant',
