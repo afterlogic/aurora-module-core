@@ -390,6 +390,10 @@ trait Users
             throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
         }
 
+        if (!preg_match('/^[a-zA-Z0-9\.\_\-\+\@]+$/', $PublicId)) {
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+        }
+
         if (!empty($TenantId) && !empty($PublicId)) {
             $oUser = $this->getUsersManager()->getUserByPublicId($PublicId);
             if ($oUser instanceof User) {
