@@ -84,5 +84,6 @@ class Module extends \Aurora\System\Module\AbstractModule
             'GetAllGroup',
             'CheckIpReputation'
         ]);
+        $test = 'phpstan';
     }
 }
