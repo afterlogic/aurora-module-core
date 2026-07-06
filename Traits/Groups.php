@@ -384,6 +384,10 @@ trait Groups
             throw new ApiException(Notifications::MethodAccessDenied, null, 'MethodAccessDenied');
         }
 
+        if (!is_array($GroupIds)) {
+            throw new ApiException(Notifications::InvalidInputParameter, null, 'InvalidInputParameter');
+        }
+
         $mResult = false;
 
         Api::checkUserRoleIsAtLeast(UserRole::TenantAdmin);
@@ -394,6 +398,10 @@ trait Groups
             throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
         }
         if ($oUser) {
+            $GroupIds = array_filter($GroupIds, function ($id) {
+                return is_numeric($id) && $id > 0;
+            });
+
             $aGroupIds = Group::where('IsAll', false)->whereIn('Id', $GroupIds)->get(['Id'])->map(function ($oGroup) {
                 return $oGroup->Id;
             });
