@@ -11,6 +11,7 @@ use Aurora\Api;
 use Aurora\System\Application;
 use Aurora\System\Enums\LogLevel;
 use Aurora\System\Exceptions\ApiException;
+use Aurora\System\Utils;
 
 /**
  * System module that provides core functionality such as User management, Tenants management.
@@ -414,7 +415,7 @@ For instructions, please refer to this section of documentation and our
             $bHttps = Api::isHttps();
             if ($bRedirectToHttps && !$bHttps) {
                 if (\strtolower($sEntryName) !== 'api') {
-                    \header("Location: https://" . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']);
+                    \header("Location: https://" . $_SERVER['HTTP_HOST'] . Utils::RequestUri());
                 } else {
                     $mResult = [
                         'ErrorCode' => 110
