@@ -20,6 +20,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\NullOutput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Aurora\System\Managers\Integrator;
+use Aurora\System\Session;
 use Carbon\Carbon;
 
 /**
@@ -1213,6 +1214,9 @@ trait Common
                 }
 
                 $sAuthToken = Api::UserSession()->Set($aAuthData, $iTime, $iExpire);
+
+                // Regenerate session ID to prevent session fixation attacks after authentication.
+                Session::regenerateId(true);
 
                 //this will store user data in static variable of Api class for later usage
                 $oUser = Api::getAuthenticatedUser($sAuthToken, true);
