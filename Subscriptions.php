@@ -73,8 +73,11 @@ class Subscriptions extends \Aurora\System\Module\AbstractSubscriptions
             }
             if (!isset($oUser)) {
                 $bPrevState = Api::skipCheckUserRole(true);
-                $iUserId = $this->module->Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
-                Api::skipCheckUserRole($bPrevState);
+                try {
+                    $iUserId = $this->module->Decorator()->CreateUser(isset($Args['TenantId']) ? (int) $Args['TenantId'] : 0, $sPublicId);
+                } finally {
+                    Api::skipCheckUserRole($bPrevState);
+                }
                 $oUser = $this->module->getUsersManager()->getUser($iUserId);
             }
 
