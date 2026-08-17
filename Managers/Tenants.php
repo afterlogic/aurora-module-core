@@ -9,6 +9,7 @@ namespace Aurora\Modules\Core\Managers;
 
 use Aurora\Modules\Core\Module as CoreModule;
 use Aurora\Modules\Core\Models\Tenant;
+use Illuminate\Support\Facades\DB;
 use Aurora\System\Enums\SortOrder;
 
 /**
@@ -161,7 +162,10 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
         $bResult = false;
 
         try {
-            $bResult = Tenant::where('Name', $oTenant->Name)->where('Id', '!=', $oTenant->Id)->exists();
+            $bResult = Tenant::where('Name', $oTenant->Name)
+                ->where('Id', '!=', $oTenant->Id)
+                ->sharedLock()
+                ->exists();
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
         }
@@ -176,36 +180,40 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     public function createTenant(Tenant &$oTenant)
     {
         try {
-            if ($oTenant->validate() && !$oTenant->IsDefault) {
-                if (!$this->isTenantExists($oTenant)) {
-                    if (0 < $oTenant->IdChannel) {
-                        /* @var $oChannelsApi CApiChannelsManager */
+            return DB::transaction(function () use (&$oTenant) {
+                if ($oTenant->validate() && !$oTenant->IsDefault) {
+                    if (!$this->isTenantExists($oTenant)) {
+                        if (0 < $oTenant->IdChannel) {
+                            /* @var $oChannelsApi CApiChannelsManager */
 
-                        $oChannelsManager = CoreModule::getInstance()->getChannelsManager();
-                        if ($oChannelsManager) {
-                            /* @var $oChannel Channel */
-                            $oChannel = $oChannelsManager->getChannelById($oTenant->IdChannel);
-                            if (!$oChannel) {
-                                throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::ChannelDoesNotExist);
+                            $oChannelsManager = CoreModule::getInstance()->getChannelsManager();
+                            if ($oChannelsManager) {
+                                /* @var $oChannel Channel */
+                                $oChannel = $oChannelsManager->getChannelById($oTenant->IdChannel);
+                                if (!$oChannel) {
+                                    throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::ChannelDoesNotExist);
+                                }
+                            } else {
+                                $oTenant->IdChannel = 0;
                             }
                         } else {
                             $oTenant->IdChannel = 0;
                         }
+
+                        if (Tenant::count() === 0) {
+                            $oTenant->IsDefault = true;
+                        }
+
+                        return $oTenant->save();
                     } else {
-                        $oTenant->IdChannel = 0;
+                        throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::TenantAlreadyExists);
                     }
-
-                    if (Tenant::count() === 0) {
-                        $oTenant->IsDefault = true;
-                    }
-
-                    return $oTenant->save();
-                } else {
-                    throw new \Aurora\Modules\Core\Exceptions\Exception(\Aurora\Modules\Core\Enums\ErrorCodes::TenantAlreadyExists);
                 }
-            }
+            });
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
+        } catch(\Aurora\Modules\Core\Exceptions\Exception $oException) {
+            $this->setLastException($oException);
         }
 
         return false;
@@ -220,15 +228,18 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oTenant->validate() && $oTenant->Id !== 0) {
-                $bResult = $oTenant->save();
-                if ($bResult) {
-                    \Aurora\Api::removeTenantFromCache($oTenant->Id);
+            DB::transaction(function () use (&$oTenant, &$bResult) {
+                if ($oTenant->validate() && $oTenant->Id !== 0) {
+                    $bResult = $oTenant->save();
+                    if ($bResult) {
+                        \Aurora\Api::removeTenantFromCache($oTenant->Id);
+                    }
                 }
-            }
+            });
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
         }
+
         return $bResult;
     }
 
@@ -283,7 +294,9 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
      */
     public function deleteTenantsByChannelId($iChannelId)
     {
-        return Tenant::where('IdChannel', $iChannelId)->delete();
+        return DB::transaction(function () use ($iChannelId) {
+            return Tenant::where('IdChannel', $iChannelId)->delete();
+        });
     }
 
     /**
@@ -297,12 +310,14 @@ class Tenants extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oTenant) {
-                $bResult = $oTenant->delete();
-                if ($bResult) {
-                    \Aurora\Api::removeTenantFromCache($oTenant->Id);
+            DB::transaction(function () use (&$oTenant, &$bResult) {
+                if ($oTenant) {
+                    $bResult = $oTenant->delete();
+                    if ($bResult) {
+                        \Aurora\Api::removeTenantFromCache($oTenant->Id);
+                    }
                 }
-            }
+            });
         } catch(\Illuminate\Database\QueryException $oException) {
             \Aurora\Api::LogException($oException);
         }
