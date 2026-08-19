@@ -771,14 +771,10 @@ trait Users
             if ($oUser) {
                 $aUserSessions = Api::UserSession()->GetUserSessionsFromDB($oUser->Id);
                 foreach ($aUserSessions as $oUserSession) {
-                    $aTokenInfo = Api::DecodeKeyValues($oUserSession->Token);
-
-                    if ($aTokenInfo !== false && isset($aTokenInfo['id'])) {
-                        $aResult[] = [
-                            'LastUsageDateTime' => $oUserSession->LastUsageDateTime,
-                            'ExpireDateTime' => (int) isset($aTokenInfo['@expire']) ? $aTokenInfo['@expire'] : 0,
-                        ];
-                    }
+                    $aResult[] = [
+                        'LastUsageDateTime' => $oUserSession->LastUsageDateTime,
+                        'ExpireDateTime' => 0,
+                    ];
                 }
             }
         }
