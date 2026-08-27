@@ -32,7 +32,8 @@ class Subscriptions extends \Aurora\System\Module\AbstractSubscriptions
         $this->callbacks = [
             ['CreateAccount', [$this, 'onCreateAccount'], 100],
             ['Core::GetCompatibilities::after', [$this, 'onAfterGetCompatibilities']],
-            ['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100]
+            ['System::RunEntry::before', [$this, 'onBeforeRunEntry'], 100],
+            ['Login::before', [$this, 'onBeforeLogin'], 90]
         ];
     }
 
@@ -354,7 +355,7 @@ For instructions, please refer to this section of documentation and our
                         throw new ApiException(Enums\ErrorCodes::AppCheckError, null, $sErrorMessage);
                     }
 
-                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks), ['RS256']);
+                    $decoded = \Firebase\JWT\JWT::decode($appCheckToken, \Firebase\JWT\JWK::parseKeySet($jwks));
                     $payload = (array) $decoded;
 
                     $parts = explode('.', $appCheckToken);
