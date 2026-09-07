@@ -342,7 +342,21 @@ For instructions, please refer to this section of documentation and our
         if ($appCheckToken) {
             $aFirebaseAppCheck = $this->module->getConfig('FirebaseAppCheck');
 
-            if (is_array($aFirebaseAppCheck) && count($aFirebaseAppCheck) > 0) {
+            $aConfiguredProjects = [];
+            if (is_array($aFirebaseAppCheck)) {
+                foreach ($aFirebaseAppCheck as $projectConfig) {
+                    $projectNumber = (string) ($projectConfig['ProjectNumber'] ?? '');
+                    $allowedAppIds = array_filter($projectConfig['AppIds'] ?? []);
+
+                    // Ignore blank/placeholder entries (e.g. the shipped default) so they
+                    // don't reject every login request that carries an App Check token.
+                    if ($projectNumber !== '' && !empty($allowedAppIds)) {
+                        $aConfiguredProjects[] = ['ProjectNumber' => $projectNumber, 'AppIds' => $allowedAppIds];
+                    }
+                }
+            }
+
+            if (count($aConfiguredProjects) > 0) {
                 $sErrorMessage = 'Invalid App Check token';
                 try {
                     $jwksJson = @file_get_contents('https://firebaseappcheck.googleapis.com/v1/jwks');
@@ -369,13 +383,9 @@ For instructions, please refer to this section of documentation and our
 
                     $valid = false;
 
-                    foreach ($aFirebaseAppCheck as $projectConfig) {
-                        $projectNumber = $projectConfig['ProjectNumber'] ?? null;
-                        $allowedAppIds = array_filter($projectConfig['AppIds'] ?? []);
-
-                        if (!$projectNumber || empty($allowedAppIds)) {
-                            continue;
-                        }
+                    foreach ($aConfiguredProjects as $projectConfig) {
+                        $projectNumber = $projectConfig['ProjectNumber'];
+                        $allowedAppIds = $projectConfig['AppIds'];
 
                         if (
                             ($header['alg'] ?? '') === 'RS256' &&
