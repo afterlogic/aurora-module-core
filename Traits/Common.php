@@ -50,6 +50,9 @@ trait Common
     /**
      * Recursively deletes temporary files and folders on time.
      *
+     * NOTE: unused — only called from ClearTempFiles(), which itself has no call
+     * sites anywhere in this codebase. Kept for backward compatibility.
+     *
      * @param string $sTempPath Path to the temporary folder.
      * @param int $iTime2Kill Interval in seconds at which files needs removing.
      * @param int $iNow Current Unix timestamp.
@@ -84,6 +87,9 @@ trait Common
 
     /**
      * Recursively deletes temporary files on time.
+     *
+     * NOTE: unused — only called from removeDirByTime()/ClearTempFiles(), which
+     * itself has no call sites anywhere in this codebase. Kept for backward compatibility.
      *
      * @param string $sTempPath Path to the temporary folder.
      * @param int $iTime2Kill Interval in seconds at which files needs removing.
@@ -150,6 +156,11 @@ trait Common
      *
      * @ignore
      * @todo check if it works.
+     *
+     * NOTE: unused — this method has no call sites anywhere in this codebase (not
+     * wired to any cron job or API entry point). Confirmed via a full-project search
+     * on 2026-09-15. Kept for backward compatibility in case something external
+     * (e.g. a custom deployment script) still calls it.
      *
      * @return bool
      */
