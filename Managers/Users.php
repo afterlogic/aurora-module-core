@@ -12,6 +12,7 @@ use Aurora\Modules\Core\Models\Group;
 use Aurora\Modules\Core\Models\User;
 use Aurora\Modules\Core\Models\UserBlock;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\DB;
 use Aurora\System\Enums\SortOrder;
 
 /**
@@ -176,7 +177,10 @@ class Users extends \Aurora\System\Managers\AbstractManager
         $oResult = null;
 
         try {
-            $oResult = User::find($oUser->Id);
+            $oResult = User::where('PublicId', $oUser->PublicId)
+                ->where('IdTenant', $oUser->IdTenant)
+                ->sharedLock()
+                ->first();
         } catch (\Illuminate\Database\QueryException $oEx) {
             \Aurora\Api::LogException($oEx);
         }
@@ -196,20 +200,25 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
-                if (!$this->isExists($oUser)) {
-                    $oUser->UUID = $oUser->generateUUID();
+            DB::transaction(function () use (&$oUser, &$bResult) {
+                if ($oUser->validate() && $oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
+                    if (!$this->isExists($oUser)) {
+                        $oUser->UUID = $oUser->generateUUID();
 
-                    if (!$oUser->save()) {
-                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
+                        if (!$oUser->save()) {
+                            throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserCreateFailed);
+                        }
+                    } else {
+                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserAlreadyExists);
                     }
-                } else {
-                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserAlreadyExists);
                 }
-            }
 
-            $bResult = true;
+                $bResult = true;
+            });
         } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        } catch (\Exception $oException) {
             $bResult = false;
             $this->setLastException($oException);
         }
@@ -226,15 +235,20 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
-                if (!$oUser->update()) {
-                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserUpdateFailed);
+            DB::transaction(function () use (&$oUser, &$bResult) {
+                if ($oUser->Role !== \Aurora\System\Enums\UserRole::SuperAdmin) {
+                    if (!$oUser->update()) {
+                        throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserUpdateFailed);
+                    }
+                    \Aurora\Api::removeUserFromCache($oUser->Id);
                 }
-                \Aurora\Api::removeUserFromCache($oUser->Id);
-            }
 
-            $bResult = true;
+                $bResult = true;
+            });
         } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        } catch (\Exception $oException) {
             $bResult = false;
             $this->setLastException($oException);
         }
@@ -251,14 +265,19 @@ class Users extends \Aurora\System\Managers\AbstractManager
     {
         $bResult = false;
         try {
-            if (!$oUser->delete()) {
-                throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
-            }
-            UserBlock::where('UserId', $oUser->Id)->delete();
-            \Aurora\Api::removeUserFromCache($oUser->Id);
+            DB::transaction(function () use (&$oUser, &$bResult) {
+                if (!$oUser->delete()) {
+                    throw new \Aurora\System\Exceptions\ManagerException(ErrorCodes::UserDeleteFailed);
+                }
+                UserBlock::where('UserId', $oUser->Id)->delete();
+                \Aurora\Api::removeUserFromCache($oUser->Id);
 
-            $bResult = true;
+                $bResult = true;
+            });
         } catch (\Aurora\System\Exceptions\BaseException $oException) {
+            $bResult = false;
+            $this->setLastException($oException);
+        } catch (\Exception $oException) {
             $bResult = false;
             $this->setLastException($oException);
         }
@@ -269,10 +288,18 @@ class Users extends \Aurora\System\Managers\AbstractManager
     public function deleteUserById($id)
     {
         $result = false;
-        if (User::find($id)->delete()) {
-            \Aurora\Api::removeUserFromCache($id);
-
-            $result = true;
+        try {
+            DB::transaction(function () use (&$result, $id) {
+                $oUser = User::find($id);
+                if ($oUser && $oUser->delete()) {
+                    UserBlock::where('UserId', $id)->delete();
+                    \Aurora\Api::removeUserFromCache($id);
+                    $result = true;
+                }
+            });
+        } catch (\Exception $oException) {
+            $result = false;
+            $this->setLastException($oException);
         }
 
         return $result;
