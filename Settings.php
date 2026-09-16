@@ -38,6 +38,7 @@ use Aurora\System\Enums;
  * @property bool $AllowGroups
  * @property string $CookieSameSite
  * @property array $FirebaseAppCheck
+ * @property string $TrustedProxyIps
  */
 
 class Settings extends \Aurora\System\Module\Settings
@@ -209,6 +210,12 @@ class Settings extends \Aurora\System\Module\Settings
                 "array",
                 null,
                 "Setting Firebase App Check"
+            ),
+            'TrustedProxyIps' => new SettingsProperty(
+                '',
+                'string',
+                null,
+                'Comma-separated list of reverse proxy IP addresses allowed to set X-Forwarded-Proto/X-Forwarded-Ssl headers (used by Api::isHttps()). Empty means these headers are trusted from any source, which matches the previous behavior; set this when the backend is directly reachable and you want the headers trusted only when REMOTE_ADDR is one of these proxies.'
             )
         ];
     }
