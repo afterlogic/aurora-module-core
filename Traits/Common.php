@@ -1176,6 +1176,19 @@ trait Common
         $sIp = \Aurora\System\Utils::getClientIp();
         $this->Decorator()->IsBlockedUser($Login, $sIp);
 
+        // Reject disabled users before the 'Login' event runs a real IMAP login against the
+        // mail server. Looked up via the authorizing account (not PublicId) because that's the
+        // same lookup the actual mail login uses (see Mail\Module::onLogin), so it can't drift
+        // out of sync with who's actually allowed to authenticate.
+        $oAccount = $this->Decorator()->GetAccountUsedToAuthorize($Login, null);
+        if ($oAccount) {
+            $oUser = Api::getUserById($oAccount->IdUser);
+            if ($oUser && $oUser->IsDisabled) {
+                $this->Decorator()->BlockUser($Login, $sIp);
+                return false;
+            }
+        }
+
         $mResult = false;
         $aArgs = array(
             'Login' => $Login,
