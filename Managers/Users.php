@@ -291,7 +291,17 @@ class Users extends \Aurora\System\Managers\AbstractManager
         try {
             DB::transaction(function () use (&$result, $id) {
                 $oUser = User::find($id);
-                if ($oUser && $oUser->delete()) {
+                if (!$oUser) {
+                    // Already gone - e.g. Mail::DeleteAccount() recursively deletes the user
+                    // when the account it just removed was their last authorizing one, which
+                    // races this same deletion when it was Core::DeleteUser() that triggered
+                    // the account cleanup in the first place (see Mail::onBeforeDeleteUser).
+                    // Whichever call actually removed the row, the end state - no such user -
+                    // is exactly what was asked for, so report success either way.
+                    $result = true;
+                    return;
+                }
+                if ($oUser->delete()) {
                     UserBlock::where('UserId', $id)->delete();
                     \Aurora\Api::removeUserFromCache($id);
                     $result = true;
