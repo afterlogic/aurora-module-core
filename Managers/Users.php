@@ -56,7 +56,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
      * @param Builder $oFilters
      * @return int
      */
-    public function getUsersCount($sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
+    public function getUsersCount($sSearchDesc = '', ?Builder $oFilters = null, $iGroupId = 0)
     {
         $iResult = 0;
         $query = isset($oFilters) ? $oFilters : User::query();
@@ -92,7 +92,7 @@ class Users extends \Aurora\System\Managers\AbstractManager
      * @param Builder $oFilters = []
      * @return array | false
      */
-    public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', Builder $oFilters = null, $iGroupId = 0)
+    public function getUserList($iOffset = 0, $iLimit = 0, $sOrderBy = 'Name', $iOrderType = SortOrder::ASC, $sSearchDesc = '', ?Builder $oFilters = null, $iGroupId = 0)
     {
         $aResult = [];
         try {
