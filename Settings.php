@@ -178,7 +178,7 @@ class Settings extends \Aurora\System\Module\Settings
                 null,
                 'Number of minutes user will be blocked for upon multiple failed login attempts'
             ),
-            'LoginBlockIpReputationThreshold ' => new SettingsProperty(
+            'LoginBlockIpReputationThreshold' => new SettingsProperty(
                 0,
                 'int',
                 null,
