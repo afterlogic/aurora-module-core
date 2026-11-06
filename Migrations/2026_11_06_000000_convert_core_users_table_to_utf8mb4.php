@@ -1,5 +1,8 @@
 <?php
 
+use Aurora\Modules\Core\Classes\UsersTableConverter;
+use Aurora\System\Api;
+use Aurora\System\Enums\LogLevel;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Capsule\Manager as Capsule;
 
@@ -12,17 +15,17 @@ class ConvertCoreUsersTableToUtf8mb4 extends Migration
      * on PublicId can't be used if the columns have different character sets, and then the whole index
      * is read for every contact. adav_addressbooks is already converted to utf8mb4.
      *
+     * A table which can't be converted only makes these queries slower, so it doesn't stop the update.
+     *
      * @return void
      */
     public function up()
     {
-        $prefix = Capsule::connection()->getTablePrefix();
-        $column = Capsule::connection()->selectOne("SHOW FULL COLUMNS FROM {$prefix}core_users WHERE Field = 'PublicId'");
+        $problem = (new UsersTableConverter(Capsule::connection()))->convert();
 
-        if ($column->Collation !== 'utf8mb4_unicode_ci') {
-            Capsule::connection()->statement(
-                "ALTER TABLE {$prefix}core_users CONVERT TO CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"
-            );
+        if ($problem !== null) {
+            Api::Log($problem, LogLevel::Error);
+            echo 'WARNING: ' . $problem . PHP_EOL;
         }
     }
 
@@ -33,7 +36,5 @@ class ConvertCoreUsersTableToUtf8mb4 extends Migration
      *
      * @return void
      */
-    public function down()
-    {
-    }
+    public function down() {}
 }
