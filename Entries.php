@@ -217,7 +217,10 @@ class Entries extends \Aurora\System\Module\AbstractEntries
                 break;
         }
 
-        $iUserId = (isset($aValues['UserId'])) ? $aValues['UserId'] : 0;
+        $iUserId = (isset($aValues['UserId'])) ? (int) $aValues['UserId'] : 0;
+        if ($iUserId === 0 || $iUserId !== (int) Api::getAuthenticatedUserId()) {
+            throw new ApiException(Notifications::AccessDenied, null, 'AccessDenied');
+        }
 
         if (isset($aValues['TempFile'], $aValues['TempName'], $aValues['Name'])) {
             $sModule = isset($aValues['Module']) && !empty($aValues['Module']) ? $aValues['Module'] : 'System';
