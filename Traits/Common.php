@@ -707,7 +707,7 @@ trait Common
     /**
      * @ignore
      * Turns on or turns off mobile version.
-     * @param bool $Mobile Indicates if mobile version should be turned on or turned off.
+     * @param bool|string $Mobile A fixed layout or 'auto' to clear the preference.
      * @return bool
      */
     public function SetMobile($Mobile)
