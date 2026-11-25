@@ -374,7 +374,11 @@ trait Users
         }
 
         $oAuthenticatedUser = Api::getAuthenticatedUser();
-        if (!($oAuthenticatedUser instanceof User && $oAuthenticatedUser->Role === UserRole::TenantAdmin && $oAuthenticatedUser->IdTenant === $TenantId)) {
+        $canCreateInOwnTenant = $oAuthenticatedUser instanceof User
+            && $oAuthenticatedUser->Role === UserRole::TenantAdmin
+            && $oAuthenticatedUser->IdTenant === $TenantId
+            && in_array($Role, [UserRole::NormalUser, (string) UserRole::NormalUser], true);
+        if (!$canCreateInOwnTenant) {
             Api::checkUserRoleIsAtLeast(UserRole::SuperAdmin);
         }
 
