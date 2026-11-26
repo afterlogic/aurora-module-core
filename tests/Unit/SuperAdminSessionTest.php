@@ -122,6 +122,34 @@ class SuperAdminSessionTest extends TestCase
         $this->sessions->Set(['id' => '-1', 'token' => 'admin'], time());
     }
 
+    public static function tokenStorageModes(): array
+    {
+        return ['stateless' => [false], 'database' => [true]];
+    }
+
+    /** @dataProvider tokenStorageModes */
+    public function testRegularTokenRefreshPreservesExpiration(bool $store): void
+    {
+        require __DIR__ . '/../fixtures/session-clock.php';
+        $this->settings->StoreAuthTokenInDB = $store;
+        if ($store) {
+            $this->createAuthTokensTable();
+        }
+        $start = \Aurora\System\time();
+        $expiry = $start + 60;
+        $token = $this->sessions->Set(['id' => 1, 'token' => 'auth'], $start, $expiry);
+        foreach ([$start + 1, $expiry - 1] as $now) {
+            \Aurora\System\SessionTestClock::$now = $now;
+            $token = $this->sessions->UpdateTimestamp($token, $now);
+            UserSession::$aTokensCache = [];
+            $data = $this->sessions->Get($token);
+            self::assertSame($now, $data['@time']);
+            self::assertSame($expiry, $data['@expire']);
+        }
+        \Aurora\System\SessionTestClock::$now = $expiry + 1;
+        self::assertFalse($this->sessions->Get($token));
+    }
+
     public static function userSessionModes(): array
     {
         return [
@@ -136,9 +164,7 @@ class SuperAdminSessionTest extends TestCase
     public function testRegularAndAdminLoginsWithUserSettings(bool $store, bool $devices): void
     {
         $this->settings->StoreAuthTokenInDB = $store;
-        Capsule::connection()->statement('CREATE TABLE test_core_auth_tokens (
-            Id INTEGER PRIMARY KEY, UserId INTEGER, AccountId INTEGER, AccountType TEXT,
-            TokenHash TEXT, LastUsageDateTime INTEGER, CreatedAt TEXT, UpdatedAt TEXT)');
+        $this->createAuthTokensTable();
         Capsule::connection()->statement('CREATE TABLE test_security_used_devices (
             Id INTEGER PRIMARY KEY, UserId INTEGER, DeviceId TEXT, DeviceName TEXT, DeviceIP TEXT,
             CreationDateTime INTEGER, LastUsageDateTime INTEGER, TrustTillDateTime INTEGER,
@@ -195,6 +221,13 @@ class SuperAdminSessionTest extends TestCase
         $expired = $this->sessions->Set($regular, $start - 90, $start - 1);
         self::assertFalse($this->acceptsRequest($twoFactor, $expired, 'desktop', 1));
         \Aurora\System\Session::Destroy();
+    }
+
+    private function createAuthTokensTable(): void
+    {
+        Capsule::connection()->statement('CREATE TABLE test_core_auth_tokens (
+            Id INTEGER PRIMARY KEY, UserId INTEGER, AccountId INTEGER, AccountType TEXT,
+            TokenHash TEXT, LastUsageDateTime INTEGER, CreatedAt TEXT, UpdatedAt TEXT)');
     }
 
     private function acceptsRequest(TwoFactorAuth $module, string $token, string $device, int $id): bool
